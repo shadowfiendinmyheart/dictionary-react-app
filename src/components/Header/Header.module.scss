@@ -1,0 +1,29 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(25px);
+  height: 100px;
+  width: 100%;
+  padding: 0 6%;
+}
+
+.logo {
+  height: 50px;
+  width: 50px;
+  background-color: crimson;
+}
+
+.navigation {
+  padding: 0;
+}
+
+.list {
+  display: flex;
+}
+
+.elem {
+  margin: 0 10px;
+  list-style-type: none;
+}

@@ -1,29 +1,25 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom'
+import HeaderButton from './components/headerButton'
 
 import styles from './Header.module.scss'
 
 const Header = ():React.ReactElement => {
   return (
-    <header>
+    <header className={styles.container}>
       <div className={styles.logo}>
         <img></img>
       </div>
       <nav className={styles.navigation}>
         <ul className={styles.list}>
           <li className={styles.elem}>
-            <a className={styles.button}>
-              home
-            </a>
+            <HeaderButton href="/21453647566" text="home" />
           </li>
           <li className={styles.elem}>
-            <a className={styles.button}>
-              dictionary
-            </a>
+          <HeaderButton href="/" text="dictionary" />
           </li>
           <li className={styles.elem}>
-            <a className={styles.button}>
-              learn !
-            </a>
+          <HeaderButton href="/" text="learn" />
           </li>
         </ul>
       </nav>

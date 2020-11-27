@@ -1,4 +1,5 @@
 declare const styles: {
+  readonly container: string;
   readonly logo: string;
   readonly navigation: string;
   readonly list: string;

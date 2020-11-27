@@ -4,9 +4,19 @@
 
 body {
   margin: 0;
+  background-color: rgb(31, 31, 31);
+  font-family: 'Alegreya Sans SC', sans-serif;
 }
 
 .wrapper {
   width: 1200px;
   margin: 0 auto;
+}
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-self: center;
+  align-items: center;
 }
