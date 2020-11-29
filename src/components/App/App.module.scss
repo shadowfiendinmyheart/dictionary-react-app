@@ -1,10 +1,12 @@
+@import '../../assets/styles/_colors.pcss';
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  background-color: rgb(31, 31, 31);
+  background-color: $background-color;
   font-family: 'Alegreya Sans SC', sans-serif;
 }
 
