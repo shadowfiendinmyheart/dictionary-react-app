@@ -4,6 +4,7 @@ import { BrowserRouter, Switch, Route, Redirect, Link } from 'react-router-dom';
 import Header from '../Header';
 import Footer from '../Footer';
 import WelcomePage from '../../pages/welcomePage';
+import HomePage from '../../pages/homePage';
 
 import styles from './App.module.scss';
 
@@ -18,6 +19,10 @@ function App():React.ReactElement {
               exact={true}
               path="/"
               component={WelcomePage}
+            />
+            <Route
+              path="/home"
+              component={HomePage}
             />
             <Route 
               path='*'

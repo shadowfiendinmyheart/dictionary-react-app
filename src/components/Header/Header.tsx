@@ -12,7 +12,7 @@ const Header = ():React.ReactElement => {
       <nav className={styles.navigation}>
         <ul className={styles.list}>
           <li className={styles.elem}>
-            <HeaderButton href="/111" text="home" />
+            <HeaderButton href="/home" text="home" />
           </li>
           <li className={styles.elem}>
             <HeaderButton href="/" text="dictionary" />
