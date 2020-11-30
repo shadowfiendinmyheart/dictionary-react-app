@@ -1,0 +1,14 @@
+@import '../../../../assets/styles/colors';
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: $font-color;
+}
+
+.formInput {
+  background-color: $input-color;
+  color: $font-color;
+}

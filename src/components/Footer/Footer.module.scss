@@ -1,6 +1,10 @@
+@import '../../assets/styles/colors';
+@import '../../assets/styles/_mixins.scss';
+
 .container {
   display: flex;
-  height: 100px;
+  min-height: 50px;
   width: 100%;
-  background-color: rgb(158, 255, 187);
+  @include glass;
+  color: $font-color;
 }

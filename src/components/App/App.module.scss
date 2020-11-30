@@ -1,4 +1,4 @@
-@import '../../assets/styles/_colors.pcss';
+@import '../../assets/styles/_colors.scss';
 
 * {
   box-sizing: border-box;
@@ -7,11 +7,12 @@
 body {
   margin: 0;
   background-color: $background-color;
+  background-image: url('https://image.freepik.com/free-vector/geometry-wallpaper-or-background-vector-illustration-eps10_24911-20612.jpg');
   font-family: 'Alegreya Sans SC', sans-serif;
 }
 
 .wrapper {
-  width: 1200px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 

@@ -1,3 +1,6 @@
+@import '../../assets/styles/_mixins.scss';
+@import '../../assets/styles/_colors.scss';
+
 .container {
   display: flex;
   justify-content: center;
@@ -6,7 +9,24 @@
 }
 
 .authWindow {
-  width: 100px;
-  height: 100px;
-  background-color: blue;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 700px;
+  height: 450px;
+  @include glass;
+}
+
+.login {
+}
+
+.split {
+  height: 90%;
+  width: 5px;
+  margin: 0;
+  box-shadow: 0 0 10px #ffffff,0 0 30px #ffffff, 0 0 80px #ffffff;;
+  border: 0;
+}
+
+.registration {
 }
