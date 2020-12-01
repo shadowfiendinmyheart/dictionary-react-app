@@ -1,6 +1,5 @@
 declare const styles: {
   readonly profile: string;
-  readonly thinkLater: string;
   readonly wrapperAvatar: string;
   readonly avatar: string;
   readonly info: string;

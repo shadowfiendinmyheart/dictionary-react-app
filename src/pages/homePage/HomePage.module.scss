@@ -1,8 +1,7 @@
 .container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   flex: 1 1 auto;
-  color: powderblue;
-}
-
-.test {
-  height: 1200px;
+  width: 80%;
 }
