@@ -1,7 +1,26 @@
 .container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   flex: 1 1 auto;
   width: 80%;
+  height: inherit;
+  padding: 20px;
+}
+
+.menu {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 20% 60% 20%;
+  margin: 20px 0;
+  flex: 1 1 auto;
+}
+
+.addWordButton {
+  grid-column-start: 1; 
+  grid-column-end: 4; 
+}
+
+.showDictionaryButton {
+  grid-column-start: 1; 
+  grid-column-end: 4; 
 }

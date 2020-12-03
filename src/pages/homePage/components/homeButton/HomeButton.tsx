@@ -1,12 +1,24 @@
 import React from 'react';
+import cn from 'clsx';
 
 import styles from './HomeButton.module.scss';
 
-const HomeButton = ():React.ReactElement => {
+type HomeButtonProps = {
+  classNameGrid: string,
+  text: string,
+  href: string,
+}
+
+const HomeButton = (props: HomeButtonProps): React.ReactElement => {
+
+  const { classNameGrid, text, href } = props;
+
   return (
-    <button className={styles.main}>
-      qwretrytu
-    </button>
+    <div className={cn(classNameGrid, styles.container)}>
+      <a className={styles.btn} href={href}>
+        {text}
+      </a>
+    </div>
   )
 };
 

@@ -1,5 +1,32 @@
 @import '../../../../assets/styles/mixins';
+@import '../../../../assets/styles/colors';
 
-.main {
+.container {
   @include glass;
+  margin: 5px;
+  padding: 5px;
+  transition-timing-function: cubic-bezier(0, 0, 1, 0.01);
+  transition: all 0.2s;
+
+  &:hover {
+    @include glow($font-active-color);
+    transform: scale(1.02);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.btn {
+  color: $font-color;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+
+  &:hover {
+    @include glow($font-active-color);
+  }
 }
