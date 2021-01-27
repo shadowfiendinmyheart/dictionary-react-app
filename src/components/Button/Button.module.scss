@@ -1,0 +1,10 @@
+@import '../../assets/styles/colors';
+@import '../../assets/styles/mixins';
+
+.btn {
+  @include glass;
+  margin-top: 15px;
+  width: 100%;
+  height: 40px;
+  color: $font-color;
+}

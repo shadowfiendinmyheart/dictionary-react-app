@@ -1,4 +1,6 @@
 import React from 'react';
+import InputForm from '../../../../components/InputForm';
+import Button from '../../../../components/Button';
 
 import styles from './LoginForm.module.scss';
 
@@ -7,14 +9,9 @@ const LoginForm = (): React.ReactElement => {
     <form action={'/login'} method={'post'}>
       <div className={styles.container}>
         <h2>LOGIN</h2>
-
-        <label htmlFor={'login'}>Логин:</label>
-        <input className={styles.formInput} id={'login'} type={'text'} placeholder={'Введите логин'} name={'user_login'}></input>
-
-        <label htmlFor={'password'}>Пароль:</label>
-        <input className={styles.formInput} id={'password'} type={'password'} placeholder={'Введите пароль'} name={'user_password'}></input>
-
-        <button type={'submit'}>Войти</button>
+        <InputForm type={'text'} placeholder={'Введите логин'} name={'auth_login'} />
+        <InputForm type={'password'} placeholder={'Введите пароль'} name={'auth_password'} />
+        <Button type={'submit'} text={'Войти'} />
       </div>
     </form>
   )
