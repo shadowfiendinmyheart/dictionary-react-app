@@ -17,16 +17,10 @@
   @include glass;
 }
 
-.login {
-}
-
 .split {
   height: 90%;
   width: 5px;
   margin: 0;
-  box-shadow: 0 0 10px #ffffff,0 0 30px #ffffff, 0 0 80px #ffffff;;
+  box-shadow: 0 0 10px $secondary-color,0 0 30px $primary-color, 0 0 80px $font-shadow;
   border: 0;
-}
-
-.registration {
 }

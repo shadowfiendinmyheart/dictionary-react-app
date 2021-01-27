@@ -7,12 +7,15 @@
 body {
   margin: 0;
   background-color: $background-color;
-  background-image: url('https://image.freepik.com/free-vector/geometry-wallpaper-or-background-vector-illustration-eps10_24911-20612.jpg');
+  background-image: url('https://te-st.ru/wp-content/uploads/2014/05/10-open-libraries.png');
   font-family: 'Alegreya Sans SC', sans-serif;
+  //https://te-st.ru/wp-content/uploads/2014/05/10-open-libraries.png
+  //https://image.freepik.com/free-vector/geometry-wallpaper-or-background-vector-illustration-eps10_24911-20612.jpg
 }
 
 .wrapper {
   max-width: 1200px;
+  min-width: 480px;
   margin: 0 auto;
 }
 

@@ -2,6 +2,8 @@
 @import '../../assets/styles/_mixins.scss';
 
 .container {
+  position: sticky;
+  top: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -14,7 +16,6 @@
 .logo {
   height: 40px;
   width: 40px;
-  background-color: rgb(255, 191, 204);
 }
 
 .logoImage {
