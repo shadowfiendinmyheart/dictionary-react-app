@@ -12,7 +12,7 @@ function App() {
         </p>
         <a
           className="App-link"
-          href="https://demasscult.ru"
+          href="http://demasscult.ru"
           target="_blank"
           rel="noopener noreferrer"
         >
