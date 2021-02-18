@@ -1,35 +1,58 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import InputForm from '../../../../components/InputForm';
 import Button from '../../../../components/Button';
+import { useHttp } from '../../../../hooks/http.hook';
 
 import styles from './RegistrationForm.module.scss';
 
 const RegistrationPage = ():React.ReactElement => {
-
+  const { loading, error, request, message, clearError, clearMessage } = useHttp();
   const [form, setForm] = useState({
-    reg_nickname: '',
-    reg_login: '',
-    reg_password: '',
-    reg_password_repeat: '',
+    regNickname: '',
+    regLogin: '',
+    regPassword: '',
+    regPasswordRepeat: '',
   });
+
+  useEffect( () => {
+    if (error) {
+      alert(error); // Добавить нормальный вывод ошибки ! ! !
+      clearError();
+    }
+  }, [error]);
+
+  useEffect( () => {
+    if (message) {
+      alert(message); // Добавить нормальный вывод ошибки ! ! !
+      clearMessage();
+    }
+  }, [message]);
 
   const changeHandler = (event: React.ChangeEvent<HTMLInputElement>)  => {
     setForm({ ...form, [event.target.name]: event.target.value })
   }
 
+  const registerHandler = async (ev: React.SyntheticEvent) => {
+    try {
+      ev.preventDefault();
+      ev.stopPropagation();
+      await request('api/auth/registration', 'POST', {...form})
+    } catch (e) {}
+  }
+  
   return (
-    <form action={'/registration'} method={'post'}>
+    
       <div className={styles.container}>
         <h2>REGISTRATION</h2>
-
-        <InputForm type={'text'} placeholder={'Введите никнейм'} name={'reg_nickname'} onChange={changeHandler} />
-        <InputForm type={'text'} placeholder={'Придумайте логин'} name={'reg_login'} onChange={changeHandler} />
-        <InputForm type={'password'} placeholder={'Придумайте пароль'} name={'reg_password'} onChange={changeHandler} />
-        <InputForm type={'password'} placeholder={'Повторите пароль'} name={'reg_password_repeat'} onChange={changeHandler} />
-        <Button type={'submit'} text={'Зарегистрироваться'}/>
-        
+        <form >
+          <InputForm type={'text'} placeholder={'Введите никнейм'} name={'regNickname'} onChange={changeHandler} />
+          <InputForm type={'text'} placeholder={'Придумайте логин'} name={'regLogin'} onChange={changeHandler} />
+          <InputForm type={'password'} placeholder={'Придумайте пароль'} name={'regPassword'} onChange={changeHandler} />
+          <InputForm type={'password'} placeholder={'Повторите пароль'} name={'regPasswordRepeat'} onChange={changeHandler} />
+          <Button type={'submit'} text={'Зарегистрироваться'} onClick={registerHandler} />
+        </form>
       </div>
-    </form>
+   
   )
 };
 

@@ -6,15 +6,16 @@ import styles from './Button.module.scss';
 
 type ButtonProps = {
   classNameUpdate?: string,
-  type: 'submit' | 'button' | 'reset',
-  text: string
+  type?: 'submit' | 'button' | 'reset',
+  text: string,
+  onClick?: (ev: React.SyntheticEvent) => void
 }
 
 const Button = (props: ButtonProps): React.ReactElement => {
-  const { classNameUpdate, type, text } = props
+  const { classNameUpdate, type, text, onClick } = props
   
   return (
-    <button className={cn(styles.btn, classNameUpdate)} type={type}>
+    <button className={cn(styles.btn, classNameUpdate)} type={type} onClick={onClick}>
       {text}
     </button>
   )

@@ -6,14 +6,15 @@ const { check, validationResult } = require('express-validator');
 const User = require('../models/User')
 const router = Router();
 
-router.post('/register', 
+router.post('/registration', 
   [
-    check('nickname', 'Некорректный никнейм').notEmpty(),
-    check('login', 'Некорректный логин').notEmpty(),
-    check('password', 'Некорректный пароль').isLength( { min: 6}),
+    check('regNickname', 'Некорректный никнейм').notEmpty(),
+    check('regLogin', 'Некорректный логин').notEmpty(),
+    check('regPassword', 'Некорректный пароль').isLength( { min: 6}),
   ],
   async (req, res) => {
   try {
+    console.log('Body: ', req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ 
@@ -22,11 +23,11 @@ router.post('/register',
       })
     }
 
-    const {nickname, login, password, rePassword} = req.body;
+    const {regNickname, regLogin, regPassword, regPasswordRepeat} = req.body;
 
-    const findNickname = await User.findOne({ nickname });
-    const findLogin = await User.findOne({ login });
-
+    const findNickname = await User.findOne({ nickname: regNickname });
+    const findLogin = await User.findOne({ login: regLogin });
+    
     if (findNickname) {
       return res.status(400).json({ message: 'Пользователь с таким никнеймом уже существует' });
     }
@@ -34,9 +35,13 @@ router.post('/register',
       return res.status(400).json({ message: 'Пользователь с таким логином уже существует' });
     }
 
-    if (password == rePassword) {
-      const hashedPassword = await bcrypt.hash(password, 12);
-      const user = new User( {nickname, login, password: hashedPassword})
+    if (regPassword == regPasswordRepeat) {
+      const hashedPassword = await bcrypt.hash(regPassword, 12);
+      const user = new User({
+        nickname: regNickname,
+        login: regLogin,
+        password: hashedPassword,
+      });
       await user.save();
       res.status(201).json({ message: 'Пользователь создан' });
     } else {
@@ -45,6 +50,7 @@ router.post('/register',
 
 
   } catch(e) {
+    console.log('Error: ', e);
     res.status(500).json({ message: 'u broke the site . . .'})
   }
 })
