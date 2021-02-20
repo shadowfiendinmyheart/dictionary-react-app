@@ -8,7 +8,7 @@ type ButtonProps = {
   classNameUpdate?: string,
   type?: 'submit' | 'button' | 'reset',
   text: string,
-  onClick?: (ev: React.SyntheticEvent) => void
+  onClick: (ev: React.SyntheticEvent) => void
 }
 
 const Button = (props: ButtonProps): React.ReactElement => {

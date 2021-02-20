@@ -57,8 +57,8 @@ router.post('/registration',
 
 router.post('/login', 
   [
-    check('login', 'Некорректный логин').notEmpty(),
-    check('password', 'Некорректный пароль').exists().bail().isLength( { min: 6}),
+    check('authLogin', 'Некорректный логин').notEmpty(),
+    check('authPassword', 'Некорректный пароль').exists().bail().isLength( { min: 6}),
   ],  
   async (req, res) => {
   try {
@@ -70,14 +70,14 @@ router.post('/login',
       })
     }
 
-    const {login, password} = req.body;
-    const user = await User.findOne({ login })
+    const {authLogin, authPassword} = req.body;
+    const user = await User.findOne({ login: authLogin })
 
     if (!user) {
       return res.status(400).json({ message: 'Такого пользователя не существует'})
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(authPassword, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Неверный пароль' })
     }
