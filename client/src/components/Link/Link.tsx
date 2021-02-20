@@ -2,15 +2,15 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import cn from 'clsx';
 
-import styles from './HeaderButton.module.scss'
+import styles from './Link.module.scss'
 
-type HeaderButtonProps = {
+type LinkProps = {
   href: string,
   text: string,
   classNameUpdate?: string,
 }
 
-const HeaderButton = (props: HeaderButtonProps): React.ReactElement => {
+const Link = (props: LinkProps): React.ReactElement => {
   const {href, text, classNameUpdate} = props;
   
   return (
@@ -20,4 +20,4 @@ const HeaderButton = (props: HeaderButtonProps): React.ReactElement => {
   )
 }
 
-export default HeaderButton;
+export default Link;

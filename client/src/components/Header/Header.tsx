@@ -1,5 +1,5 @@
 import React from 'react';
-import HeaderButton from './components/headerButton'
+import Link from '../Link'
 
 import styles from './Header.module.scss'
 
@@ -12,13 +12,13 @@ const Header = ():React.ReactElement => {
       <nav className={styles.navigation}>
         <ul className={styles.list}>
           <li className={styles.elem}>
-            <HeaderButton href="/home" text="home" />
+            <Link href="/home" text="home" />
           </li>
           <li className={styles.elem}>
-            <HeaderButton href="/" text="dictionary" />
+            <Link href="/" text="dictionary" />
           </li>
           <li className={styles.elem}>
-            <HeaderButton href="/" text="learn" />
+            <Link href="/" text="learn" />
           </li>
         </ul>
       </nav>

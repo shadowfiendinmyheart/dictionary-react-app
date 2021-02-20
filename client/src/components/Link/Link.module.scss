@@ -1,11 +1,11 @@
-@import '../../../../assets/styles/_colors.scss';
-@import '../../../../assets/styles/_mixins.scss';
+@import '../../assets/styles/_colors.scss';
+@import '../../assets/styles/mixins';
 
 .button {
   color: $font-color;
   text-decoration: none;
   font-size: larger;
-  border-bottom: 0px solid $font-color;
+  border-bottom: 3px solid transparent;
   transition: all 0.2s;
 
   &:hover {

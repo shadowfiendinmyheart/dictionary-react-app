@@ -5,6 +5,7 @@ import Header from '../Header';
 import Footer from '../Footer';
 import WelcomePage from '../../pages/welcomePage';
 import HomePage from '../../pages/homePage';
+import ErrorPage from '../../pages/errorPage';
 
 import styles from './App.module.scss';
 
@@ -26,13 +27,7 @@ function App():React.ReactElement {
             />
             <Route 
               path='*'
-              component={():React.ReactElement => {
-                return (
-                  <div>
-                    404, page not found
-                  </div>
-                )
-              }}
+              component={ErrorPage}
             />
           </Switch>
           <Footer />
