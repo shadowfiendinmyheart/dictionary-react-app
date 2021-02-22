@@ -1,34 +1,23 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route, Redirect, Link } from 'react-router-dom';
 
+import useRoutes from '../../routes';
+
 import Header from '../Header';
 import Footer from '../Footer';
-import WelcomePage from '../../pages/welcomePage';
-import HomePage from '../../pages/homePage';
-import ErrorPage from '../../pages/errorPage';
 
 import styles from './App.module.scss';
 
 function App():React.ReactElement {
+  const router = useRoutes(false);
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
         <BrowserRouter>
-          <Header />
+          <Header isAuth={false}/>
           <Switch>
-            <Route 
-              exact={true}
-              path="/"
-              component={WelcomePage}
-            />
-            <Route
-              path="/home"
-              component={HomePage}
-            />
-            <Route 
-              path='*'
-              component={ErrorPage}
-            />
+            {router}
           </Switch>
           <Footer />
         </BrowserRouter>
