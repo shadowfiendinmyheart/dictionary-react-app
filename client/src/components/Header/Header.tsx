@@ -1,7 +1,9 @@
 import React from 'react';
-import Link from '../Link'
+import Link from '../Link';
 
-import styles from './Header.module.scss'
+import { ROUTES } from '../../constants/routes';
+
+import styles from './Header.module.scss';
 
 type headerProps = {
   isAuth: boolean
@@ -19,7 +21,7 @@ const Header = ( props: headerProps ):React.ReactElement => {
         <nav className={styles.navigation}>
           <ul className={styles.list}>
             <li className={styles.elem}>
-              <Link href="/home" text="home" />
+              <Link href={ROUTES.HOME_PAGE} text="home" />
             </li>
             <li className={styles.elem}>
               <Link href="/" text="dictionary" />

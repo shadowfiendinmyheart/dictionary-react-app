@@ -16,9 +16,7 @@ function App():React.ReactElement {
       <div className={styles.container}>
         <BrowserRouter>
           <Header isAuth={false}/>
-          <Switch>
             {router}
-          </Switch>
           <Footer />
         </BrowserRouter>
       </div>
