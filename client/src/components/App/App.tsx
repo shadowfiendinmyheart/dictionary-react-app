@@ -9,13 +9,13 @@ import Footer from '../Footer';
 import styles from './App.module.scss';
 
 function App():React.ReactElement {
-  const router = useRoutes(false);
+  const router = useRoutes(true);
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
         <BrowserRouter>
-          <Header isAuth={false}/>
+          <Header isAuth={true}/>
             {router}
           <Footer />
         </BrowserRouter>
