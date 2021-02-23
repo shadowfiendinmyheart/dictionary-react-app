@@ -1,0 +1,24 @@
+@import '../../assets/styles/colors';
+@import '../../assets/styles/mixins';
+
+.btn {
+  @include glass;
+  margin-top: 15px;
+  width: 100%;
+  height: 40px;
+  color: $font-color;
+  border: none;
+}
+
+.btn:hover {
+  cursor: pointer;
+  @include glow($font-color);
+}
+
+.btn:active {
+  box-shadow: 0 0 3px $font-shadow, 0 0 6px $font-shadow, 0 0 9px whitesmoke;
+}
+
+.btn:focus {
+  outline: none;
+}

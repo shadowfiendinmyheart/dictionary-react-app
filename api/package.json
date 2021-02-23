@@ -1,0 +1,27 @@
+{
+  "name": "react-nodejs-example",
+  "version": "1.0.0",
+  "description": "example project react with nodejs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node app.js",
+    "server": "nodemon ./app.js",
+    "client": "npm run start --prefix ../client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "config": "^3.3.3",
+    "express": "^4.17.1",
+    "express-validator": "^6.9.2",
+    "http-proxy-middleware": "^1.0.4",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.11.16"
+  },
+  "devDependencies": {
+    "concurrently": "^5.3.0",
+    "nodemon": "^2.0.4",
+    "webpack": "^4.43.0"
+  }
+}

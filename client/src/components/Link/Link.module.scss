@@ -1,0 +1,20 @@
+@import '../../assets/styles/_colors.scss';
+@import '../../assets/styles/mixins';
+
+.button {
+  color: $font-color;
+  text-decoration: none;
+  font-size: larger;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+
+  &:hover {
+    border-bottom: 3px solid $font-color;
+    @include glow($font-active-color);
+  }
+
+  &:active {
+    border-bottom: 3px solid $font-active-color;
+    color: $font-active-color;
+  }
+}
