@@ -7,5 +7,6 @@ declare const styles: {
   readonly stats: string;
   readonly list: string;
   readonly element: string;
+  readonly logout: string;
 };
 export = styles;

@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import Button from '../../../../components/Button';
+import AuthContext from '../../../../context/AuthContext';
 
-import styles from './UserProfile.module.scss'
+import styles from './UserProfile.module.scss';
 
 const UserProfile = (): React.ReactElement => {
+  const { logout } = useContext(AuthContext);
+
   return (
     <div className={styles.profile}>
       <div className={styles.wrapperAvatar}>
@@ -24,6 +28,7 @@ const UserProfile = (): React.ReactElement => {
           </ul>
         </div>
       </div>
+      <Button classNameUpdate={styles.logout} onClick={logout} text={'Выйти из системы (logout)'} />
     </div>
   );
 }
