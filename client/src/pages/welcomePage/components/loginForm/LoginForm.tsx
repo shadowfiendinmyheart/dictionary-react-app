@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import InputForm from '../../../../components/InputForm';
 import Button from '../../../../components/Button';
 import { useHttp } from '../../../../hooks/http.hook';
+import AuthContext from '../../../../context/AuthContext';
 
 import styles from './LoginForm.module.scss';
 
@@ -12,6 +13,7 @@ const LoginForm = (): React.ReactElement => {
     authLogin: '',
     authPassword: '',
   });
+  const { token, userId, login, logout, isAuth } = useContext(AuthContext);
 
   useEffect( () => {
     if (error) {
@@ -35,7 +37,9 @@ const LoginForm = (): React.ReactElement => {
     try {
       ev.preventDefault();
       ev.stopPropagation();
-      await request('api/auth/login', 'POST', {...form})
+      const data = await request('api/auth/login', 'POST', {...form});
+      console.log('handler', data);
+      login(data.token, data.userId);
     } catch (e) {}
   }
 

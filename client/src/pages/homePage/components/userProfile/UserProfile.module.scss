@@ -3,6 +3,7 @@
 
 .profile {
   display: flex;
+  justify-content: space-evenly;
   width: 100%;
   @include glass;
   color: $font-color;
@@ -24,4 +25,10 @@
 
 .element {
   list-style-type: none;
+}
+
+.logout {
+  width: 100px;
+  height: 80px;
+  background-color: rgba(255, 0, 0, 0.438);
 }

@@ -1,0 +1,17 @@
+@import '../../assets/styles/colors';
+@import '../../assets/styles/mixins';
+
+.wrapper {  
+  display: flex;
+  flex: 1 1 auto;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  padding: 20px;
+}
+
+.add {
+  width: 100%;
+  min-width: 800px;
+  @include glass();
+}
