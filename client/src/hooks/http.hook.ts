@@ -17,6 +17,7 @@ export const useHttp = () => {
         headers['Content-Type'] = 'application/json'
       }
 
+      console.log('request:\n', 'body:', body, '\nheaders: ', headers);
       const response: Response = await fetch(url, {method, body, headers})
       const data: any = await response.json();
       
@@ -25,11 +26,15 @@ export const useHttp = () => {
       }
       
       setLoading(false);
-      setMessage(data.message);
+      if (data.message) {
+        setMessage(data.message);
+      }
       return data;
     } catch (e) {
       setLoading(false);
-      setError(e.message);
+      if (e.message) {
+        setError(e.message);
+      }
       throw e;
     }
   }, [])
