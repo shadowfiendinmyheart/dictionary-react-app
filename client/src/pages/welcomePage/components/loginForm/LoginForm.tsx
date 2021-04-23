@@ -8,7 +8,7 @@ import styles from './LoginForm.module.scss';
 
 const LoginForm = (): React.ReactElement => {
   
-  const { loading, error, request, message, clearError, clearMessage } = useHttp();
+  const { loading, request, answer, clearAnswer } = useHttp();
   const [form, setForm] = useState({
     authLogin: '',
     authPassword: '',
@@ -16,18 +16,11 @@ const LoginForm = (): React.ReactElement => {
   const { token, userId, login, logout, isAuth } = useContext(AuthContext);
 
   useEffect( () => {
-    if (error) {
-      alert(error); // Добавить нормальный вывод ошибки ! ! !
-      clearError();
+    if (answer) {
+      alert(answer); // Добавить нормальный вывод ошибки ! ! !
+      clearAnswer();
     }
-  }, [error]);
-
-  useEffect( () => {
-    if (message) {
-      alert(message); // Добавить нормальный вывод ошибки ! ! !
-      clearMessage();
-    }
-  }, [message]);
+  }, [answer]);
 
   const changeHandler = (event: React.ChangeEvent<HTMLInputElement>)  => {
     setForm({ ...form, [event.target.name]: event.target.value })

@@ -20,7 +20,7 @@ const Input = (props: InputProps):React.ReactElement => {
       <input 
         className={cn(styles.form__field, classNameUpdate)} 
         id={name} type={type} 
-        placeholder={placeholder} 
+        placeholder={placeholder}
         name={name} 
         onChange={onChange}
         required>

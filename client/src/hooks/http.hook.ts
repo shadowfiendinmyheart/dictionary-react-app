@@ -2,8 +2,7 @@ import { useState, useCallback } from 'react';
 
 export const useHttp = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string>('');
+  const [answer, setAnswer] = useState<string | null>(null);
 
   const request = useCallback(async (
       url: string, 
@@ -27,20 +26,19 @@ export const useHttp = () => {
       
       setLoading(false);
       if (data.message) {
-        setMessage(data.message);
+        setAnswer(data.message);
       }
       return data;
     } catch (e) {
       setLoading(false);
       if (e.message) {
-        setError(e.message);
+        setAnswer(e.message);
       }
       throw e;
     }
   }, [])
 
-  const clearError = () => setError(null);
-  const clearMessage = () => setMessage('');
+  const clearAnswer = () => setAnswer(null);
 
-  return { loading, request, error, message, clearError, clearMessage }
+  return { loading, request, answer, clearAnswer }
 }

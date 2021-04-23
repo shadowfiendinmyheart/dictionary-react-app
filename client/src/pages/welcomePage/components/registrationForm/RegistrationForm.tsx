@@ -6,7 +6,7 @@ import { useHttp } from '../../../../hooks/http.hook';
 import styles from './RegistrationForm.module.scss';
 
 const RegistrationPage = ():React.ReactElement => {
-  const { loading, error, request, message, clearError, clearMessage } = useHttp();
+  const { loading, request, answer, clearAnswer } = useHttp();
   const [form, setForm] = useState({
     regNickname: '',
     regLogin: '',
@@ -15,18 +15,11 @@ const RegistrationPage = ():React.ReactElement => {
   });
 
   useEffect( () => {
-    if (error) {
-      alert(error); // Добавить нормальный вывод ошибки ! ! !
-      clearError();
+    if (answer) {
+      alert(answer); // Добавить нормальный вывод ошибки ! ! !
+      clearAnswer();
     }
-  }, [error]);
-
-  useEffect( () => {
-    if (message) {
-      alert(message); // Добавить нормальный вывод ошибки ! ! !
-      clearMessage();
-    }
-  }, [message]);
+  }, [answer]);
 
   const changeHandler = (event: React.ChangeEvent<HTMLInputElement>)  => {
     setForm({ ...form, [event.target.name]: event.target.value })

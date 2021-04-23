@@ -4,7 +4,8 @@ const getTranslatedWord = require('../services/abbyy');
 
 const router = Router();
 
-router.get('/word', 
+// words/translate?word=
+router.get('/translate', 
   [
     check('word', 'Введите слово').notEmpty().isString(),
   ],
