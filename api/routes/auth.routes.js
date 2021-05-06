@@ -14,7 +14,7 @@ router.post('/registration',
   ],
   async (req, res) => {
   try {
-    console.log('Body: ', req.body);
+    console.log('Body register: ', req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ 

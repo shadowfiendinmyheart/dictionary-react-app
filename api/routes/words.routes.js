@@ -39,13 +39,13 @@ router.get('/translate',
 // Сохранение слова в словарь
 router.post('/saveTranslation',
     [
-      check('word', 'Введите слово').notEmpty().isString(),
-      check('translation', 'Введите перевод').notEmpty().isString(),
+      check('reqWord', 'Введите слово').notEmpty().isString(),
+      check('reqTranslation', 'Введите перевод').notEmpty().isString(),
       auth
     ],
     async (req, res) => {
       try {
-        console.log('Body: ', req.body);
+        console.log('Body : ', req);
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
           return res.status(400).json({
@@ -55,25 +55,40 @@ router.post('/saveTranslation',
         }
 
         const {reqWord, reqTranslation} = req.body;
-        const reqUser = req.user.userId;
+        const reqUserId = req.user.userId;
+
         const findWord = await EngWord.findOne({word: reqWord});
-
+        let word;
         if(findWord) {
-
+          word = findWord
+        } else {
+          word = new EngWord({word: reqWord})
         }
 
         const findTranslation = await RusWord.findOne({word: reqTranslation});
-
+        let translation;
+        if(findTranslation) {
+          translation = findTranslation
+        } else {
+          translation = new RusWord({word: reqTranslation})
+          await translation.save();
+        }
+        word.translations.push(translation._id);
         await word.save();
 
+        const user = await User.findOne({_id: reqUserId});
+        user.words.push({word: word._id});
+        await user.save();
+
         return res.status(201).json({ message: 'Слово добавлено в словарь'});
-
-
       } catch (e) {
-        return res.status(400).json({ message: 'Произошла ошибка на сервере' })
+        return res.status(400).json({ message: 'Произошла ошибка на сервере', error: e})
       }
     }
 )
+
+router.get
+
 
 
 module.exports = router;
