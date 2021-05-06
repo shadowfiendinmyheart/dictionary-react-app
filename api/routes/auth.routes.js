@@ -14,7 +14,7 @@ router.post('/registration',
   ],
   async (req, res) => {
   try {
-    console.log('Body: ', req.body);
+    console.log('Body register: ', req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ 
@@ -35,7 +35,7 @@ router.post('/registration',
       return res.status(400).json({ message: 'Пользователь с таким логином уже существует' });
     }
 
-    if (regPassword == regPasswordRepeat) {
+    if (regPassword === regPasswordRepeat) {
       const hashedPassword = await bcrypt.hash(regPassword, 12);
       const user = new User({
         nickname: regNickname,
