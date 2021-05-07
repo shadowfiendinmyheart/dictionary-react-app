@@ -15,6 +15,7 @@ const router = Router();
 router.get('/translate', 
   [
     check('word', 'Введите слово').notEmpty().isString(),
+    auth
   ],
   async (req, res) => {
     try {

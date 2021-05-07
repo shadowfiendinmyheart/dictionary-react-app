@@ -9,22 +9,25 @@ type InputProps = {
   type: string,
   placeholder: string,
   name: string,
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  value?: string,
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 const Input = (props: InputProps):React.ReactElement => {
-  const { classNameUpdate, id, type, placeholder, name, onChange} = props;
+  const { classNameUpdate, id, type, placeholder, name, onChange, value} = props;
   
   return (
     <div className={styles.form__group}>
       <input 
         className={cn(styles.form__field, classNameUpdate)} 
-        id={name} type={type} 
+        id={name} 
+        type={type} 
         placeholder={placeholder}
         name={name} 
         onChange={onChange}
-        required>
-      </input>
+        value={value}
+        required 
+      />
       <label htmlFor={name} className={styles.form__label}>{placeholder}</label>
       </div>
     )

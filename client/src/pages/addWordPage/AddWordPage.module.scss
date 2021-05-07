@@ -4,14 +4,20 @@
 .wrapper {  
   display: flex;
   flex: 1 1 auto;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 80%;
   padding: 20px;
 }
 
-.add {
+.wrapperForm {
   width: 100%;
   min-width: 800px;
   @include glass();
+}
+
+.wrapperPickImage {
+  margin-top: 20px;
+  background-color: azure;
 }
