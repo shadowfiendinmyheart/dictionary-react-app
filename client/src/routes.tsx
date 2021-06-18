@@ -9,7 +9,6 @@ import ErrorPage from './pages/errorPage';
 import { ROUTES } from './constants/routes';
 
 const useRoutes = (isAuth: boolean) => {
-  console.log('useRoutes', isAuth);
   if (isAuth) {
     return (
       <Switch>

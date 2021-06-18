@@ -12,8 +12,6 @@ const AddWordPage = ():React.ReactElement => {
   const { loading, request, answer, clearAnswer } = useHttp();
   const auth = useContext(AuthContext);
 
-  console.log('auth', auth);
-
   const translateHandler = async (ev: React.SyntheticEvent) => {
     try {
       ev.preventDefault();

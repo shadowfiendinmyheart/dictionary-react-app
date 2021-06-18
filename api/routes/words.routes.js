@@ -46,7 +46,6 @@ router.post('/saveTranslation',
     ],
     async (req, res) => {
       try {
-        console.log('Body : ', req);
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
           return res.status(400).json({

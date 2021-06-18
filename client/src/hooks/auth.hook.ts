@@ -7,7 +7,6 @@ const useAuth = () => {
   const [userId, setUserId] = useState<string | null>(null);
 
   const login = useCallback((jwtToken: string, id: string) => {
-    console.log()
     setToken(jwtToken);
     setUserId(id);
     
