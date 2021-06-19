@@ -16,8 +16,8 @@ export const useHttp = () => {
         headers['Content-Type'] = 'application/json'
       }
 
-      console.log('request:\n', 'body:', body, '\nheaders: ', headers);
-      const response: Response = await fetch(url, {method, body, headers})
+      setLoading(true);
+      const response: Response = await fetch(url, {method, body, headers});
       const data: any = await response.json();
       
       if (!response.ok) {

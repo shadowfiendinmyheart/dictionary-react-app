@@ -15,6 +15,7 @@ const router = Router();
 router.get('/translate', 
   [
     check('word', 'Введите слово').notEmpty().isString(),
+    auth
   ],
   async (req, res) => {
     try {
@@ -45,7 +46,6 @@ router.post('/saveTranslation',
     ],
     async (req, res) => {
       try {
-        console.log('Body : ', req);
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
           return res.status(400).json({
