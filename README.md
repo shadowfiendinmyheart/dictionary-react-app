@@ -22,7 +22,7 @@
 
 ##### Бэк:
 ###### 5000 порт
-`node app.js`
+`npm run server`
 Если дропает ошибку `(node:8844)`, нужно добавить IP в Network Access монги
 
 
