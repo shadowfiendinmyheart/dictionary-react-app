@@ -14,7 +14,7 @@ const AddWordPage = ():React.ReactElement => {
 
   // TODO: подумать над некой "обёрткой" для кнопок
   const translateHandler = async (ev: React.SyntheticEvent) => {
-    console.log('click');
+    if (!word) return console.log('Введите слово для перевода');
     try {
       ev.preventDefault();
       ev.stopPropagation();
@@ -30,15 +30,15 @@ const AddWordPage = ():React.ReactElement => {
   }
 
   const onTranslateHandler = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('wow');
     setTranslate(ev.target.value);
   }
   
-  const emptyHandler = async (ev: React.SyntheticEvent) => {
+  const addWordHandler = async (ev: React.SyntheticEvent) => {
     ev.preventDefault();
     ev.stopPropagation();
     // TODO: сделать вывод ошибки
-    if (!translate) return console.log('Ошибка');
+    if (!word) return console.log('Введите слово для перевода');
+    if (!translate) return console.log('Укажите перевод');
     
     try {
       const saveTranslateWord = await request(`words/saveTranslation`, 'POST', {reqWord: word, reqTranslation: translate}, {Authorization: `Bearer ${auth.token}`});
@@ -51,10 +51,14 @@ const AddWordPage = ():React.ReactElement => {
   return (
     <div className={styles.wrapper}>
       <form className={styles.wrapperForm}>
-        <InputForm type={'text'} name={'word'} onChange={onWordHandler} placeholder={'Введите слово для перевода'} />
-        <InputForm type={'text'} name={'translate'} onChange={onTranslateHandler} placeholder={'Перевод'} value={translate} />
+        <div className={styles.inpForm}>
+          <InputForm  type={'text'} name={'word'} onChange={onWordHandler} placeholder={'Введите слово для перевода'} />
+        </div>
         <Button onClick={translateHandler} text={'Перевести'} disabled={loading} />
-        <Button onClick={emptyHandler} text={'Добавить в словарь'} disabled={loading} />
+        <div className={styles.inpForm}>
+          <InputForm type={'text'} name={'translate'} onChange={onTranslateHandler} placeholder={'Перевод'} value={translate} />
+        </div>
+        <Button onClick={addWordHandler} text={'Добавить в словарь'} disabled={loading} />
       </form>
       <div>
       <div className={styles.wrapperPickImage}>

@@ -22,3 +22,7 @@
 .btn:focus {
   outline: none;
 }
+
+.btn:disabled {
+  color: $disable-color;
+}

@@ -24,7 +24,7 @@ const Header = ( props: headerProps ):React.ReactElement => {
               <Link href={ROUTES.HOME_PAGE} text="home" />
             </li>
             <li className={styles.elem}>
-              <Link href="/" text="dictionary" />
+              <Link href="/404" text="dictionary" />
             </li>
             <li className={styles.elem}>
               <Link href="/" text="learn" />

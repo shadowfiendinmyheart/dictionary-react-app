@@ -15,11 +15,14 @@ const useRoutes = (isAuth: boolean) => {
         <Route path={ROUTES.HOME_PAGE} exact={true}>
           <HomePage />
         </Route>
-        <Route path={ROUTES.ADD_WORD_PAGE} >
+        <Route path={ROUTES.ADD_WORD_PAGE}  >
           <AddWordPage />
         </Route>
+        <Route path={ROUTES.ERROR_PAGE}  >
+          <ErrorPage />
+        </Route>
 
-        <Redirect to={ROUTES.HOME_PAGE} />
+        <Redirect to={ROUTES.ERROR_PAGE} />
       </Switch>
     )
   }
@@ -29,8 +32,6 @@ const useRoutes = (isAuth: boolean) => {
         <Route path={ROUTES.WELCOME_PAGE} exact={true}>
           <WelcomePage />
         </Route>
-
-        <Redirect to={ROUTES.WELCOME_PAGE} />
     </Switch>
   )
 }
