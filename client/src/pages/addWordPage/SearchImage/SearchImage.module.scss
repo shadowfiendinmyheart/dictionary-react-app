@@ -1,0 +1,15 @@
+@import '../../../assets/styles/_mixins.scss';
+@import '../../../assets/styles/_colors.scss';
+
+.searchImage {
+    transition: all .25s;
+
+    &:hover {
+        cursor: pointer;
+        transform: scale(1.05);
+    }
+}
+
+.pickedImage {
+    box-shadow: 0px 0px 78px 9px rgb(255, 225, 0);
+}

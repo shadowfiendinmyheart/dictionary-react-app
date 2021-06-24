@@ -3,6 +3,7 @@ declare const styles: {
   readonly wrapperForm: string;
   readonly wrapperPickImage: string;
   readonly inpForm: string;
+  readonly pickImage: string;
 }
 
 export = styles;
