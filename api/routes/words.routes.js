@@ -1,10 +1,10 @@
-const {Router} = require('express');
+const { Router } = require('express');
+const { check, validationResult } = require('express-validator');
+
 const EngWord = require('../models/EngWord');
 const RusWord = require('../models/RusWord');
-
 const User = require('../models/User')//А я хз че делаю ляляля
 
-const { check, validationResult } = require('express-validator');
 const auth = require('../middleware/auth.middleware');
 const getTranslatedWord = require('../services/abbyy');
 

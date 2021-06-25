@@ -8,11 +8,11 @@
   height: 40px;
   color: $font-color;
   border: none;
-}
 
-.btn:hover {
-  cursor: pointer;
-  @include glow($font-color);
+  &:hover {
+    cursor: pointer;
+    @include glow($font-color);
+  }
 }
 
 .btn:active {
@@ -21,4 +21,8 @@
 
 .btn:focus {
   outline: none;
+}
+
+.btn:disabled {
+  color: $disable-color;
 }

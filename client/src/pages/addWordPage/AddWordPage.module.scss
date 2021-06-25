@@ -12,12 +12,33 @@
 }
 
 .wrapperForm {
+  @include glass();
   width: 100%;
   min-width: 800px;
-  @include glass();
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+}
+
+.inpForm {
+  grid-column-start: 1; 
+  grid-column-end: 3; 
 }
 
 .wrapperPickImage {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
   margin-top: 20px;
-  background-color: azure;
 }
+
+.pickImage {
+  transition: all .25s;
+  &:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+  }
+}
+
