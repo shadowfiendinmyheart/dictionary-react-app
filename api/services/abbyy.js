@@ -14,6 +14,8 @@ const getAuthKey = async () => {
 }
 
 const getTranslatedWord = async (word) => {
+  // TODO: Переделать для слов с несколькими значениями
+  // например: shower
   const key = await getAuthKey();
   const response = await fetch(`https://developers.lingvolive.com/api/v1/Minicard?text=${word}&srcLang=1033&dstLang=1049`, {
     method: 'GET',

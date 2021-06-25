@@ -28,6 +28,17 @@
 }
 
 .wrapperPickImage {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
   margin-top: 20px;
-  background-color: azure;
 }
+
+.pickImage {
+  transition: all .25s;
+  &:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+  }
+}
+
