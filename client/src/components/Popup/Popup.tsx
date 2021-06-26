@@ -4,13 +4,13 @@ import cn from 'clsx';
 import styles from './Popup.module.scss';
 
 type popupProps = {
-    content: JSX.Element;
+    children: JSX.Element;
     visible: boolean;
     cb: () => void;
 }
 
 const Popup = (props: popupProps): React.ReactElement => {
-    const { content, visible, cb } = props;
+    const { children, visible, cb } = props;
     const backgroundRef = useRef<any>(null);
 
     useEffect(() => {
@@ -33,7 +33,7 @@ const Popup = (props: popupProps): React.ReactElement => {
             ref={backgroundRef}
         >
             <div className={styles.content}>
-                {content}
+                {children}
             </div>
         </div>
     )

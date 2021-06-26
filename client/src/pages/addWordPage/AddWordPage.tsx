@@ -4,6 +4,7 @@ import AuthContext from '../../context/AuthContext';
 import InputForm from '../../components/InputForm';
 import Button from '../../components/Button';
 import Popup from '../../components/Popup';
+import Card from '../../components/Card';
 import SearchImage from './components/SearchImage';
 
 import styles from './AddWordPage.module.scss';
@@ -18,7 +19,7 @@ const AddWordPage = ():React.ReactElement => {
   const [translate, setTranslate] = useState<string>('');
   const [imageSearch, setImageSearch] = useState<string>('');
   const [images, setImages] = useState<imageType[]>();
-  const [pickedImage, setPickedImage] = useState<string>();
+  const [pickedImage, setPickedImage] = useState<string>('');
   const [page, setPage] = useState<number>(1);
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
@@ -132,7 +133,6 @@ const AddWordPage = ():React.ReactElement => {
 
   return (
     <div className={styles.wrapper}>
-      <Popup content={<div>HELLO WORLD ! ! !</div>} visible={showPopup} cb={() => setShowPopup(!showPopup)}/>
       <form className={styles.wrapperForm}>
         <div className={styles.inpForm}>
           <InputForm
@@ -169,6 +169,9 @@ const AddWordPage = ():React.ReactElement => {
           {images && imageTile(images, 3).map((column: JSX.Element[], index: number) => <div key={`${index}-column`}>{column}</div>)}
         </div>
       </div>
+      <Popup visible={showPopup} cb={() => setShowPopup(!showPopup)}>
+        <Card word={word} translate={translate} url={pickedImage} />
+      </Popup>
     </div>
   )
 }
