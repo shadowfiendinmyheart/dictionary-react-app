@@ -4,7 +4,7 @@ import AuthContext from '../../context/AuthContext';
 import InputForm from '../../components/InputForm';
 import Button from '../../components/Button';
 import Popup from '../../components/Popup';
-import Card from '../../components/Card';
+import CreateCard from './components/CreateCard';
 import SearchImage from './components/SearchImage';
 
 import styles from './AddWordPage.module.scss';
@@ -77,7 +77,7 @@ const AddWordPage = ():React.ReactElement => {
     }
   }
   
-  const addWordHandler = async (ev: React.SyntheticEvent) => {
+  const createCardHandler = (ev: React.SyntheticEvent) => {
     ev.preventDefault();
     ev.stopPropagation();
     // TODO: сделать вывод ошибки
@@ -85,18 +85,26 @@ const AddWordPage = ():React.ReactElement => {
     if (!translate) return console.log('Укажите перевод');
 
     setShowPopup(true);
-    
-    // try {
-    //   const saveTranslateWord = await request(
-    //     'words/saveTranslation', 
-    //     'POST', 
-    //     {reqWord: word, reqTranslation: translate}, 
-    //     {Authorization: `Bearer ${auth.token}`}
-    //   );
-    //   console.log('done saveTranslateWord', saveTranslateWord);
-    // } catch (e) {
-    //   console.log('ERROR:', e);
-    // }
+  }
+  
+  const confirmClickHandler = async () => {
+    try {
+      const saveTranslateWord = await request(
+        'words/saveTranslation', 
+        'POST', 
+        {reqWord: word, reqTranslation: translate}, 
+        {Authorization: `Bearer ${auth.token}`}
+      );
+      console.log('done saveTranslateWord', saveTranslateWord);
+
+      setShowPopup(false);
+      setWord('');
+      setImageSearch('');
+      setImages([]);
+      setTranslate('');
+    } catch (e) {
+      console.log('ERROR:', e);
+    }  
   }
 
   const searchImageHandler = async (ev: React.SyntheticEvent) => {
@@ -140,6 +148,7 @@ const AddWordPage = ():React.ReactElement => {
             name={'word'}
             onChange={onWordHandler}
             placeholder={'Введите слово для перевода'}
+            value={word}
           />
         </div>
         <Button onClick={translateHandler} text={'Перевести'} disabled={loading} />
@@ -152,7 +161,7 @@ const AddWordPage = ():React.ReactElement => {
             value={translate}
           />
         </div>
-        {word && translate && pickedImage && <Button onClick={addWordHandler} text={'Создать карточку'} disabled={loading} />}
+        {word && translate && pickedImage && <Button onClick={createCardHandler} text={'Создать карточку'} disabled={loading} />}
         <div className={styles.inpForm}>
           <InputForm 
             type={'text'}
@@ -170,7 +179,11 @@ const AddWordPage = ():React.ReactElement => {
         </div>
       </div>
       <Popup visible={showPopup} cb={() => setShowPopup(!showPopup)}>
-        <Card word={word} translate={translate} url={pickedImage} />
+        <CreateCard 
+          card={{word: word, translate: translate, url: pickedImage}} 
+          onCancelClick={() => setShowPopup(!showPopup)} 
+          onConfirmClick={confirmClickHandler}
+        />
       </Popup>
     </div>
   )

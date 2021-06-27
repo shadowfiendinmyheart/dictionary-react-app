@@ -32,9 +32,7 @@ const Popup = (props: popupProps): React.ReactElement => {
             className={cn((!visible && styles.visible),styles.background)}
             ref={backgroundRef}
         >
-            <div className={styles.content}>
-                {children}
-            </div>
+            {children}
         </div>
     )
 }
