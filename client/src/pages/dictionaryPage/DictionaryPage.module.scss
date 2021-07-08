@@ -4,28 +4,33 @@
 .wrapper {  
   display: flex;
   flex: 1 1 auto;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 80%;
   padding: 20px;
 }
 
-.errorText {
-  font-size: x-large
+.formWrapper {
+  @include glass();
+  width: 100%;
+  padding: 10px 115px;
+  margin-bottom: 25px;
 }
 
-.errorWindow {
-  @include glass;
-  color: $font-color;
-  height: 200px;
-  width: 400px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.selectWord {
+  width: 100%;
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.048);
+  color: whitesmoke;
+
+  option {
+    background-color: rgb(172, 148, 70);
+  }
 }
 
-.button {
-  width: 50%;
-  height: 250px;
+.cardsWrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 15px;
 }

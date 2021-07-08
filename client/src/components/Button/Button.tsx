@@ -4,15 +4,15 @@ import cn from "clsx";
 import styles from './Button.module.scss';
 
 type ButtonProps = {
-  classNameUpdate?: string,
-  type?: 'submit' | 'button' | 'reset',
   text: string,
-  disabled?: boolean,
   onClick: (ev: React.SyntheticEvent) => void
+  type?: 'submit' | 'button' | 'reset',
+  disabled?: boolean,
+  classNameUpdate?: string,
 }
 
 const Button = (props: ButtonProps): React.ReactElement => {
-  const { classNameUpdate, type, text, disabled, onClick } = props
+  const { text, onClick, type, disabled, classNameUpdate } = props
   
   return (
     <button 

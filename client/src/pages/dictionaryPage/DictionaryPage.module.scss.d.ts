@@ -1,8 +1,8 @@
 declare const styles: {
   readonly wrapper: string;
-  readonly button: string;
-  readonly errorText: string;
-  readonly errorWindow: string;
+  readonly formWrapper: string;
+  readonly selectWord: string;
+  readonly cardsWrapper: string;
 }
 
 export = styles;
