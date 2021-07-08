@@ -15,7 +15,7 @@ const SearchImage = (props: searchImageProps):React.ReactElement => {
     return (
         <img
           className={cn(styles.searchImage, (active && styles.pickedImage))}
-          onClick={() => cb()} 
+          onClick={cb}
           src={url}
         />
     )

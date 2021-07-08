@@ -1,0 +1,31 @@
+@import '../../../../assets/styles/mixins';
+@import '../../../../assets/styles/colors';
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    @include glass();
+}
+
+.header {
+    font-size: 24px;
+}
+
+.buttonsWrapper {
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;
+    margin: 20px 0;
+}
+
+.test {
+    transition: 0.2s;
+    &:hover {
+        cursor: pointer;
+        transform: scale(1.5);
+        // box-shadow: 0px 0px 28px 1px rgba(25, 244, 0, 0.45);
+    }
+}

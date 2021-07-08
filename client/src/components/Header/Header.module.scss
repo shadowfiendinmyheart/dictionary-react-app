@@ -2,7 +2,7 @@
 @import '../../assets/styles/_mixins.scss';
 
 .container {
-  position: sticky;
+  position: relative;
   top: 0;
   display: flex;
   justify-content: space-between;

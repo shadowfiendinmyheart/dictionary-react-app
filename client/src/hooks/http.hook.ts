@@ -6,14 +6,14 @@ export const useHttp = () => {
 
   const request = useCallback(async (
       url: string, 
-      method: string = 'GET', 
-      body: any = null, //fix later ! ! ! 
-      headers: any = {} //fix too ! ! !
+      method: string = 'GET',
+      body: object | string | null = null,
+      headers = new Headers()
     ) => {
     try {
       if (body) {
         body = JSON.stringify(body);
-        headers['Content-Type'] = 'application/json'
+        headers.set('Content-Type', 'application/json');
       }
 
       setLoading(true);
