@@ -15,7 +15,7 @@ const HomePage = (): React.ReactElement => {
         <HomeButton classNameGrid={styles.gameOneButton} text={"Игра 1. Переводчик-pro"} to={"#"}/>
         <HomeButton classNameGrid={styles.gameTwoButton} text={"Игра 2. Переводчик-ez"} to={"#"}/>
         <HomeButton classNameGrid={styles.gameThreeButton} text={"Игра 3. Картинки"} to={"#"}/>
-        <HomeButton classNameGrid={styles.showDictionaryButton} text={"Подсмотреть в словарик"} to={"#"}/>
+        <HomeButton classNameGrid={styles.showDictionaryButton} text={"Подсмотреть в словарик"} to={ROUTES.DICTIONARY_PAGE}/>
       </div>
     </div>
   )
