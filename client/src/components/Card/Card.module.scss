@@ -1,0 +1,29 @@
+@mixin cardWords {
+    background-color: rgba(0, 0, 0, 0.507);
+    color: whitesmoke;
+    width: 100%;
+    text-align: center;
+    max-height: 25%;
+    overflow: auto;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    background-position: center;
+    background-size: cover;
+    width: 500px;
+    height: 500px;
+}
+
+.word {
+    @include cardWords();
+    font-size: 48px;
+}
+
+.translate {
+    @include cardWords();
+    padding-bottom: 15px;
+}
