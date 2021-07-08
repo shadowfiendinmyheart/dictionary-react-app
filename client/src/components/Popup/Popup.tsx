@@ -6,17 +6,17 @@ import styles from './Popup.module.scss';
 type popupProps = {
     children: JSX.Element;
     visible: boolean;
-    cb: () => void;
+    onClosePopup: () => void;
 }
 
 const Popup = (props: popupProps): React.ReactElement => {
-    const { children, visible, cb } = props;
+    const { children, visible, onClosePopup } = props;
     const backgroundRef = useRef<any>(null);
 
     useEffect(() => {
         const handler = (event: any) => {
             if (backgroundRef.current === event.target) {
-                cb();
+                onClosePopup();
             }
         };
 

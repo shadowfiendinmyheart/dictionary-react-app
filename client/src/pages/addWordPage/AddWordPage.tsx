@@ -178,7 +178,7 @@ const AddWordPage = ():React.ReactElement => {
           {images && imageTile(images, 3).map((column: JSX.Element[], index: number) => <div key={`${index}-column`}>{column}</div>)}
         </div>
       </div>
-      <Popup visible={showPopup} cb={() => setShowPopup(!showPopup)}>
+      <Popup visible={showPopup} onClosePopup={() => setShowPopup(!showPopup)}>
         <CreateCard 
           card={{word: word, translate: translate, url: pickedImage}} 
           onCancelClick={() => setShowPopup(!showPopup)} 
