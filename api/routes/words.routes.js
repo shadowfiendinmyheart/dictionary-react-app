@@ -42,7 +42,7 @@ router.post('/saveTranslation',
     [
       check('reqWord', 'Введите слово').notEmpty().isString(),
       check('reqTranslation', 'Введите перевод').notEmpty().isString(),
-      check('reqImageURL', 'Введите URL картинки').optional().isString(),
+      check('reqImageURL', 'Введите URL картинки').notEmpty().isString(),
       auth
     ],
     async (req, res) => {
@@ -57,6 +57,8 @@ router.post('/saveTranslation',
 
         const {reqWord, reqTranslation, reqImageURL} = req.body;
         const reqUserId = req.user.userId;
+
+        //Поиск слова в коллекции английских слов
         const findWord = await EngWord.findOne({word: reqWord});
         let word;
         if(findWord) {
@@ -65,6 +67,7 @@ router.post('/saveTranslation',
           word = new EngWord({word: reqWord})
         }
 
+        //Поиск слова в коллекции русских слов
         const findRusWord = await RusWord.findOne({word: reqTranslation});
         let rusWord;
         if(findRusWord) {
@@ -74,16 +77,18 @@ router.post('/saveTranslation',
           await rusWord.save();
         }
 
-        let findTranslation = word.translations.find(id => rusWord._id.toString() === id.toString());
+        //Поиск русского слова в списке переводов английского слова
+        const findTranslation = word.translations.find(id => rusWord._id.toString() === id.toString());
         if (!findTranslation) {
           word.translations.push(rusWord._id);
           await word.save();
         }
 
+        //Поиск английского слова в списке слов пользователя
         const user = await User.findOne({_id: reqUserId});
-        let findUserWord = user.words.find(userWord => userWord.word.toString() === word._id.toString())
+        const findUserWord = user.words.find(userWord => userWord.word.toString() === word._id.toString())
         if (!findUserWord) {
-          user.words.push({word: word._id});
+          user.words.push({word: word._id, imageURL: reqImageURL});
           await user.save();
         }
 
