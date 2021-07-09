@@ -7,7 +7,7 @@ const auth = require('../middleware/auth.middleware');
 const router = Router();
 
 // user/info
-// Получить список картинок
+// Получить информацию об авторизованном пользователе
 router.get('/info', 
     [
         auth
