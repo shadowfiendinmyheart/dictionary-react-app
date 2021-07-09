@@ -7,6 +7,7 @@ const schema = new Schema ({
   password: {type: String, required: true},
   words: [{
     word: {type: Schema.Types.ObjectId, ref: 'EngWord'},
+    imageURL: {type: String, required: true},
     status: {type: String, required: true, default:"watched"},
     date: {type: Date, required: true, default: Date.now}
   }]
