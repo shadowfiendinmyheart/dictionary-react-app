@@ -3,6 +3,7 @@ declare const styles: {
   readonly formWrapper: string;
   readonly selectWord: string;
   readonly cardsWrapper: string;
+  readonly card: string;
 }
 
 export = styles;

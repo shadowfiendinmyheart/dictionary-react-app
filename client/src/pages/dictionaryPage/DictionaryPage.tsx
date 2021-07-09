@@ -18,10 +18,6 @@ const DictionaryPage = (): React.ReactElement => {
     setSelectedWords(Number(ev.target.value));
   }
 
-  const handleButtonClick = () => {
-    console.log(selectedWords)
-  }
-
   return (
     <div className={styles.wrapper}>
       <form className={styles.formWrapper}>
@@ -39,108 +35,118 @@ const DictionaryPage = (): React.ReactElement => {
       </form>
 
       <div className={styles.cardsWrapper}>
+        <div className={styles.card}>
           <Card 
-              word={'cat'}  
-              translate={'Кот'} 
-              url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-              size={'s'}
-            />
-            <Card 
-              translate={'mock'} 
-              url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-              word={'mock'}  
-              size={'s'}
-            />
-            <Card 
-              translate={'mock'} 
-              url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-              word={'mock'}  
-              size={'s'}
-            />
-            <Card 
-              translate={'mock'} 
-              url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-              word={'mock'}  
-              size={'s'}
-            />
-            <Card 
-              translate={'mock'} 
-              url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-              word={'mock'}  
-              size={'s'}
-            />
-            <Card 
-              translate={'mock'} 
-              url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-              word={'mock'}  
-              size={'s'}
-            />
-            <Card 
-              translate={'mock'} 
-              url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-              word={'mock'}  
-              size={'s'}
-            />
-            <Card 
-              translate={'mock'} 
-              url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-              word={'mock'}  
-              size={'s'}
-            />
-            <Card 
-              translate={'mock'} 
-              url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-              word={'mock'}  
-              size={'s'}
-            />
-            <Card 
-              translate={'mock'} 
-              url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-              word={'mock'}  
-              size={'s'}
-            />
-            <Card 
-              translate={'mock'} 
-              url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-              word={'mock'}  
-              size={'s'}
-            />
-            <Card 
-              translate={'mock'} 
-              url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-              word={'mock'}  
-              size={'s'}
-            />
-            <Card 
-              translate={'mock'} 
-              url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-              word={'mock'}  
-              size={'s'}
-            />
-            <Card 
-              translate={'mock'} 
-              url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-              word={'mock'}  
-              size={'s'}
-            />
-            <Card 
-              translate={'mock'} 
-              url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-              word={'mock'}  
-              size={'s'}
-            />
-            <Card 
-              translate={'mock'} 
-              url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-              word={'mock'}  
-              size={'s'}
-            />
-            <Card 
-              translate={'mock'} 
-              url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-              word={'mock'}  
-              size={'s'}
-            />
+                word={'cat'}  
+                translate={'Кот'} 
+                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
+                size={'s'}
+              />
+        </div>
+        <div className={styles.card}>
+          <Card 
+                word={'cat'}  
+                translate={'Кот'} 
+                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
+                size={'s'}
+              />
+        </div>
+        <div className={styles.card}>
+          <Card 
+                word={'cat'}  
+                translate={'Кот'} 
+                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
+                size={'s'}
+              />
+        </div>
+        <div className={styles.card}>
+          <Card 
+                word={'cat'}  
+                translate={'Кот'} 
+                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
+                size={'s'}
+              />
+        </div>
+        <div className={styles.card}>
+          <Card 
+                word={'cat'}  
+                translate={'Кот'} 
+                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
+                size={'s'}
+              />
+        </div>
+        <div className={styles.card}>
+          <Card 
+                word={'cat'}  
+                translate={'Кот'} 
+                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
+                size={'s'}
+              />
+        </div>
+        <div className={styles.card}>
+          <Card 
+                word={'cat'}  
+                translate={'Кот'} 
+                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
+                size={'s'}
+              />
+        </div>
+        <div className={styles.card}>
+          <Card 
+                word={'cat'}  
+                translate={'Кот'} 
+                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
+                size={'s'}
+              />
+        </div>
+        <div className={styles.card}>
+          <Card 
+                word={'cat'}  
+                translate={'Кот'} 
+                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
+                size={'s'}
+              />
+        </div>
+        <div className={styles.card}>
+          <Card 
+                word={'cat'}  
+                translate={'Кот'} 
+                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
+                size={'s'}
+              />
+        </div>
+        <div className={styles.card}>
+          <Card 
+                word={'cat'}  
+                translate={'Кот'} 
+                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
+                size={'s'}
+              />
+        </div>
+        <div className={styles.card}>
+          <Card 
+                word={'cat'}  
+                translate={'Кот'} 
+                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
+                size={'s'}
+              />
+        </div>
+        <div className={styles.card}>
+          <Card 
+                word={'cat'}  
+                translate={'Кот'} 
+                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
+                size={'s'}
+              />
+        </div>
+        <div className={styles.card}>
+          <Card 
+                word={'cat'}  
+                translate={'Кот'} 
+                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
+                size={'s'}
+              />
+        </div>
       </div>
     </div>
   )
