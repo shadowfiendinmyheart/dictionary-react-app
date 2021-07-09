@@ -7,14 +7,19 @@ import styles from './Link.module.scss'
 type LinkProps = {
   href: string,
   text: string,
+  onClick?: () => void,
   classNameUpdate?: string,
 }
 
 const Link = (props: LinkProps): React.ReactElement => {
-  const {href, text, classNameUpdate} = props;
+  const {href, text, onClick, classNameUpdate} = props;
   
   return (
-    <NavLink className={cn(styles.button, classNameUpdate)} to={href}>
+    <NavLink
+      className={cn(styles.button, classNameUpdate)} 
+      to={href}
+      onClick={onClick}
+    >
       {text}
     </NavLink>
   )

@@ -2,15 +2,15 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import cn from 'clsx';
 
-import styles from './HomeButton.module.scss';
+import styles from './LinkAsButton.module.scss';
 
-type HomeButtonProps = {
+type LinkAsButtonProps = {
   classNameGrid: string,
   text: string,
   to: string,
 }
 
-const HomeButton = (props: HomeButtonProps): React.ReactElement => {
+const LinkAsButton = (props: LinkAsButtonProps): React.ReactElement => {
 
   const { classNameGrid, text, to } = props;
 
@@ -23,4 +23,4 @@ const HomeButton = (props: HomeButtonProps): React.ReactElement => {
   )
 };
 
-export default HomeButton;
+export default LinkAsButton;

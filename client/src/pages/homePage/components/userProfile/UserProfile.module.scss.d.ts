@@ -1,4 +1,5 @@
 declare const styles: {
+  readonly wrapper: string;
   readonly profile: string;
   readonly wrapperAvatar: string;
   readonly avatar: string;

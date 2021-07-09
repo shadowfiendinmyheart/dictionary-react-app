@@ -1,6 +1,7 @@
-import React from 'react';
-import Link from '../Link';
+import React, { useContext } from 'react';
 
+import Link from '../Link';
+import AuthContext from '../../context/AuthContext';
 import { ROUTES } from '../../constants/routes';
 
 import styles from './Header.module.scss';
@@ -12,6 +13,8 @@ type headerProps = {
 const Header = ( props: headerProps ):React.ReactElement => {
   const { isAuth } = props;
 
+  const { logout } = useContext(AuthContext);
+
   return (
     <header className={styles.container}>
       <div className={styles.logo}>
@@ -21,13 +24,10 @@ const Header = ( props: headerProps ):React.ReactElement => {
         <nav className={styles.navigation}>
           <ul className={styles.list}>
             <li className={styles.elem}>
-              <Link href={ROUTES.HOME_PAGE} text="home" />
+              <Link href={ROUTES.HOME_PAGE} text="Домой" />
             </li>
             <li className={styles.elem}>
-              <Link href="/404" text="dictionary" />
-            </li>
-            <li className={styles.elem}>
-              <Link href="/" text="learn" />
+              <Link href="#" text="Выйти" onClick={logout} />
             </li>
           </ul>
         </nav>

@@ -6,7 +6,7 @@ import styles from './InputForm.module.scss'
 type InputProps = {
   classNameUpdate?: string,
   id?: string,
-  type: string,
+  type: 'text' | 'password',
   placeholder: string,
   name: string,
   value?: string,

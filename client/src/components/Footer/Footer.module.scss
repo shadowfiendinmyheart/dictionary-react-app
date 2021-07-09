@@ -2,9 +2,11 @@
 @import '../../assets/styles/_mixins.scss';
 
 .container {
-  display: flex;
-  min-height: 50px;
-  width: 100%;
   @include glass;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 25px;
+  width: 100%;
   color: $font-color;
 }

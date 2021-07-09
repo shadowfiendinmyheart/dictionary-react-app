@@ -1,6 +1,10 @@
 @import '../../../../assets/styles/colors';
 @import '../../../../assets/styles/mixins';
 
+.wrapper {
+  padding: 0 5px;
+}
+
 .profile {
   display: flex;
   justify-content: space-evenly;
@@ -9,12 +13,12 @@
   color: $font-color;
 }
 
-.wrapperAvatar {
-  width: 15%;
+.username {
+  text-align: center;
 }
 
-.stats {
-
+.wrapperAvatar {
+  width: 15%;
 }
 
 .list {
@@ -25,10 +29,4 @@
 
 .element {
   list-style-type: none;
-}
-
-.logout {
-  width: 100px;
-  height: 80px;
-  background-color: rgba(255, 0, 0, 0.438);
 }
