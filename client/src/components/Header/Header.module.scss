@@ -29,9 +29,9 @@
 
 .list {
   display: flex;
+  list-style-type: none;
 }
 
 .elem {
   margin: 0 10px;
-  list-style-type: none;
 }

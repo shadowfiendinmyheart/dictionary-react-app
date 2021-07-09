@@ -4,8 +4,7 @@
 .button {
   color: $font-color;
   text-decoration: none;
-  font-size: larger;
-  border-bottom: 3px solid transparent;
+  border-bottom: 2px solid transparent;
   transition: all 0.2s;
 
   &:hover {
