@@ -42,6 +42,7 @@ router.post('/saveTranslation',
     [
       check('reqWord', 'Введите слово').notEmpty().isString(),
       check('reqTranslation', 'Введите перевод').notEmpty().isString(),
+      check('reqImageURL', 'Введите URL картинки').optional().isString(),
       auth
     ],
     async (req, res) => {
@@ -54,9 +55,8 @@ router.post('/saveTranslation',
           })
         }
 
-        const {reqWord, reqTranslation} = req.body;
+        const {reqWord, reqTranslation, reqImageURL} = req.body;
         const reqUserId = req.user.userId;
-
         const findWord = await EngWord.findOne({word: reqWord});
         let word;
         if(findWord) {
@@ -65,20 +65,28 @@ router.post('/saveTranslation',
           word = new EngWord({word: reqWord})
         }
 
-        const findTranslation = await RusWord.findOne({word: reqTranslation});
-        let translation;
-        if(findTranslation) {
-          translation = findTranslation
+        const findRusWord = await RusWord.findOne({word: reqTranslation});
+        let rusWord;
+        if(findRusWord) {
+          rusWord = findRusWord
         } else {
-          translation = new RusWord({word: reqTranslation})
-          await translation.save();
+          rusWord = new RusWord({word: reqTranslation})
+          await rusWord.save();
         }
-        word.translations.push(translation._id);
-        await word.save();
+
+        let findTranslation = word.translations.find(id => rusWord._id.toString() === id.toString());
+        if (!findTranslation) {
+          word.translations.push(rusWord._id);
+          await word.save();
+        }
 
         const user = await User.findOne({_id: reqUserId});
-        user.words.push({word: word._id});
-        await user.save();
+        let findUserWord = user.words.find(userWord => userWord.word.toString() === word._id.toString())
+        if (!findUserWord) {
+          user.words.push({word: word._id});
+          await user.save();
+        }
+
 
         return res.status(201).json({ message: 'Слово добавлено в словарь'});
       } catch (e) {
@@ -87,7 +95,31 @@ router.post('/saveTranslation',
     }
 )
 
-router.get
+router.get('/getWord',
+    [
+      check('word', 'Введите слово').notEmpty().isString(),
+      auth
+    ],
+    async (req, res) => {
+      try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(400).json({
+            errors: errors.array(),
+            message: 'Вы допустили ошибку . . .'
+          })
+        }
+
+        const word = req.query.word;
+        const reqUserId = req.user.userId;
+        const user = await User.findOne({_id: reqUserId});
+
+        return res.status(200).json({ message: "Boobs"});
+      } catch (e) {
+        return res.status(400).json({ message: 'Произошла обшибка на сервере' })
+      }
+    }
+)
 
 
 
