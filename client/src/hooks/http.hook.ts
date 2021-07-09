@@ -8,12 +8,12 @@ export const useHttp = () => {
       url: string, 
       method: string = 'GET',
       body: object | string | null = null,
-      headers = new Headers()
+      headers: any = {}
     ) => {
     try {
       if (body) {
         body = JSON.stringify(body);
-        headers.set('Content-Type', 'application/json');
+        headers['Content-Type'] = 'application/json';
       }
 
       setLoading(true);
