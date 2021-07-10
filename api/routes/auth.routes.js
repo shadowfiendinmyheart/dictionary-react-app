@@ -14,7 +14,6 @@ router.post('/registration',
   ],
   async (req, res) => {
   try {
-    console.log('Body register: ', req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ 
@@ -50,7 +49,6 @@ router.post('/registration',
 
 
   } catch(e) {
-    console.log('Error: ', e);
     res.status(500).json({ message: 'u broke the site . . .'})
   }
 })

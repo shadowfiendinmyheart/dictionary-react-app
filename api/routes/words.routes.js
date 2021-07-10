@@ -36,7 +36,6 @@ router.get('/translate',
   }
 )
 
-// words/saveTranslation?token=
 // Сохранение слова в словарь
 router.post('/saveTranslation',
     [
@@ -100,6 +99,7 @@ router.post('/saveTranslation',
     }
 )
 
+// Получение слова из списка слов пользователя
 router.get('/getEngWord',
     [
       check('word', 'Введите слово').notEmpty().isString(),
@@ -134,7 +134,6 @@ router.get('/getEngWord',
         //Поиск переводов в коллекции рус.слов
         const findTranslationsArr = await RusWord.find({_id: { $in: findEngWord.translations}},'word -_id');
         let translationsArr = findTranslationsArr.map(item => item.word);
-        console.log(translationsArr);
 
         //Вовзвращение объекта: слово, перевод, картинка, статус
         return res.status(200).json({ message: {
