@@ -100,7 +100,7 @@ router.post('/saveTranslation',
     }
 )
 
-router.get('/getWord',
+router.get('/getEngWord',
     [
       check('word', 'Введите слово').notEmpty().isString(),
       auth
@@ -119,7 +119,31 @@ router.get('/getWord',
         const reqUserId = req.user.userId;
         const user = await User.findOne({_id: reqUserId});
 
-        return res.status(200).json({ message: "Boobs"});
+        //Поиск слова в коллекции англ.слов
+        const findEngWord = await EngWord.findOne({word: word});
+        if(!findEngWord) {
+          return res.status(200).json({ message: 'Слово отсутствует'});
+        }
+
+        //Поиск слова в массиве слов пользователя
+        const findUserWord = user.words.find(userWord => {return userWord.word.toString() === findEngWord._id.toString();})
+        if (!findUserWord) {
+          return res.status(200).json({ message: 'Слово отсутствует у пользователя'});
+        }
+
+        //Поиск переводов в коллекции рус.слов
+        const findTranslationsArr = await RusWord.find({_id: { $in: findEngWord.translations}},'word -_id');
+        let translationsArr = findTranslationsArr.map(item => item.word);;
+        console.log(translationsArr);
+
+        //Вовзвращение объекта: слово, перевод, картинка, статус
+        return res.status(200).json({ message: {
+            word: findEngWord.word,
+            translations: translationsArr,
+            imageURL: findUserWord.imageURL,
+            status: findUserWord.status
+          }});
+
       } catch (e) {
         return res.status(400).json({ message: 'Произошла обшибка на сервере' })
       }
