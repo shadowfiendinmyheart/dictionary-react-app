@@ -133,7 +133,7 @@ router.get('/getEngWord',
 
         //Поиск переводов в коллекции рус.слов
         const findTranslationsArr = await RusWord.find({_id: { $in: findEngWord.translations}},'word -_id');
-        let translationsArr = findTranslationsArr.map(item => item.word);;
+        let translationsArr = findTranslationsArr.map(item => item.word);
         console.log(translationsArr);
 
         //Вовзвращение объекта: слово, перевод, картинка, статус
