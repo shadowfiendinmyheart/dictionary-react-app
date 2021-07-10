@@ -122,13 +122,13 @@ router.get('/getEngWord',
         //Поиск слова в коллекции англ.слов
         const findEngWord = await EngWord.findOne({word: word});
         if(!findEngWord) {
-          return res.status(200).json({ message: 'Слово отсутствует'});
+          return res.status(204);
         }
 
         //Поиск слова в массиве слов пользователя
         const findUserWord = user.words.find(userWord => {return userWord.word.toString() === findEngWord._id.toString();})
         if (!findUserWord) {
-          return res.status(200).json({ message: 'Слово отсутствует у пользователя'});
+          return res.status(204);
         }
 
         //Поиск переводов в коллекции рус.слов
