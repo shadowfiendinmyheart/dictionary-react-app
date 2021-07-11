@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import Card from '../../components/Card';
 import InputForm from '../../components/InputForm';
 import Button from '../../components/Button';
+
+import { useHttp } from '../../hooks/http.hook';
+import AuthContext from '../../context/AuthContext';
 
 import styles from './DictionaryPage.module.scss';
 
@@ -12,10 +15,51 @@ enum words {
 }
 
 const DictionaryPage = (): React.ReactElement => {
+  const auth = useContext(AuthContext);
+  const { request, loading } = useHttp();
+
   const [selectedWords, setSelectedWords] = useState<words>(words.all);
-  
+  const [searchWord, setSearchWord] = useState<string>('');
+  const [cards, setCards] = useState<[]>([]);
+
   const handleSelectChange = (ev: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedWords(Number(ev.target.value));
+  }
+
+  useEffect(() => {
+    const getCards = async () => {
+      try {
+        const userInfo = await request(
+          `user/info`,
+          'GET',
+          null, 
+          {Authorization: `Bearer ${auth.token}`}
+        );
+
+        setCards(userInfo.message.words);
+      } catch (e) {
+        console.log('ERROR:', e);
+      }
+    }
+
+    getCards();
+
+    return () => {
+      setCards([]);
+    }
+  }, []);
+
+  const cardsElem = (cards: any[]) => {
+      return cards.map(card => 
+        <div className={styles.card} key={card.word}>
+          <Card 
+                word={card.word}  
+                translate={card.word} 
+                url={card.imageURL}
+                size={'s'}
+              />
+        </div>
+      ) 
   }
 
   return (
@@ -30,123 +74,14 @@ const DictionaryPage = (): React.ReactElement => {
           name='search' 
           placeholder='Введите слово для поиска' 
           type='text'
+          value={searchWord}
+          onChange={(ev: React.ChangeEvent<HTMLInputElement>) => setSearchWord(ev.target.value)}
         />
         <Button onClick={() => console.log('mock')} text={'Мне повезёт'} />
       </form>
 
       <div className={styles.cardsWrapper}>
-        <div className={styles.card}>
-          <Card 
-                word={'cat'}  
-                translate={'Кот'} 
-                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-                size={'s'}
-              />
-        </div>
-        <div className={styles.card}>
-          <Card 
-                word={'cat'}  
-                translate={'Кот'} 
-                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-                size={'s'}
-              />
-        </div>
-        <div className={styles.card}>
-          <Card 
-                word={'cat'}  
-                translate={'Кот'} 
-                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-                size={'s'}
-              />
-        </div>
-        <div className={styles.card}>
-          <Card 
-                word={'cat'}  
-                translate={'Кот'} 
-                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-                size={'s'}
-              />
-        </div>
-        <div className={styles.card}>
-          <Card 
-                word={'cat'}  
-                translate={'Кот'} 
-                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-                size={'s'}
-              />
-        </div>
-        <div className={styles.card}>
-          <Card 
-                word={'cat'}  
-                translate={'Кот'} 
-                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-                size={'s'}
-              />
-        </div>
-        <div className={styles.card}>
-          <Card 
-                word={'cat'}  
-                translate={'Кот'} 
-                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-                size={'s'}
-              />
-        </div>
-        <div className={styles.card}>
-          <Card 
-                word={'cat'}  
-                translate={'Кот'} 
-                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-                size={'s'}
-              />
-        </div>
-        <div className={styles.card}>
-          <Card 
-                word={'cat'}  
-                translate={'Кот'} 
-                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-                size={'s'}
-              />
-        </div>
-        <div className={styles.card}>
-          <Card 
-                word={'cat'}  
-                translate={'Кот'} 
-                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-                size={'s'}
-              />
-        </div>
-        <div className={styles.card}>
-          <Card 
-                word={'cat'}  
-                translate={'Кот'} 
-                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-                size={'s'}
-              />
-        </div>
-        <div className={styles.card}>
-          <Card 
-                word={'cat'}  
-                translate={'Кот'} 
-                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-                size={'s'}
-              />
-        </div>
-        <div className={styles.card}>
-          <Card 
-                word={'cat'}  
-                translate={'Кот'} 
-                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-                size={'s'}
-              />
-        </div>
-        <div className={styles.card}>
-          <Card 
-                word={'cat'}  
-                translate={'Кот'} 
-                url={'https://www.demokot.ru/photo/img/foto-anime-koshek-1.jpg'}
-                size={'s'}
-              />
-        </div>
+        {cardsElem(cards)}
       </div>
     </div>
   )

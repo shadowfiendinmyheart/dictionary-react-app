@@ -27,7 +27,7 @@ const Header = ( props: headerProps ):React.ReactElement => {
               <Link href={ROUTES.HOME_PAGE} text="Домой" />
             </li>
             <li className={styles.elem}>
-              <Link href="#" text="Выйти" onClick={logout} />
+              <Link href={ROUTES.WELCOME_PAGE} text="Выйти" onClick={logout} />
             </li>
           </ul>
         </nav>

@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { useHttp } from '../../hooks/http.hook';
+import useInput from '../../hooks/input.hook';
 import AuthContext from '../../context/AuthContext';
 import InputForm from '../../components/InputForm';
 import Button from '../../components/Button';
@@ -15,13 +16,15 @@ type imageType = {
 }
 
 const AddWordPage = ():React.ReactElement => {
-  const [word, setWord] = useState<string>('');
-  const [translate, setTranslate] = useState<string>('');
-  const [imageSearch, setImageSearch] = useState<string>('');
+  const inputWord = useInput('');
+  const inputTranslate = useInput('');
+  const inputImage = useInput('');
+
   const [images, setImages] = useState<imageType[]>();
   const [pickedImage, setPickedImage] = useState<string>('');
   const [page, setPage] = useState<number>(1);
   const [showPopup, setShowPopup] = useState<boolean>(false);
+
 
   const { loading, request } = useHttp();
   const auth = useContext(AuthContext);
@@ -44,34 +47,22 @@ const AddWordPage = ():React.ReactElement => {
       console.log('ERROR:', e);
     }
   }
-  
-  const onWordHandler = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setWord(ev.target.value);
-  }
-
-  const onTranslateHandler = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setTranslate(ev.target.value);
-  }
-
-  const onImageSearch = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setImageSearch(ev.target.value);
-  }
 
   // TODO: подумать над некой "обёрткой" для кнопок
   const translateHandler = async (ev: React.SyntheticEvent) => {
-    if (!word) return console.log('Введите слово для перевода');
+    if (!inputWord.value) return console.log('Введите слово для перевода');
     try {
       ev.preventDefault();
       ev.stopPropagation();
       const translateFromServer = await request(
-        `words/translate?word=${word}`, 
+        `words/translate?word=${inputWord.value}`, 
         'GET', 
         null, 
         {Authorization: `Bearer ${auth.token}`}
       );
-      setTranslate(translateFromServer.message);
-      setImageSearch(translateFromServer.message);
-      setImages(await getImages(word, page));
+      inputTranslate.setValue(translateFromServer.message);
+      inputImage.setValue(translateFromServer.message);
+      setImages(await getImages(inputWord.value, page));
     } catch (e) {
       console.log('ERROR: ', e);
     }
@@ -81,8 +72,8 @@ const AddWordPage = ():React.ReactElement => {
     ev.preventDefault();
     ev.stopPropagation();
     // TODO: сделать вывод ошибки
-    if (!word) return console.log('Введите слово для перевода');
-    if (!translate) return console.log('Укажите перевод');
+    if (!inputWord.value) return console.log('Введите слово для перевода');
+    if (!inputTranslate.value) return console.log('Укажите перевод');
 
     setShowPopup(true);
   }
@@ -92,16 +83,16 @@ const AddWordPage = ():React.ReactElement => {
       const saveTranslateWord = await request(
         'words/saveTranslation', 
         'POST', 
-        {reqWord: word, reqTranslation: translate}, 
+        {reqWord: inputWord.value, reqTranslation: inputTranslate.value, reqImageURL: pickedImage}, 
         {Authorization: `Bearer ${auth.token}`}
       );
       console.log('done saveTranslateWord', saveTranslateWord);
 
       setShowPopup(false);
-      setWord('');
-      setImageSearch('');
+      inputWord.setValue('');
+      inputImage.setValue('');
       setImages([]);
-      setTranslate('');
+      inputTranslate.setValue('');
     } catch (e) {
       console.log('ERROR:', e);
     }  
@@ -110,10 +101,10 @@ const AddWordPage = ():React.ReactElement => {
   const searchImageHandler = async (ev: React.SyntheticEvent) => {
     ev.preventDefault();
     ev.stopPropagation();
-    if (!imageSearch) return console.log('Заполните поле для поиска ассоциации');
+    if (!inputImage.value) return console.log('Заполните поле для поиска ассоциации');
 
     try {
-      const images =  await getImages(imageSearch, page);
+      const images =  await getImages(inputImage.value, page);
       setImages(images);
     } catch (e) {
       console.log('ERROR:', e);
@@ -146,9 +137,9 @@ const AddWordPage = ():React.ReactElement => {
           <InputForm
             type={'text'}
             name={'word'}
-            onChange={onWordHandler}
             placeholder={'Введите слово для перевода'}
-            value={word}
+            value={inputWord.value}
+            onChange={inputWord.onChange}
           />
         </div>
         <Button onClick={translateHandler} text={'Перевести'} disabled={loading} />
@@ -156,19 +147,19 @@ const AddWordPage = ():React.ReactElement => {
           <InputForm 
             type={'text'}
             name={'translate'}
-            onChange={onTranslateHandler}
             placeholder={'Перевод'}
-            value={translate}
+            value={inputTranslate.value}
+            onChange={inputTranslate.onChange}
           />
         </div>
-        {word && translate && pickedImage && <Button onClick={createCardHandler} text={'Создать карточку'} disabled={loading} />}
+        {inputWord.value && inputTranslate.value && pickedImage && <Button onClick={createCardHandler} text={'Создать карточку'} disabled={loading} />}
         <div className={styles.inpForm}>
           <InputForm 
             type={'text'}
             name={'imageSearch'}
-            onChange={onImageSearch}
             placeholder={'Визуальная ассоциация'}
-            value={imageSearch}
+            value={inputImage.value}
+            onChange={inputImage.onChange}
           />
         </div>
         <Button onClick={searchImageHandler} text={'Найти ассоциацию'} disabled={loading} />
@@ -180,7 +171,7 @@ const AddWordPage = ():React.ReactElement => {
       </div>
       <Popup visible={showPopup} onClosePopup={() => setShowPopup(!showPopup)}>
         <CreateCard 
-          card={{word: word, translate: translate, url: pickedImage}} 
+          card={{word: inputWord.value, translate: inputTranslate.value, url: pickedImage}} 
           onCancelClick={() => setShowPopup(!showPopup)} 
           onConfirmClick={confirmClickHandler}
         />
