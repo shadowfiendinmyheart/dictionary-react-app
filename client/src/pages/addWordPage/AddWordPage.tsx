@@ -7,6 +7,7 @@ import Button from '../../components/Button';
 import Popup from '../../components/Popup';
 import CreateCard from './components/CreateCard';
 import SearchImage from './components/SearchImage';
+import Loader from '../../components/Loader';
 
 import styles from './AddWordPage.module.scss';
 
@@ -172,6 +173,7 @@ const AddWordPage = ():React.ReactElement => {
       <Popup visible={showPopup} onClosePopup={() => setShowPopup(!showPopup)}>
         <CreateCard 
           card={{word: inputWord.value, translate: inputTranslate.value, url: pickedImage}} 
+          loading={loading}
           onCancelClick={() => setShowPopup(!showPopup)} 
           onConfirmClick={confirmClickHandler}
         />
