@@ -26,7 +26,9 @@ router.get('/list',
             const page = req.query.page;
 
             const imageList = await getImagePage(page, search);
-            return res.status(200).json({ message: JSON.parse(imageList) });
+            const answer = JSON.parse(imageList).hits.map(img => img.previewURL);
+
+            return res.status(200).json({ message: answer });
         } catch (e) {
             return res.status(400).json({ message: 'Произошла обшибка на сервере' });
         }

@@ -9,6 +9,7 @@ import AboutCard from './components/AboutCard';
 import SearchImage from './components/SearchImage';
 
 import styles from './AddWordPage.module.scss';
+import { searchImage } from './components/SearchImage/SearchImage.module.scss';
 
 type imageType = {
   url: string;
@@ -62,7 +63,7 @@ const AddWordPage = ():React.ReactElement => {
       ev.preventDefault();
       ev.stopPropagation();
       // тут будет эндпоинт на проверку карточки у пользователя 
-      const checkCardExist = false;
+      const checkCardExist = true;
       if (checkCardExist) {
         setShowPopup(true);
         setIsExistCard(true);
@@ -191,13 +192,25 @@ const AddWordPage = ():React.ReactElement => {
       <Popup visible={showPopup} onClosePopup={() => setShowPopup(!showPopup)}>
         {(isExistCard && existCard) ? (
           <AboutCard
+            title={'У вас уже есть карточка с таким словом. Редактировать ?'}
             card={{...existCard}} 
             loading={loading}
             onCancelClick={() => setShowPopup(!showPopup)} 
-            onConfirmClick={() => setShowPopup(!showPopup)}
+            onConfirmClick={async () => {
+              setShowPopup(!showPopup)
+              inputTranslate.setValue(existCard.translate);
+              inputImage.setValue(existCard.word);
+              try {
+                const images = await getImages(existCard.word, page);
+                setImages(images);
+              } catch (e) {
+                console.log('ERROR:', e);
+              }
+            }}
           />
         ) : (
           <AboutCard
+            title={'Сохранить карточку в словарь?'}
             card={{word: inputWord.value, translate: inputTranslate.value, url: pickedImage}} 
             loading={loading}
             onCancelClick={() => setShowPopup(!showPopup)} 
