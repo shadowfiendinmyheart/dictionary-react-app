@@ -2,9 +2,9 @@ import React from 'react';
 import Card from '../../../../components/Card';
 import Loader from '../../../../components/Loader';
 
-import styles from './CreateCard.module.scss';
+import styles from './AboutCard.module.scss';
 
-type createCardProps = {
+type aboutCardProps = {
     card: {
         word: string,
         translate: string,
@@ -15,7 +15,7 @@ type createCardProps = {
     onConfirmClick: () => void,
 } 
 
-const CreateCard = (props: createCardProps): React.ReactElement => {
+const AboutCard = (props: aboutCardProps): React.ReactElement => {
     const { card, loading, onCancelClick, onConfirmClick } = props;
     const { word, translate, url } = card;
 
@@ -39,4 +39,4 @@ const CreateCard = (props: createCardProps): React.ReactElement => {
     )
 }
 
-export default CreateCard;
+export default AboutCard;

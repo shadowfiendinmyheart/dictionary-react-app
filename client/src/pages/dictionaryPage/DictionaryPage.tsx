@@ -35,7 +35,7 @@ const DictionaryPage = (): React.ReactElement => {
           null, 
           {Authorization: `Bearer ${auth.token}`}
         );
-
+  
         setCards(userInfo.message.words);
       } catch (e) {
         console.log('ERROR:', e);
@@ -43,11 +43,7 @@ const DictionaryPage = (): React.ReactElement => {
     }
 
     getCards();
-
-    return () => {
-      setCards([]);
-    }
-  }, []);
+  }, [selectedWords]);
 
   const cardsElem = (cards: any[]) => {
       return cards.map(card => 

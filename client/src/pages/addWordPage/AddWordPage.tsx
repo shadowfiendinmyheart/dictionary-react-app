@@ -5,7 +5,7 @@ import AuthContext from '../../context/AuthContext';
 import InputForm from '../../components/InputForm';
 import Button from '../../components/Button';
 import Popup from '../../components/Popup';
-import CreateCard from './components/CreateCard';
+import AboutCard from './components/AboutCard';
 import SearchImage from './components/SearchImage';
 
 import styles from './AddWordPage.module.scss';
@@ -62,7 +62,7 @@ const AddWordPage = ():React.ReactElement => {
       ev.preventDefault();
       ev.stopPropagation();
       // тут будет эндпоинт на проверку карточки у пользователя 
-      const checkCardExist = true;
+      const checkCardExist = false;
       if (checkCardExist) {
         setShowPopup(true);
         setIsExistCard(true);
@@ -190,14 +190,14 @@ const AddWordPage = ():React.ReactElement => {
       </div>
       <Popup visible={showPopup} onClosePopup={() => setShowPopup(!showPopup)}>
         {(isExistCard && existCard) ? (
-          <CreateCard
+          <AboutCard
             card={{...existCard}} 
             loading={loading}
             onCancelClick={() => setShowPopup(!showPopup)} 
             onConfirmClick={() => setShowPopup(!showPopup)}
           />
         ) : (
-          <CreateCard
+          <AboutCard
             card={{word: inputWord.value, translate: inputTranslate.value, url: pickedImage}} 
             loading={loading}
             onCancelClick={() => setShowPopup(!showPopup)} 
