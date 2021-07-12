@@ -7,13 +7,18 @@ import Button from '../../components/Button';
 import Popup from '../../components/Popup';
 import CreateCard from './components/CreateCard';
 import SearchImage from './components/SearchImage';
-import Loader from '../../components/Loader';
 
 import styles from './AddWordPage.module.scss';
 
 type imageType = {
   url: string;
   active: boolean;
+}
+
+type cardType = {
+  word: string;
+  translate: string;
+  url: string;
 }
 
 const AddWordPage = ():React.ReactElement => {
@@ -25,7 +30,8 @@ const AddWordPage = ():React.ReactElement => {
   const [pickedImage, setPickedImage] = useState<string>('');
   const [page, setPage] = useState<number>(1);
   const [showPopup, setShowPopup] = useState<boolean>(false);
-
+  const [isExistCard, setIsExistCard] = useState<boolean>(false);
+  const [existCard, setExistCard] = useState<cardType>();
 
   const { loading, request } = useHttp();
   const auth = useContext(AuthContext);
@@ -55,15 +61,27 @@ const AddWordPage = ():React.ReactElement => {
     try {
       ev.preventDefault();
       ev.stopPropagation();
-      const translateFromServer = await request(
-        `words/translate?word=${inputWord.value}`, 
-        'GET', 
-        null, 
-        {Authorization: `Bearer ${auth.token}`}
-      );
-      inputTranslate.setValue(translateFromServer.message);
-      inputImage.setValue(translateFromServer.message);
-      setImages(await getImages(inputWord.value, page));
+      // тут будет эндпоинт на проверку карточки у пользователя 
+      const checkCardExist = true;
+      if (checkCardExist) {
+        setShowPopup(true);
+        setIsExistCard(true);
+        setExistCard({
+          word: 'mock',
+          translate: 'cock',
+          url: 'https://i.ytimg.com/vi/1Ne1hqOXKKI/maxresdefault.jpg'
+        })
+      } else {
+        const translateFromServer = await request(
+          `words/translate?word=${inputWord.value}`, 
+          'GET', 
+          null, 
+          {Authorization: `Bearer ${auth.token}`}
+        );
+        inputTranslate.setValue(translateFromServer.message);
+        inputImage.setValue(translateFromServer.message);
+        setImages(await getImages(inputWord.value, page));
+      }
     } catch (e) {
       console.log('ERROR: ', e);
     }
@@ -171,12 +189,21 @@ const AddWordPage = ():React.ReactElement => {
         </div>
       </div>
       <Popup visible={showPopup} onClosePopup={() => setShowPopup(!showPopup)}>
-        <CreateCard 
-          card={{word: inputWord.value, translate: inputTranslate.value, url: pickedImage}} 
-          loading={loading}
-          onCancelClick={() => setShowPopup(!showPopup)} 
-          onConfirmClick={confirmClickHandler}
-        />
+        {(isExistCard && existCard) ? (
+          <CreateCard
+            card={{...existCard}} 
+            loading={loading}
+            onCancelClick={() => setShowPopup(!showPopup)} 
+            onConfirmClick={() => setShowPopup(!showPopup)}
+          />
+        ) : (
+          <CreateCard
+            card={{word: inputWord.value, translate: inputTranslate.value, url: pickedImage}} 
+            loading={loading}
+            onCancelClick={() => setShowPopup(!showPopup)} 
+            onConfirmClick={confirmClickHandler}
+          />
+        )}
       </Popup>
     </div>
   )
