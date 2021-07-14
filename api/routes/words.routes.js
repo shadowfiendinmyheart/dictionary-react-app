@@ -6,7 +6,7 @@ const RusWord = require('../models/RusWord');
 const User = require('../models/User')//А я хз че делаю ляляля
 
 const auth = require('../middleware/auth.middleware');
-const getTranslatedWord = require('../services/abbyy');
+const getTranslatedWord = require('../services/translate');
 
 const router = Router();
 

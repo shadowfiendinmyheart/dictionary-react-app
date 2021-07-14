@@ -26,7 +26,8 @@ router.get('/list',
             const page = req.query.page;
 
             const imageList = await getImagePage(page, search);
-            const answer = JSON.parse(imageList).hits.map(img => img.previewURL);
+            
+            const answer = JSON.parse(imageList).hits.map(img => img.webformatURL);
 
             return res.status(200).json({ message: answer });
         } catch (e) {

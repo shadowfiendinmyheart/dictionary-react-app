@@ -47,8 +47,9 @@ const AddWordPage = ():React.ReactElement => {
         null, 
         {Authorization: `Bearer ${auth.token}`}
       );
-      const images = imageList.message.results.map((img: { urls: string; }) => {
-        return {url: img.urls.small, active: false}
+      
+      const images = imageList.message.map((img: string) => {
+        return {url: img, active: false}
       })
       return images;
     } catch (e) {
@@ -63,7 +64,7 @@ const AddWordPage = ():React.ReactElement => {
       ev.preventDefault();
       ev.stopPropagation();
       // тут будет эндпоинт на проверку карточки у пользователя 
-      const checkCardExist = true;
+      const checkCardExist = false;
       if (checkCardExist) {
         setShowPopup(true);
         setIsExistCard(true);
@@ -134,6 +135,8 @@ const AddWordPage = ():React.ReactElement => {
 
   const imageTile = (images: imageType[], chunks: number) => {
     const columns = [...Array(chunks)].map((_, c) => images.filter((_, i) => i % chunks === c)); 
+    console.log('columns', columns);
+    console.log('images', images);
     return columns.map(column => column.map(el=> {
       return (
         <SearchImage key={el.url} url={el.url} active={el.active} cb={() => {
@@ -186,7 +189,7 @@ const AddWordPage = ():React.ReactElement => {
       </form>
       <div>
         <div className={styles.wrapperPickImage}>
-          {images && imageTile(images, 3).map((column: JSX.Element[], index: number) => <div key={`${index}-column`}>{column}</div>)}
+          {images && imageTile(images, 3).map((column: JSX.Element[], index: number) => <div className={styles.imageColumn} key={`${index}-column`}>{column}</div>)}
         </div>
       </div>
       <Popup visible={showPopup} onClosePopup={() => setShowPopup(!showPopup)}>

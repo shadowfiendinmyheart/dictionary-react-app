@@ -4,6 +4,7 @@ declare const styles: {
   readonly wrapperPickImage: string;
   readonly inpForm: string;
   readonly pickImage: string;
+  readonly imageColumn: string
 }
 
 export = styles;
