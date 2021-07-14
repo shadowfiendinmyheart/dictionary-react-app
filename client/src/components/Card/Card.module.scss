@@ -4,7 +4,8 @@
     width: 100%;
     text-align: center;
     overflow: auto;
-    font-size: 48px;
+    font-size: 24px;
+    overflow-wrap: anywhere;
 }
 
 .wrapper {
@@ -64,10 +65,11 @@
 .word {
     @include cardWords();
     max-height: 25%;
-    font-size: 48px;
 }
 
 .translate {
     @include cardWords();
+    margin: 0 15px;
     max-height: 80%;
+    width: 100%;
 }

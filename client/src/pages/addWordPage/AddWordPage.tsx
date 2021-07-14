@@ -1,27 +1,38 @@
 import React, { useContext, useState } from 'react';
 import { useHttp } from '../../hooks/http.hook';
+import useInput from '../../hooks/input.hook';
 import AuthContext from '../../context/AuthContext';
 import InputForm from '../../components/InputForm';
 import Button from '../../components/Button';
 import Popup from '../../components/Popup';
-import CreateCard from './components/CreateCard';
+import AboutCard from './components/AboutCard';
 import SearchImage from './components/SearchImage';
 
 import styles from './AddWordPage.module.scss';
+import { searchImage } from './components/SearchImage/SearchImage.module.scss';
 
 type imageType = {
   url: string;
   active: boolean;
 }
 
+type cardType = {
+  word: string;
+  translate: string;
+  url: string;
+}
+
 const AddWordPage = ():React.ReactElement => {
-  const [word, setWord] = useState<string>('');
-  const [translate, setTranslate] = useState<string>('');
-  const [imageSearch, setImageSearch] = useState<string>('');
+  const inputWord = useInput('');
+  const inputTranslate = useInput('');
+  const inputImage = useInput('');
+
   const [images, setImages] = useState<imageType[]>();
   const [pickedImage, setPickedImage] = useState<string>('');
   const [page, setPage] = useState<number>(1);
   const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [isExistCard, setIsExistCard] = useState<boolean>(false);
+  const [existCard, setExistCard] = useState<cardType>();
 
   const { loading, request } = useHttp();
   const auth = useContext(AuthContext);
@@ -36,42 +47,43 @@ const AddWordPage = ():React.ReactElement => {
         null, 
         {Authorization: `Bearer ${auth.token}`}
       );
-      const images = imageList.message.results.map((img: { urls: string; }) => {
-        return {url: img.urls.small, active: false}
+      
+      const images = imageList.message.map((img: string) => {
+        return {url: img, active: false}
       })
       return images;
     } catch (e) {
       console.log('ERROR:', e);
     }
   }
-  
-  const onWordHandler = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setWord(ev.target.value);
-  }
-
-  const onTranslateHandler = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setTranslate(ev.target.value);
-  }
-
-  const onImageSearch = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setImageSearch(ev.target.value);
-  }
 
   // TODO: подумать над некой "обёрткой" для кнопок
   const translateHandler = async (ev: React.SyntheticEvent) => {
-    if (!word) return console.log('Введите слово для перевода');
+    if (!inputWord.value) return console.log('Введите слово для перевода');
     try {
       ev.preventDefault();
       ev.stopPropagation();
-      const translateFromServer = await request(
-        `words/translate?word=${word}`, 
-        'GET', 
-        null, 
-        {Authorization: `Bearer ${auth.token}`}
-      );
-      setTranslate(translateFromServer.message);
-      setImageSearch(translateFromServer.message);
-      setImages(await getImages(word, page));
+      // тут будет эндпоинт на проверку карточки у пользователя 
+      const checkCardExist = false;
+      if (checkCardExist) {
+        setShowPopup(true);
+        setIsExistCard(true);
+        setExistCard({
+          word: 'mock',
+          translate: 'cock',
+          url: 'https://i.ytimg.com/vi/1Ne1hqOXKKI/maxresdefault.jpg'
+        })
+      } else {
+        const translateFromServer = await request(
+          `words/translate?word=${inputWord.value}`, 
+          'GET', 
+          null, 
+          {Authorization: `Bearer ${auth.token}`}
+        );
+        inputTranslate.setValue(translateFromServer.message);
+        inputImage.setValue(translateFromServer.message);
+        setImages(await getImages(inputWord.value, page));
+      }
     } catch (e) {
       console.log('ERROR: ', e);
     }
@@ -81,8 +93,8 @@ const AddWordPage = ():React.ReactElement => {
     ev.preventDefault();
     ev.stopPropagation();
     // TODO: сделать вывод ошибки
-    if (!word) return console.log('Введите слово для перевода');
-    if (!translate) return console.log('Укажите перевод');
+    if (!inputWord.value) return console.log('Введите слово для перевода');
+    if (!inputTranslate.value) return console.log('Укажите перевод');
 
     setShowPopup(true);
   }
@@ -92,16 +104,16 @@ const AddWordPage = ():React.ReactElement => {
       const saveTranslateWord = await request(
         'words/saveTranslation', 
         'POST', 
-        {reqWord: word, reqTranslation: translate}, 
+        {reqWord: inputWord.value, reqTranslation: inputTranslate.value, reqImageURL: pickedImage}, 
         {Authorization: `Bearer ${auth.token}`}
       );
       console.log('done saveTranslateWord', saveTranslateWord);
 
       setShowPopup(false);
-      setWord('');
-      setImageSearch('');
+      inputWord.setValue('');
+      inputImage.setValue('');
       setImages([]);
-      setTranslate('');
+      inputTranslate.setValue('');
     } catch (e) {
       console.log('ERROR:', e);
     }  
@@ -110,10 +122,10 @@ const AddWordPage = ():React.ReactElement => {
   const searchImageHandler = async (ev: React.SyntheticEvent) => {
     ev.preventDefault();
     ev.stopPropagation();
-    if (!imageSearch) return console.log('Заполните поле для поиска ассоциации');
+    if (!inputImage.value) return console.log('Заполните поле для поиска ассоциации');
 
     try {
-      const images =  await getImages(imageSearch, page);
+      const images =  await getImages(inputImage.value, page);
       setImages(images);
     } catch (e) {
       console.log('ERROR:', e);
@@ -123,6 +135,8 @@ const AddWordPage = ():React.ReactElement => {
 
   const imageTile = (images: imageType[], chunks: number) => {
     const columns = [...Array(chunks)].map((_, c) => images.filter((_, i) => i % chunks === c)); 
+    console.log('columns', columns);
+    console.log('images', images);
     return columns.map(column => column.map(el=> {
       return (
         <SearchImage key={el.url} url={el.url} active={el.active} cb={() => {
@@ -146,9 +160,9 @@ const AddWordPage = ():React.ReactElement => {
           <InputForm
             type={'text'}
             name={'word'}
-            onChange={onWordHandler}
             placeholder={'Введите слово для перевода'}
-            value={word}
+            value={inputWord.value}
+            onChange={inputWord.onChange}
           />
         </div>
         <Button onClick={translateHandler} text={'Перевести'} disabled={loading} />
@@ -156,34 +170,56 @@ const AddWordPage = ():React.ReactElement => {
           <InputForm 
             type={'text'}
             name={'translate'}
-            onChange={onTranslateHandler}
             placeholder={'Перевод'}
-            value={translate}
+            value={inputTranslate.value}
+            onChange={inputTranslate.onChange}
           />
         </div>
-        {word && translate && pickedImage && <Button onClick={createCardHandler} text={'Создать карточку'} disabled={loading} />}
+        {inputWord.value && inputTranslate.value && pickedImage && <Button onClick={createCardHandler} text={'Создать карточку'} disabled={loading} />}
         <div className={styles.inpForm}>
           <InputForm 
             type={'text'}
             name={'imageSearch'}
-            onChange={onImageSearch}
             placeholder={'Визуальная ассоциация'}
-            value={imageSearch}
+            value={inputImage.value}
+            onChange={inputImage.onChange}
           />
         </div>
         <Button onClick={searchImageHandler} text={'Найти ассоциацию'} disabled={loading} />
       </form>
       <div>
         <div className={styles.wrapperPickImage}>
-          {images && imageTile(images, 3).map((column: JSX.Element[], index: number) => <div key={`${index}-column`}>{column}</div>)}
+          {images && imageTile(images, 3).map((column: JSX.Element[], index: number) => <div className={styles.imageColumn} key={`${index}-column`}>{column}</div>)}
         </div>
       </div>
       <Popup visible={showPopup} onClosePopup={() => setShowPopup(!showPopup)}>
-        <CreateCard 
-          card={{word: word, translate: translate, url: pickedImage}} 
-          onCancelClick={() => setShowPopup(!showPopup)} 
-          onConfirmClick={confirmClickHandler}
-        />
+        {(isExistCard && existCard) ? (
+          <AboutCard
+            title={'У вас уже есть карточка с таким словом. Редактировать ?'}
+            card={{...existCard}} 
+            loading={loading}
+            onCancelClick={() => setShowPopup(!showPopup)} 
+            onConfirmClick={async () => {
+              setShowPopup(!showPopup)
+              inputTranslate.setValue(existCard.translate);
+              inputImage.setValue(existCard.word);
+              try {
+                const images = await getImages(existCard.word, page);
+                setImages(images);
+              } catch (e) {
+                console.log('ERROR:', e);
+              }
+            }}
+          />
+        ) : (
+          <AboutCard
+            title={'Сохранить карточку в словарь?'}
+            card={{word: inputWord.value, translate: inputTranslate.value, url: pickedImage}} 
+            loading={loading}
+            onCancelClick={() => setShowPopup(!showPopup)} 
+            onConfirmClick={confirmClickHandler}
+          />
+        )}
       </Popup>
     </div>
   )
