@@ -11,7 +11,7 @@ const getTranslatedWord = require('../services/translate');
 const router = Router();
 
 // words/translate?word=
-// Получить перевод слова с Abbyy
+// Получить перевод слова
 router.get('/translate', 
   [
     check('word', 'Введите слово').notEmpty().isString(),
@@ -29,7 +29,7 @@ router.get('/translate',
       const word = req.query.word;
       const translatedWord = await getTranslatedWord(word);
 
-      return res.status(200).json({ message: translatedWord});
+      return res.status(200).json({ message: translatedWord });
     } catch (e) {
       return res.status(400).json({ message: 'Произошла обшибка на сервере' })
     }

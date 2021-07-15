@@ -9,7 +9,6 @@ import AboutCard from './components/AboutCard';
 import SearchImage from './components/SearchImage';
 
 import styles from './AddWordPage.module.scss';
-import { searchImage } from './components/SearchImage/SearchImage.module.scss';
 
 type imageType = {
   url: string;
@@ -47,7 +46,7 @@ const AddWordPage = ():React.ReactElement => {
         null, 
         {Authorization: `Bearer ${auth.token}`}
       );
-      
+
       const images = imageList.message.map((img: string) => {
         return {url: img, active: false}
       })
@@ -131,7 +130,6 @@ const AddWordPage = ():React.ReactElement => {
       console.log('ERROR:', e);
     }
   }
-
 
   const imageTile = (images: imageType[], chunks: number) => {
     const columns = [...Array(chunks)].map((_, c) => images.filter((_, i) => i % chunks === c)); 
