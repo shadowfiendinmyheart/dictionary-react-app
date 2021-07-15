@@ -1,15 +1,14 @@
 const { Router } = require('express');
 const { check, validationResult } = require('express-validator');
 
-const EngWord = require('../models/EngWord');
-const RusWord = require('../models/RusWord');
-const User = require('../models/User')//А я хз че делаю ляляля
+const Dictionary = require('../models/Dictionary');
+const User = require('../models/User');
 
 const auth = require('../middleware/auth.middleware');
 const getTranslatedWord = require('../services/translate');
 
 const router = Router();
-
+const language = "eng";
 // words/translate?word=
 // Получить перевод слова с Abbyy
 router.get('/translate', 
@@ -39,9 +38,9 @@ router.get('/translate',
 // Сохранение слова в словарь
 router.post('/saveTranslation',
     [
-      check('reqWord', 'Введите слово').notEmpty().isString(),
-      check('reqTranslation', 'Введите перевод').notEmpty().isString(),
-      check('reqImageURL', 'Введите URL картинки').notEmpty().isString(),
+      check('reqWord', 'Введите слово').notEmpty().isString().toLowerCase(),
+      check('reqTranslation', 'Введите перевод').notEmpty().isString().toLowerCase(),
+      check('reqImageURL', 'Введите URL картинки').notEmpty().isString().toLowerCase(),
       auth
     ],
     async (req, res) => {
@@ -57,42 +56,38 @@ router.post('/saveTranslation',
         const {reqWord, reqTranslation, reqImageURL} = req.body;
         const reqUserId = req.user.userId;
 
-        //Поиск слова в коллекции английских слов
-        const findWord = await EngWord.findOne({word: reqWord});
+        const findDictionary = await Dictionary.findOne({"language":language, "ownerId": reqUserId});
+        let dictionary;
+        if (findDictionary) {
+            dictionary = findDictionary;
+        } else {
+            dictionary = new Dictionary();
+        }
+        console.log(dictionary);
+
+        //Существует ли такое слово в словаре вообще
+        const findWord = dictionary.words.find(word => word.word === reqWord);
         let word;
         if(findWord) {
-          word = findWord
+            word = findWord;
         } else {
-          word = new EngWord({word: reqWord})
+            word = {
+                word: reqWord,
+                translations: [],
+                imageURL: reqImageURL,
+                status: "watched"
+            }
+            dictionary.words.push(word);
         }
 
-        //Поиск слова в коллекции русских слов
-        const findRusWord = await RusWord.findOne({word: reqTranslation});
-        let rusWord;
-        if(findRusWord) {
-          rusWord = findRusWord
-        } else {
-          rusWord = new RusWord({word: reqTranslation})
-          await rusWord.save();
+        //Существует ли такой перевод слова
+        const findTranslation = word.translations.find(word => word === reqTranslation);
+        console.log(word.translations);
+        if(!findTranslation) {
+            word.translations.push(reqTranslation);
         }
 
-        //Поиск русского слова в списке переводов английского слова
-        const findTranslation = word.translations.find(id => rusWord._id.toString() === id.toString());
-        if (!findTranslation) {
-          word.translations.push(rusWord._id);
-          await word.save();
-        }
-
-        //Поиск английского слова в списке слов пользователя
-        const user = await User.findOne({_id: reqUserId});
-        const findUserWord = user.words.find(userWord => userWord.word.toString() === word._id.toString())
-        if (!findUserWord) {
-          user.words.push({word: word._id, imageURL: reqImageURL});
-          await user.save();
-        }
-
-
-        return res.status(201).json({ message: 'Слово добавлено в словарь'});
+        return res.status(201).json({ dictionary: dictionary, word: word});
       } catch (e) {
         return res.status(400).json({ message: 'Произошла ошибка на сервере', error: e})
       }
