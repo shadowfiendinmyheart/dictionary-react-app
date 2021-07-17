@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 
 export const useHttp = () => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [answer, setAnswer] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false); 
+  const [error, setError] = useState<string | null>(null);
 
   const request = useCallback(async (
       url: string, 
@@ -25,20 +25,22 @@ export const useHttp = () => {
         }
         
         setLoading(false);
-        if (data.message) {
-          setAnswer(data.message);
-        }
+
+        const headersFromRes: any = {};
+        response.headers.forEach((value, name) => {
+          headersFromRes[name] = value;
+        });
+        data['headers'] = headersFromRes;
+
         return data;
       } catch (e) {
         setLoading(false);
-        if (e.message) {
-          setAnswer(e.message);
-        }
+        setError(e.message);
         throw e;
       }
     }, [])
 
-  const clearAnswer = () => setAnswer(null);
+  const clearAnswer = useCallback(() => setError(null), []);
 
-  return { loading, request, answer, clearAnswer }
+  return { loading, request, error, clearAnswer }
 }
