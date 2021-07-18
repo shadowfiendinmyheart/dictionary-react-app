@@ -35,6 +35,36 @@ router.get('/translate',
   }
 )
 
+router.post('/createDictionary', auth,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          errors: errors.array(),
+          message: 'Вы допустили ошибку . . .'
+        })
+      }
+
+      const {reqWord, reqTranslation, reqImageURL} = req.body;
+      const reqUserId = req.user.userId;
+
+      const findDictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
+      let dictionary;
+      if (findDictionary) {
+        return res.status(204).send();
+      } else {
+        dictionary = new Dictionary({language:language, ownerId: reqUserId});
+      }
+
+      await dictionary.save();
+      return res.status(201).json({message: 'Словарь создан'});
+    } catch (e) {
+      return res.status(400).json({message: 'Произошла ошибка на сервере', error: e})
+    }
+  }
+)
+
 // Сохранение слова в словарь
 router.post('/saveTranslation',
   [
@@ -61,7 +91,7 @@ router.post('/saveTranslation',
       if (findDictionary) {
         dictionary = findDictionary;
       } else {
-        dictionary = new Dictionary();
+        dictionary = new Dictionary({language:language, ownerId: reqUserId});
       }
       console.log(dictionary);
 
