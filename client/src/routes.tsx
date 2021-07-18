@@ -8,6 +8,7 @@ import DictionaryPage from './pages/dictionaryPage';
 import ErrorPage from './pages/errorPage';
 
 import { ROUTES } from './constants/routes';
+import GameTranslationPage from './pages/gameTranslationPage';
 
 const useRoutes = (isAuth: boolean) => {
   if (isAuth) {
@@ -21,6 +22,9 @@ const useRoutes = (isAuth: boolean) => {
         </Route>
         <Route path={ROUTES.DICTIONARY_PAGE}>
           <DictionaryPage />
+        </Route>
+        <Route path={ROUTES.GAME_TRANSLATION_PAGE}>
+          <GameTranslationPage />
         </Route>
         <Route path={ROUTES.ERROR_PAGE}>
           <ErrorPage />
