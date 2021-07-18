@@ -29,7 +29,7 @@ router.get('/list',
             
             const answer = imageList.hits.map(img => img.webformatURL);
             const numberOfPage = Math.ceil(imageList.totalHits / 20);
-            res.set('Number-Of-Page', numberOfPage);
+            res.set('number-of-page', numberOfPage);
             return res.status(200).json({ message: answer });
         } catch (e) {
             return res.status(400).json({ message: 'Произошла обшибка на сервере' });
