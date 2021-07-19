@@ -203,7 +203,7 @@ router.post('/setCounter',
   }
 )
 
-//Получение списка слов
+//Получение списка слов постранично (5 на одну стр)
 router.get('/getWordsList',
   [
     check('page', 'Введите страницу').notEmpty().isNumeric(),
@@ -221,7 +221,7 @@ router.get('/getWordsList',
 
       const page = req.query.page;
       const reqUserId = req.user.userId;
-      console.log(page, wordListLimit, page * wordListLimit);
+
       const dictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId},{"words":{$slice: [(page - 1) * wordListLimit , wordListLimit]}});
       if (!dictionary) {
         return res.status(400).json({message: "Словарь отсутствует"});
