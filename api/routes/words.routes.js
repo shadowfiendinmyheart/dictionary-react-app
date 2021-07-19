@@ -161,6 +161,7 @@ router.get('/getEngWord',
   }
 )
 
+//Сеттер счетчика угадываний слова для игры
 router.post('/setCounter',
   [
     check('reqWord', 'Введите слово').notEmpty().isString().toLowerCase(),
