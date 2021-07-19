@@ -3,7 +3,7 @@ const Word = new Schema( {
     word: {type: String, unique: true, index: true},
     translations: {type: [String], index: true},
     imageURL: {type: String, required: true},
-    showCount: {type: Number, default: 0},
+    counter: {type: Number, default: 0},
     date: {type: Date, required: true, default: Date.now}
 });
 
