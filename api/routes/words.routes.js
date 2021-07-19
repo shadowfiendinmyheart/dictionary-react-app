@@ -8,12 +8,13 @@ const auth = require('../middleware/auth.middleware');
 const getTranslatedWord = require('../services/translate');
 
 const router = Router();
-const language = "eng";
+const language = "eng";//Захардкодил
+
 // words/translate?word=
 // Получить перевод слова
 router.get('/translate', 
   [
-    check('word', 'Введите слово').notEmpty().isString(),
+    check('word', 'Введите слово').notEmpty().isString().toLowerCase(),
     auth
   ],
   async (req, res) => {
@@ -52,7 +53,7 @@ router.post('/createDictionary', auth,
       const findDictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
       let dictionary;
       if (findDictionary) {
-        return res.status(204).send();
+        return res.status(400).json({message:"Словарь с таким языком уже существует"});
       } else {
         dictionary = new Dictionary({language:language, ownerId: reqUserId});
       }
@@ -60,7 +61,7 @@ router.post('/createDictionary', auth,
       await dictionary.save();
       return res.status(201).json({message: 'Словарь создан'});
     } catch (e) {
-      return res.status(400).json({message: 'Произошла ошибка на сервере', error: e})
+      return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
     }
   }
 )
@@ -86,14 +87,10 @@ router.post('/saveTranslation',
       const {reqWord, reqTranslation, reqImageURL} = req.body;
       const reqUserId = req.user.userId;
 
-      const findDictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
-      let dictionary;
-      if (findDictionary) {
-        dictionary = findDictionary;
-      } else {
-        dictionary = new Dictionary({language:language, ownerId: reqUserId});
+      const dictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
+      if (!dictionary) {
+        return res.status(400).json({message: "Отсутствует словарь"});
       }
-      console.log(dictionary);
 
       //Существует ли такое слово в словаре вообще
       const findWordId = dictionary.words.findIndex(word => word.word === reqWord);
@@ -120,7 +117,7 @@ router.post('/saveTranslation',
       await dictionary.save();
       return res.status(201).json({message: 'Словарь обновлен', word: word});
     } catch (e) {
-      return res.status(400).json({message: 'Произошла ошибка на сервере', error: e})
+      return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
     }
   }
 )
@@ -128,7 +125,7 @@ router.post('/saveTranslation',
 // Получение слова из списка слов пользователя
 router.get('/getEngWord',
   [
-    check('reqWord', 'Введите слово').notEmpty().isString(),
+    check('reqWord', 'Введите слово').notEmpty().isString().toLowerCase(),
     auth
   ],
   async (req, res) => {
@@ -147,22 +144,62 @@ router.get('/getEngWord',
       //Поиск словаря
       const dictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
       if (!dictionary) {
-        return res.status(204).send();
+        return res.status(400).json({message: "Словарь отсутствует"});
       }
 
       //Поиск англ.слова
       const findWordId = dictionary.words.findIndex(word => word.word === reqWord);
       if (findWordId === -1) {
-        return res.status(204).send();
+        return res.status(400).json({message: "Слово отсутствует"});
       }
 
       //Вовзвращение объекта: слово, перевод, картинка, статус, дата
       return res.status(200).json({message: dictionary.words[findWordId]});
     } catch (e) {
-      return res.status(400).json({message: 'Произошла обшибка на сервере'})
+      return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
     }
   }
 )
 
+router.post('/setCounter',
+  [
+    check('reqWord', 'Введите слово').notEmpty().isString().toLowerCase(),
+    check('reqCount','Введите число').notEmpty().isNumeric(),
+    auth
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          errors: errors.array(),
+          message: 'Вы допустили ошибку . . .'
+        })
+      }
+
+      const {reqWord, reqCount} = req.body;
+      const reqUserId = req.user.userId;
+
+      //Поиск словаря
+      const dictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
+      if (!dictionary) {
+        return res.status(400).json({message: "Словарь отсутствует"});
+      }
+
+      //Поиск англ.слова
+      const findWordId = dictionary.words.findIndex(word => word.word === reqWord);
+      if (findWordId === -1) {
+        return res.status(400).json({message: "Слово отсутствует"});
+      }
+
+      dictionary.words[findWordId].showCount = reqCount;
+
+      await dictionary.save();
+      return res.status(201).json({message: 'Словарь обновлен'});
+    } catch (e) {
+      return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
+    }
+  }
+)
 
 module.exports = router;
