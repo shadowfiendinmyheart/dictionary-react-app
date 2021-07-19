@@ -51,12 +51,11 @@ router.post('/createDictionary', auth,
       const reqUserId = req.user.userId;
 
       const findDictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
-      let dictionary;
       if (findDictionary) {
-        return res.status(400).json({message:"Словарь с таким языком уже существует"});
-      } else {
-        dictionary = new Dictionary({language:language, ownerId: reqUserId});
+        return res.status(400).json({message: "Словарь с таким языком уже существует"});
       }
+      const  dictionary = new Dictionary({language:language, ownerId: reqUserId});
+
 
       await dictionary.save();
       return res.status(201).json({message: 'Словарь создан'});
