@@ -9,6 +9,7 @@ const getTranslatedWord = require('../services/translate');
 
 const router = Router();
 const language = "eng";//Захардкодил
+const wordListLimit = 5;//Захардкодил
 
 // words/translate?word=
 // Получить перевод слова
@@ -202,4 +203,34 @@ router.post('/setCounter',
   }
 )
 
+//Получение списка слов
+router.get('/getWordsList',
+  [
+    check('page', 'Введите страницу').notEmpty().isNumeric(),
+    auth
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          errors: errors.array(),
+          message: 'Вы допустили ошибку . . .'
+        })
+      }
+
+      const page = req.query.page;
+      const reqUserId = req.user.userId;
+      console.log(page, wordListLimit, page * wordListLimit);
+      const dictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId},{"words":{$slice: [(page - 1) * wordListLimit , wordListLimit]}});
+      if (!dictionary) {
+        return res.status(400).json({message: "Словарь отсутствует"});
+      }
+
+      return res.status(201).json({message: dictionary.words});
+    } catch (e) {
+      return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
+    }
+  }
+)
 module.exports = router;
