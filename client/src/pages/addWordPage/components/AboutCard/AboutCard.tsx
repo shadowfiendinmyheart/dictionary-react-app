@@ -1,5 +1,6 @@
 import React from 'react';
 import Card from '../../../../components/Card';
+import { sizeVariant } from '../../../../components/Card/Card';
 import Loader from '../../../../components/Loader';
 
 import styles from './AboutCard.module.scss';
@@ -23,7 +24,7 @@ const AboutCard = (props: aboutCardProps): React.ReactElement => {
     return (
         <div className={styles.wrapper}>
             <h3 className={styles.header}>{title}</h3>
-            <Card word={word} translate={translate} url={url} />
+            <Card word={word} translate={translate} url={url} size={sizeVariant.s} />
             <div className={styles.buttonsWrapper}>
                 {loading ? (<Loader />) : (
                     <>

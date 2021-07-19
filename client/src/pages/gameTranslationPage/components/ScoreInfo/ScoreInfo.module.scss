@@ -1,0 +1,38 @@
+@import '../../../../assets/styles/colors';
+@import '../../../../assets/styles/mixins';
+
+.wrapper {  
+  @include mainContent;
+}
+
+.window {
+  @include glass;
+  color: $font-color;
+  height: 500px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.leftSide {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  width: 65%;
+  height: 100%;
+}
+
+.rightSide {
+  display: flex;
+  flex-direction: column;
+  width: 20%;
+}
+
+.true {
+  background-color: rgba(0, 255, 42, 0.111);
+}
+
+.false {
+  background-color: rgba(255, 0, 51, 0.111);
+}

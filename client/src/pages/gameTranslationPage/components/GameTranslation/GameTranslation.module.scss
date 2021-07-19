@@ -1,0 +1,21 @@
+@import '../../../../assets/styles/colors';
+@import '../../../../assets/styles/mixins';
+
+.wrapper {  
+  @include mainContent;
+}
+
+.window {
+  @include glass;
+  color: $font-color;
+  height: 500px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.img {
+    width: 200px;
+}
