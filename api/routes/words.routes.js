@@ -94,7 +94,7 @@ router.post('/saveTranslation',
 
       //Существует ли такое слово в словаре вообще
       const findWordId = dictionary.words.findIndex(word => word.word === reqWord);
-      console.log(findWordId);
+
       let word;
       if (findWordId > -1) {
         word = dictionary.words[findWordId];
@@ -221,13 +221,43 @@ router.get('/getWordsList',
 
       const page = req.query.page;
       const reqUserId = req.user.userId;
+      // const dictionary = await Dictionary.findOne(
+      //   {
+      //     "language": language,
+      //     "ownerId": reqUserId
+      //   },
+      //   {
+      //     words:{$slice: [(page - 1) * wordListLimit , wordListLimit]},
+      //     wordsCount: {$size: "$words"}
+      //   }
+      // );
 
-      const dictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId},{"words":{$slice: [(page - 1) * wordListLimit , wordListLimit]}});
-      if (!dictionary) {
+      const dictionaryAggregation = await Dictionary.aggregate([
+        {
+          $match: {
+            "language": language,
+            "ownerId": require('mongoose').Types.ObjectId(reqUserId)
+          },
+
+        },
+        {
+          $project: {
+            "wordsArr": {$slice: ["$words",(page - 1) * wordListLimit , wordListLimit]},
+            "wordsCount":{$size: "$words"}
+          }
+        }
+      ])
+
+      if (!dictionaryAggregation) {
         return res.status(400).json({message: "Словарь отсутствует"});
       }
 
-      return res.status(201).json({message: dictionary.words});
+      const dictionary = dictionaryAggregation[0];
+
+      return res.status(200).json({
+        words: dictionary.wordsArr,
+        pagesTotal: Math.ceil(dictionary.wordsCount / wordListLimit)
+      });
     } catch (e) {
       return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
     }
