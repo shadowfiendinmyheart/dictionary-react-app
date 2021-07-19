@@ -142,19 +142,31 @@ router.get('/getEngWord',
       const reqUserId = req.user.userId;
 
       //Поиск словаря
-      const dictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
-      if (!dictionary) {
+      const dictionaryAggregation = await Dictionary.aggregate([
+        {
+          $match: {
+            "language": language,
+            "ownerId": require('mongoose').Types.ObjectId(reqUserId)
+          }
+        },
+        {
+          $project: {
+            "words":{
+              $filter: {
+                input:"$words",
+                as:"word",
+                cond:{$eq: ["$$word.word", reqWord]}
+              }
+            }
+          }
+        }
+      ])
+      if (!dictionaryAggregation) {
         return res.status(400).json({message: "Словарь отсутствует"});
       }
 
-      //Поиск англ.слова
-      const findWordId = dictionary.words.findIndex(word => word.word === reqWord);
-      if (findWordId === -1) {
-        return res.status(400).json({message: "Слово отсутствует"});
-      }
-
       //Вовзвращение объекта: слово, перевод, картинка, статус, дата
-      return res.status(200).json({message: dictionary.words[findWordId]});
+      return res.status(200).json({message: dictionaryAggregation[0]});
     } catch (e) {
       return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
     }
@@ -183,6 +195,7 @@ router.post('/setCounter',
 
       //Поиск словаря
       const dictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
+
       if (!dictionary) {
         return res.status(400).json({message: "Словарь отсутствует"});
       }
@@ -221,16 +234,6 @@ router.get('/getWordsList',
 
       const page = req.query.page;
       const reqUserId = req.user.userId;
-      // const dictionary = await Dictionary.findOne(
-      //   {
-      //     "language": language,
-      //     "ownerId": reqUserId
-      //   },
-      //   {
-      //     words:{$slice: [(page - 1) * wordListLimit , wordListLimit]},
-      //     wordsCount: {$size: "$words"}
-      //   }
-      // );
 
       const dictionaryAggregation = await Dictionary.aggregate([
         {
