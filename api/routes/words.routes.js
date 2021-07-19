@@ -193,10 +193,10 @@ router.post('/setCounter',
         return res.status(400).json({message: "Слово отсутствует"});
       }
 
-      dictionary.words[findWordId].showCount = reqCount;
+      dictionary.words[findWordId].counter = reqCount;
 
       await dictionary.save();
-      return res.status(201).json({message: 'Словарь обновлен'});
+      return res.status(201).json({message: 'Счетчик обновлен'});
     } catch (e) {
       return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
     }
