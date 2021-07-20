@@ -1,6 +1,6 @@
 const {Schema, model} = require('mongoose');
 const Word = new Schema( {
-    word: {type: String, unique: true, index: true},
+    word: {type: String, index: true},
     translations: {type: [String], index: true},
     imageURL: {type: String, required: true},
     counter: {type: Number, default: 0},

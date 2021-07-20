@@ -8,8 +8,8 @@ const router = Router();
 
 router.post('/registration', 
   [
-    check('regNickname', 'Некорректный никнейм').notEmpty(),
-    check('regLogin', 'Некорректный логин').notEmpty(),
+    check('regNickname', 'Некорректный никнейм').notEmpty().isString(),
+    check('regLogin', 'Некорректный логин').notEmpty().isString(),
     check('regPassword', 'Некорректный пароль').isLength( { min: 6}),
   ],
   async (req, res) => {
@@ -24,12 +24,13 @@ router.post('/registration',
 
     const {regNickname, regLogin, regPassword, regPasswordRepeat} = req.body;
 
-    const findNickname = await User.findOne({ nickname: regNickname });
+    // const findNickname = await User.findOne({ nickname: regNickname });
     const findLogin = await User.findOne({ login: regLogin });
-    
-    if (findNickname) {
-      return res.status(400).json({ message: 'Пользователь с таким никнеймом уже существует' });
-    }
+
+    // if (findNickname) {
+    //   return res.status(400).json({ message: 'Пользователь с таким никнеймом уже существует' });
+    // }
+
     if (findLogin) {
       return res.status(400).json({ message: 'Пользователь с таким логином уже существует' });
     }
