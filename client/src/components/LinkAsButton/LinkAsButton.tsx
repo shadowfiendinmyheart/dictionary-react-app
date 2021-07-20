@@ -5,17 +5,17 @@ import cn from 'clsx';
 import styles from './LinkAsButton.module.scss';
 
 type LinkAsButtonProps = {
-  classNameGrid: string,
   text: string,
   to: string,
+  updateClassName?: string,
 }
 
 const LinkAsButton = (props: LinkAsButtonProps): React.ReactElement => {
 
-  const { classNameGrid, text, to } = props;
+  const { text, to, updateClassName } = props;
 
   return (
-    <div className={cn(classNameGrid, styles.container)}>
+    <div className={cn(updateClassName, styles.container)}>
       <NavLink className={styles.btn} to={to}>
         {text}
       </NavLink>

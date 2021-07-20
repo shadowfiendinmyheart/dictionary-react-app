@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import Card from '../../components/Card';
+import { sizeVariant } from '../../components/Card/Card';
 import InputForm from '../../components/InputForm';
 import Button from '../../components/Button';
 
@@ -52,7 +53,7 @@ const DictionaryPage = (): React.ReactElement => {
                 word={card.word}  
                 translate={card.word} 
                 url={card.imageURL}
-                size={'s'}
+                size={sizeVariant.s}
               />
         </div>
       ) 

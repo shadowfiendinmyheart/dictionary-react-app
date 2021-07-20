@@ -8,7 +8,7 @@ import styles from './LoginForm.module.scss';
 
 const LoginForm = (): React.ReactElement => {
   
-  const { loading, request, answer, clearAnswer } = useHttp();
+  const { loading, request, error, clearAnswer } = useHttp();
   const [form, setForm] = useState({
     authLogin: '',
     authPassword: '',
@@ -16,11 +16,11 @@ const LoginForm = (): React.ReactElement => {
   const { token, userId, login, logout, isAuth } = useContext(AuthContext);
 
   useEffect( () => {
-    if (answer) {
-      alert(answer); // Добавить нормальный вывод ошибки ! ! !
+    if (error) {
+      alert(error); // Добавить нормальный вывод ошибки ! ! !
       clearAnswer();
     }
-  }, [answer]);
+  }, [error]);
 
   const changeHandler = (event: React.ChangeEvent<HTMLInputElement>)  => {
     setForm({ ...form, [event.target.name]: event.target.value })
@@ -38,10 +38,10 @@ const LoginForm = (): React.ReactElement => {
   return(
     <form action={'/login'} method={'post'}>
       <div className={styles.container}>
-        <h2>LOGIN</h2>
+        <h2>Авторизация</h2>
         <InputForm type={'text'} placeholder={'Введите логин'} name={'authLogin'} onChange={changeHandler} />
         <InputForm type={'password'} placeholder={'Введите пароль'} name={'authPassword'} onChange={changeHandler} />
-        <Button type={'submit'} text={'Войти'} onClick={authHandler}/>
+        <Button type={'submit'} text={'Войти'} onClick={authHandler} disabled={loading} />
       </div>
     </form>
   )

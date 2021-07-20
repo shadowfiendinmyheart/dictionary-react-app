@@ -9,3 +9,12 @@
   background-color: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
 }
+
+@mixin mainContent() {
+  display: flex;
+  flex: 1 1 auto;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  padding: 20px;
+}

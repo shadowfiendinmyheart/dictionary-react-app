@@ -8,7 +8,9 @@ import Popup from '../../components/Popup';
 import AboutCard from './components/AboutCard';
 import SearchImage from './components/SearchImage';
 
-import styles from './AddWordPage.module.scss';
+import DynamicPagination from '../../components/DynamicPagination';
+
+import styles, { imageColumn } from './AddWordPage.module.scss';
 
 type imageType = {
   url: string;
@@ -29,6 +31,7 @@ const AddWordPage = ():React.ReactElement => {
   const [images, setImages] = useState<imageType[]>();
   const [pickedImage, setPickedImage] = useState<string>('');
   const [page, setPage] = useState<number>(1);
+  const [maxPage, setMaxPage] = useState<number>(2);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [isExistCard, setIsExistCard] = useState<boolean>(false);
   const [existCard, setExistCard] = useState<cardType>();
@@ -47,6 +50,10 @@ const AddWordPage = ():React.ReactElement => {
         {Authorization: `Bearer ${auth.token}`}
       );
 
+      setMaxPage(Number(imageList.headers['number-of-page']));
+      console.log("Number(imageList.headers['number-of-page'])", Number(imageList.headers['number-of-page']));
+      console.log('maxPage', maxPage);
+
       const images = imageList.message.map((img: string) => {
         return {url: img, active: false}
       })
@@ -62,6 +69,8 @@ const AddWordPage = ():React.ReactElement => {
     try {
       ev.preventDefault();
       ev.stopPropagation();
+      setPage(1);
+      setMaxPage(2);
       // тут будет эндпоинт на проверку карточки у пользователя 
       const checkCardExist = false;
       if (checkCardExist) {
@@ -81,7 +90,7 @@ const AddWordPage = ():React.ReactElement => {
         );
         inputTranslate.setValue(translateFromServer.message);
         inputImage.setValue(translateFromServer.message);
-        setImages(await getImages(inputWord.value, page));
+        setImages(await getImages(inputWord.value, 1));
       }
     } catch (e) {
       console.log('ERROR: ', e);
@@ -132,9 +141,7 @@ const AddWordPage = ():React.ReactElement => {
   }
 
   const imageTile = (images: imageType[], chunks: number) => {
-    const columns = [...Array(chunks)].map((_, c) => images.filter((_, i) => i % chunks === c)); 
-    console.log('columns', columns);
-    console.log('images', images);
+    const columns = [...Array(chunks)].map((_, c) => images.filter((_, i) => i % chunks === c));
     return columns.map(column => column.map(el=> {
       return (
         <SearchImage key={el.url} url={el.url} active={el.active} cb={() => {
@@ -149,6 +156,22 @@ const AddWordPage = ():React.ReactElement => {
         />
       )
     }))
+  }
+
+  const dynamicPaginationHandler = (): Promise<void | string> => {
+    return new Promise((res, rej) => {
+      const nextPage: Promise<void | string> = getImages(inputImage.value, page)
+        .then((res) => {
+          if (images && res) {
+            setImages([...images, ...res]);
+            setPage(prev => prev + 1);
+          }
+        })
+        .catch((rej) => `got error - ${rej}`);
+
+      res(nextPage);
+      rej(nextPage);
+    })
   }
 
   return (
@@ -186,9 +209,11 @@ const AddWordPage = ():React.ReactElement => {
         <Button onClick={searchImageHandler} text={'Найти ассоциацию'} disabled={loading} />
       </form>
       <div>
-        <div className={styles.wrapperPickImage}>
-          {images && imageTile(images, 3).map((column: JSX.Element[], index: number) => <div className={styles.imageColumn} key={`${index}-column`}>{column}</div>)}
-        </div>
+        <DynamicPagination onScrollEnd={dynamicPaginationHandler} currentPage={page} maxPage={maxPage}> 
+          <div className={styles.wrapperPickImage}>
+            {images && imageTile(images, 3).map((column: JSX.Element[], index: number) => <div className={styles.imageColumn} key={`${index}-column`}>{column}</div>)}
+          </div>
+        </DynamicPagination>
       </div>
       <Popup visible={showPopup} onClosePopup={() => setShowPopup(!showPopup)}>
         {(isExistCard && existCard) ? (
