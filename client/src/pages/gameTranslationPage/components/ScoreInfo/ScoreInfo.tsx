@@ -41,7 +41,7 @@ const ScoreInfo = (): React.ReactElement => {
                 <div className={styles.leftSide}>
                     {mockWords.map(mock => {
                         return (
-                            <div className={cn(mock.isAnswer ? styles.true : styles.false)}>
+                            <div className={cn(mock.isAnswer ? styles.true : styles.false)} key={mock.word}>
                                 <div>
                                     {mock.word}
                                 </div>
