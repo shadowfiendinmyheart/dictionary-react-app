@@ -9,7 +9,7 @@ const getTranslatedWord = require('../services/translate');
 
 const router = Router();
 const language = "eng";//Захардкодил
-const wordListLimit = 5;//Захардкодил
+const wordListLimit = 10;//Захардкодил
 
 // words/translate?word=
 // Получить перевод слова
@@ -48,7 +48,6 @@ router.post('/createDictionary', auth,
         })
       }
 
-      const {reqWord, reqTranslation, reqImageURL} = req.body;
       const reqUserId = req.user.userId;
 
       const findDictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
@@ -94,7 +93,6 @@ router.post('/saveTranslation',
 
       //Существует ли такое слово в словаре вообще
       const findWordId = dictionary.words.findIndex(word => word.word === reqWord);
-
       let word;
       if (findWordId > -1) {
         word = dictionary.words[findWordId];
@@ -106,10 +104,9 @@ router.post('/saveTranslation',
         }) - 1;
         word = dictionary.words[wordId];
       }
-
+      
       //Существует ли такой перевод слова
       const findTranslation = word.translations.find(word => word === reqTranslation);
-
       if (!findTranslation) {
         word.translations.push(reqTranslation);
       }
