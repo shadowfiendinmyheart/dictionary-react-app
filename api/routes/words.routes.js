@@ -9,6 +9,7 @@ const getTranslatedWord = require('../services/translate');
 
 const router = Router();
 const language = "eng";//Захардкодил
+const wordListLimit = 5;//Захардкодил
 
 // words/translate?word=
 // Получить перевод слова
@@ -93,7 +94,7 @@ router.post('/saveTranslation',
 
       //Существует ли такое слово в словаре вообще
       const findWordId = dictionary.words.findIndex(word => word.word === reqWord);
-      console.log(findWordId);
+
       let word;
       if (findWordId > -1) {
         word = dictionary.words[findWordId];
@@ -141,19 +142,31 @@ router.get('/getEngWord',
       const reqUserId = req.user.userId;
 
       //Поиск словаря
-      const dictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
-      if (!dictionary) {
+      const dictionaryAggregation = await Dictionary.aggregate([
+        {
+          $match: {
+            "language": language,
+            "ownerId": require('mongoose').Types.ObjectId(reqUserId)
+          }
+        },
+        {
+          $project: {
+            "words":{
+              $filter: {
+                input:"$words",
+                as:"word",
+                cond:{$eq: ["$$word.word", reqWord]}
+              }
+            }
+          }
+        }
+      ])
+      if (!dictionaryAggregation) {
         return res.status(400).json({message: "Словарь отсутствует"});
       }
 
-      //Поиск англ.слова
-      const findWordId = dictionary.words.findIndex(word => word.word === reqWord);
-      if (findWordId === -1) {
-        return res.status(400).json({message: "Слово отсутствует"});
-      }
-
       //Вовзвращение объекта: слово, перевод, картинка, статус, дата
-      return res.status(200).json({message: dictionary.words[findWordId]});
+      return res.status(200).json({message: dictionaryAggregation[0]});
     } catch (e) {
       return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
     }
@@ -182,6 +195,7 @@ router.post('/setCounter',
 
       //Поиск словаря
       const dictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
+
       if (!dictionary) {
         return res.status(400).json({message: "Словарь отсутствует"});
       }
@@ -202,4 +216,54 @@ router.post('/setCounter',
   }
 )
 
+//Получение списка слов постранично (5 на одну стр)
+router.get('/getWordsList',
+  [
+    check('page', 'Введите страницу').notEmpty().isNumeric(),
+    auth
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          errors: errors.array(),
+          message: 'Вы допустили ошибку . . .'
+        })
+      }
+
+      const page = req.query.page;
+      const reqUserId = req.user.userId;
+
+      const dictionaryAggregation = await Dictionary.aggregate([
+        {
+          $match: {
+            "language": language,
+            "ownerId": require('mongoose').Types.ObjectId(reqUserId)
+          },
+
+        },
+        {
+          $project: {
+            "wordsArr": {$slice: ["$words",(page - 1) * wordListLimit , wordListLimit]},
+            "wordsCount":{$size: "$words"}
+          }
+        }
+      ])
+
+      if (!dictionaryAggregation) {
+        return res.status(400).json({message: "Словарь отсутствует"});
+      }
+
+      const dictionary = dictionaryAggregation[0];
+
+      return res.status(200).json({
+        words: dictionary.wordsArr,
+        pagesTotal: Math.ceil(dictionary.wordsCount / wordListLimit)
+      });
+    } catch (e) {
+      return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
+    }
+  }
+)
 module.exports = router;
