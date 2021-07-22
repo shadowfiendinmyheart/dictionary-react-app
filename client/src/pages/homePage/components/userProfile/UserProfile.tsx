@@ -16,6 +16,8 @@ const UserProfile = (): React.ReactElement => {
   useEffect(() => {
     const setUserInfo = async () => {
       try {
+        console.log('auth.token', auth.token);
+
         const userInfo = await request(
           `user/info`,
           'GET',
@@ -24,8 +26,10 @@ const UserProfile = (): React.ReactElement => {
         );
         
         setUsername(userInfo.message.nickname);
-        setAllWords(userInfo.message.words.length);
-        setKnownWords(userInfo.message.words.length);
+        if (userInfo.message.words) {
+          setAllWords(userInfo.message.words.length);
+          setKnownWords(userInfo.message.words.length);
+        }
       } catch (e) {
         console.log('ERROR:', e);
       }

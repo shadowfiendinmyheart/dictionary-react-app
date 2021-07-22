@@ -31,7 +31,7 @@ const LoginForm = (): React.ReactElement => {
       ev.preventDefault();
       ev.stopPropagation();
       const data = await request('api/auth/login', 'POST', {...form});
-      login(data.token, data.userId);
+      login(data.accessToken, data.userId);
     } catch (e) {}
   }
 

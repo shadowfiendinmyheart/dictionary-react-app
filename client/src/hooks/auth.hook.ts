@@ -8,7 +8,6 @@ const useAuth = () => {
 
   const login = useCallback((jwtToken: string, id: string) => {
     setToken(jwtToken);
-    setUserId(id);
     
     localStorage.setItem(storageName, JSON.stringify({
       userId: id, token: jwtToken
@@ -17,19 +16,29 @@ const useAuth = () => {
 
   const logout = useCallback(() => {
     setToken(null);
-    setUserId(null);
 
     localStorage.removeItem(storageName);
   }, []);
 
+  const refreshToken = (token: string) => {
+    setToken(prev => token);
+
+    console.log('token', token);
+
+    localStorage.setItem(storageName, JSON.stringify({
+      token: token
+    }))
+  } 
+
   useEffect(() => {
     const data: {userId: string | null, token: string | null} = JSON.parse(localStorage.getItem(storageName) || '{}');
-    if (data && data.token && data.userId) {
-      login(data.token, data.userId);
+    console.log('data', data);
+    if (data && data.token) {
+      login(data.token, 'mock');
     }
   }, [login])
 
-  return { login, logout, token, userId }
+  return { login, logout, token, userId, refreshToken }
 }
 
 export default useAuth;

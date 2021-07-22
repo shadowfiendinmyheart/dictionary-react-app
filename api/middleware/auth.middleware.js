@@ -10,15 +10,15 @@ module.exports = (req, res, next) => {
         const token = req.headers.authorization.split(' ')[1];
 
         if(!token) {
-            return res.status(401).json({message: "Отказано в доступе"})
+            return res.status(401).json({message: "Отказано в доступе, нет токена"})
         }
 
-        const decoded = jwt.verify(token, config.get('jwtSecret'))
+        const decoded = jwt.verify(token, config.get('jwtAccessSecret'));
         
         req.user = decoded;
         next();
 
     } catch (e) {
-        return res.status(401).json({message: "Отказано в доступе"})
+        return res.status(401).json({message: "Отказано в доступе, произошла ошибка"})
     }
 }

@@ -134,6 +134,7 @@ const AddWordPage = ():React.ReactElement => {
 
     try {
       const images =  await getImages(inputImage.value, page);
+      console.log('images', images);
       setImages(images);
     } catch (e) {
       console.log('ERROR:', e);

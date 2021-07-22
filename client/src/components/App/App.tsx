@@ -13,6 +13,7 @@ import styles from './App.module.scss';
 function App():React.ReactElement {
   const { login, logout, token, userId } = useAuth();
   const isAuth = Boolean(token);
+  console.log('isAuth', isAuth);
   const router = useRoutes(isAuth);
 
   return (

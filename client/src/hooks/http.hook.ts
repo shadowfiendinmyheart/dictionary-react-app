@@ -1,8 +1,10 @@
 import { useState, useCallback } from 'react';
+import useAuth from './auth.hook';
 
 export const useHttp = () => {
   const [loading, setLoading] = useState<boolean>(false); 
   const [error, setError] = useState<string | null>(null);
+  const { refreshToken } = useAuth();
 
   const request = useCallback(async (
       url: string, 
@@ -20,11 +22,34 @@ export const useHttp = () => {
         const response: Response = await fetch(url, {method, body, headers});
         const data: any = await response.json();
         
+
+        if (response.status === 401) {
+          // const refresh = await fetch('api/auth/refresh', {'POST', {}, {}});
+          const refresh = await fetch('api/auth/refresh', {method: 'GET', headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+          }});
+          const answer = await refresh.json();
+
+          refreshToken(answer.tokens.accessToken);
+
+          const response: Response = await fetch(url, {method, body, headers: {...headers, 'Authorization': `Bearer ${answer.tokens.accessToken}`}});
+          const data: any = await response.json();
+        
+          const headersFromRes: any = {};
+          response.headers.forEach((value, name) => {
+            headersFromRes[name] = value;
+          });
+          data['headers'] = headersFromRes;
+
+          return data;
+          /* 
+          Authorization: `Bearer ${auth.token}`
+          */
+        }
+
         if (!response.ok) {
           throw new Error(data.message || 'Error . . .')
         }
-        
-        setLoading(false);
 
         const headersFromRes: any = {};
         response.headers.forEach((value, name) => {
@@ -34,9 +59,10 @@ export const useHttp = () => {
 
         return data;
       } catch (e) {
-        setLoading(false);
         setError(e.message);
         throw e;
+      } finally {
+        setLoading(false);
       }
     }, [])
 
