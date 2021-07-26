@@ -1,4 +1,6 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+import user from '../../store/user';
 import Card from '../../components/Card';
 import { sizeVariant } from '../../components/Card/Card';
 import InputForm from '../../components/InputForm';
@@ -6,7 +8,6 @@ import Button from '../../components/Button';
 import DynamicPagination from '../../components/DynamicPagination';
 
 import { useHttp } from '../../hooks/http.hook';
-import AuthContext from '../../context/AuthContext';
 
 import styles from './DictionaryPage.module.scss';
 
@@ -16,8 +17,7 @@ enum words {
   unknown
 }
 
-const DictionaryPage = (): React.ReactElement => {
-  const auth = useContext(AuthContext);
+const DictionaryPage = observer((): React.ReactElement => {
   const { request, loading } = useHttp();
 
   const [selectedWords, setSelectedWords] = useState<words>(words.all);
@@ -30,19 +30,13 @@ const DictionaryPage = (): React.ReactElement => {
     setSelectedWords(Number(ev.target.value));
   }
 
-  const getCards = async () => {
-    try {
-      const cards = await request(
-        `words/getWordsList?page=${page}`,
-        'GET',
-        null,
-        {Authorization: `Bearer ${auth.token}`}
-      );
-      console.log('cards', cards);
-      setCards(cards.words);
-    } catch (e) {
-      console.log('ERROR:', e);
-    }
+  const getCards = () => {
+    return request(
+      `words/getWordsList?page=${page}`,
+      'GET',
+      null,
+      {Authorization: `Bearer ${user.token}`}
+    );
   }
 
   useEffect(() => {
@@ -66,8 +60,8 @@ const DictionaryPage = (): React.ReactElement => {
     return new Promise((res, rej) => {
       const nextPage: Promise<void | string> = getCards()
         .then((res: any) => {
-            setCards([...cards, ...res]);
-            setPage(prev => prev + 1);
+          setCards([...cards, ...res.words]);
+          setPage(prev => prev + 1);
         })
         .catch((rej) => `got error - ${rej}`);
 
@@ -101,6 +95,6 @@ const DictionaryPage = (): React.ReactElement => {
       </div>
     </div>
   )
-}
+});
 
 export default DictionaryPage;

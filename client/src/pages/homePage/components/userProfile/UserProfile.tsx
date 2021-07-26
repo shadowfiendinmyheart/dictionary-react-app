@@ -1,12 +1,11 @@
-import React, { useEffect, useContext, useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
+import { observer } from 'mobx-react-lite';
 import { useHttp } from '../../../../hooks/http.hook';
-import AuthContext from '../../../../context/AuthContext';
+import user from '../../../../store/user';
 
 import styles from './UserProfile.module.scss';
 
-const UserProfile = (): React.ReactElement => {
-  const auth = useContext(AuthContext);
+const UserProfile = observer((): React.ReactElement => {
   const { request, loading } = useHttp();
   
   const [username, setUsername] = useState<string>();
@@ -16,13 +15,11 @@ const UserProfile = (): React.ReactElement => {
   useEffect(() => {
     const setUserInfo = async () => {
       try {
-        console.log('auth.token', auth.token);
-
         const userInfo = await request(
           `user/info`,
           'GET',
           null, 
-          {Authorization: `Bearer ${auth.token}`}
+          {Authorization: `Bearer ${user.token}`}
         );
         
         setUsername(userInfo.message.nickname);
@@ -36,7 +33,6 @@ const UserProfile = (): React.ReactElement => {
     }
     setUserInfo();
   }, [])
-
 
   // TODO: сделать loader для текста
   return (
@@ -64,6 +60,6 @@ const UserProfile = (): React.ReactElement => {
       </div>
     </div>
   );
-}
+});
 
 export default UserProfile;

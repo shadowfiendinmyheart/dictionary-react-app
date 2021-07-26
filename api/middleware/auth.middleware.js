@@ -17,7 +17,6 @@ module.exports = (req, res, next) => {
         
         req.user = decoded;
         next();
-
     } catch (e) {
         return res.status(401).json({message: "Отказано в доступе, произошла ошибка"})
     }

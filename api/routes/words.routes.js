@@ -54,8 +54,7 @@ router.post('/createDictionary', auth,
       if (findDictionary) {
         return res.status(400).json({message: "Словарь с таким языком уже существует"});
       }
-      const  dictionary = new Dictionary({language:language, ownerId: reqUserId});
-
+      const dictionary = new Dictionary({language:language, ownerId: reqUserId});
 
       await dictionary.save();
       return res.status(201).json({message: 'Словарь создан'});
@@ -248,7 +247,7 @@ router.get('/getWordsList',
         }
       ])
 
-      if (!dictionaryAggregation) {
+      if (!dictionaryAggregation[0]) {
         return res.status(400).json({message: "Словарь отсутствует"});
       }
 

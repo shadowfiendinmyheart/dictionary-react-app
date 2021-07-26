@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+
 import InputForm from '../../../../components/InputForm';
 import Button from '../../../../components/Button';
 import { useHttp } from '../../../../hooks/http.hook';
-import AuthContext from '../../../../context/AuthContext';
+import user from '../../../../store/user';
 
 import styles from './LoginForm.module.scss';
 
-const LoginForm = (): React.ReactElement => {
-  
+const LoginForm = observer((): React.ReactElement => {
   const { loading, request, error, clearAnswer } = useHttp();
   const [form, setForm] = useState({
     authLogin: '',
     authPassword: '',
   });
-  const { token, userId, login, logout, isAuth } = useContext(AuthContext);
 
   useEffect( () => {
     if (error) {
@@ -31,7 +31,7 @@ const LoginForm = (): React.ReactElement => {
       ev.preventDefault();
       ev.stopPropagation();
       const data = await request('api/auth/login', 'POST', {...form});
-      login(data.accessToken, data.userId);
+      user.login(data.accessToken);
     } catch (e) {}
   }
 
@@ -45,6 +45,6 @@ const LoginForm = (): React.ReactElement => {
       </div>
     </form>
   )
-};
+});
 
 export default LoginForm;

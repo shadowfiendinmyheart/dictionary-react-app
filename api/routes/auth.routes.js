@@ -1,13 +1,9 @@
 const {Router} = require('express');
 const bcrypt = require('bcryptjs');
-const config = require('config');
-const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
 const User = require('../models/User');
-const Token = require('../models/Token');
 const tokenService = require('../services/token');
 const auth = require('../middleware/auth.middleware');
-const token = require('../services/token');
 
 const router = Router();
 
@@ -113,6 +109,7 @@ router.post('/logout', [auth], async (req, res) => {
     res.status(200).json({ message: 'logout is success', token});
   } catch (e) {
     console.log('ERROR:', e);
+    res.status(500).json({ message: 'u broke the site . . .'})
   }
 });
 
@@ -146,6 +143,7 @@ router.get('/refresh', async (req, res) => {
     res.status(200).json({ message: 'refresh is success', tokens});
   } catch (e) {
     console.log('ERROR:', e);
+    res.status(500).json({ message: 'u broke the site . . .'});
   }
 });
 

@@ -14,7 +14,7 @@ const RegistrationPage = ():React.ReactElement => {
     regPasswordRepeat: '',
   });
 
-  useEffect( () => {
+  useEffect(() => {
     if (error) {
       alert(error); // Добавить нормальный вывод ошибки ! ! !
       clearAnswer();
@@ -29,15 +29,14 @@ const RegistrationPage = ():React.ReactElement => {
     try {
       ev.preventDefault();
       ev.stopPropagation();
-      await request('api/auth/registration', 'POST', {...form})
+      await request('api/auth/registration', 'POST', {...form});
     } catch (e) {}
   }
   
   return (
-    
       <div className={styles.container}>
         <h2>Регистрация</h2>
-        <form >
+        <form>
           <InputForm type={'text'} placeholder={'Введите никнейм'} name={'regNickname'} onChange={changeHandler} />
           <InputForm type={'text'} placeholder={'Придумайте логин'} name={'regLogin'} onChange={changeHandler} />
           <InputForm type={'password'} placeholder={'Придумайте пароль'} name={'regPassword'} onChange={changeHandler} />
@@ -45,7 +44,6 @@ const RegistrationPage = ():React.ReactElement => {
           <Button type={'submit'} text={'Зарегистрироваться'} onClick={registerHandler} disabled={loading} />
         </form>
       </div>
-   
   )
 };
 

@@ -1,7 +1,8 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import user from '../../store/user';
 import { useHttp } from '../../hooks/http.hook';
 import useInput from '../../hooks/input.hook';
-import AuthContext from '../../context/AuthContext';
 import InputForm from '../../components/InputForm';
 import Button from '../../components/Button';
 import Popup from '../../components/Popup';
@@ -10,7 +11,7 @@ import SearchImage from './components/SearchImage';
 
 import DynamicPagination from '../../components/DynamicPagination';
 
-import styles, { imageColumn } from './AddWordPage.module.scss';
+import styles from './AddWordPage.module.scss';
 
 type imageType = {
   url: string;
@@ -23,7 +24,7 @@ type cardType = {
   url: string;
 }
 
-const AddWordPage = ():React.ReactElement => {
+const AddWordPage = observer(():React.ReactElement => {
   const inputWord = useInput('');
   const inputTranslate = useInput('');
   const inputImage = useInput('');
@@ -37,7 +38,6 @@ const AddWordPage = ():React.ReactElement => {
   const [existCard, setExistCard] = useState<cardType>();
 
   const { loading, request } = useHttp();
-  const auth = useContext(AuthContext);
 
   const getImages = async (findImage: string, numberOfPage: number) => {
     if (!findImage) return;
@@ -47,7 +47,7 @@ const AddWordPage = ():React.ReactElement => {
         `images/list?search=${findImage}&page=${numberOfPage}`,
         'GET',
         null, 
-        {Authorization: `Bearer ${auth.token}`}
+        {Authorization: `Bearer ${user.token}`}
       );
 
       setMaxPage(Number(imageList.headers['number-of-page']));
@@ -71,7 +71,7 @@ const AddWordPage = ():React.ReactElement => {
       ev.stopPropagation();
       setPage(1);
       setMaxPage(2);
-      // тут будет эндпоинт на проверку карточки у пользователя 
+      // тут будет эндпоинт на проверку карточки у пользователя
       const checkCardExist = false;
       if (checkCardExist) {
         setShowPopup(true);
@@ -86,7 +86,7 @@ const AddWordPage = ():React.ReactElement => {
           `words/translate?word=${inputWord.value}`, 
           'GET', 
           null, 
-          {Authorization: `Bearer ${auth.token}`}
+          {Authorization: `Bearer ${user.token}`}
         );
         inputTranslate.setValue(translateFromServer.message);
         inputImage.setValue(translateFromServer.message);
@@ -106,6 +106,22 @@ const AddWordPage = ():React.ReactElement => {
 
     setShowPopup(true);
   }
+
+  const createDictionary = async () => {
+    try {
+      const create = await request(
+        'words/createDictionary', 
+        'POST', 
+        null, 
+        {Authorization: `Bearer ${user.token}`}
+      );
+      console.log(create);
+      return true;
+    } catch(e) {
+      console.log(e);
+      return false;
+    }
+  }
   
   const confirmClickHandler = async () => {
     try {
@@ -113,7 +129,7 @@ const AddWordPage = ():React.ReactElement => {
         'words/saveTranslation', 
         'POST', 
         {reqWord: inputWord.value, reqTranslation: inputTranslate.value, reqImageURL: pickedImage}, 
-        {Authorization: `Bearer ${auth.token}`}
+        {Authorization: `Bearer ${user.token}`}
       );
       console.log('done saveTranslateWord', saveTranslateWord);
 
@@ -123,6 +139,13 @@ const AddWordPage = ():React.ReactElement => {
       setImages([]);
       inputTranslate.setValue('');
     } catch (e) {
+      const code = Number(e.toString().split(' ')[1]);
+      if (code === 400) {
+        // TODO: когда будет готова реализация нескольких словарей,
+        // сделать попап с предложением создать словарь с новым языком
+        const isSuccess = await createDictionary();
+        if (isSuccess) confirmClickHandler();
+      }
       console.log('ERROR:', e);
     }  
   }
@@ -247,6 +270,6 @@ const AddWordPage = ():React.ReactElement => {
       </Popup>
     </div>
   )
-}
+});
 
 export default AddWordPage;

@@ -1,39 +1,47 @@
-import React, { useContext } from 'react';
+import React from 'react';
+import { observer } from 'mobx-react-lite';
+import { useHttp } from '../../hooks/http.hook';
 
 import Link from '../Link';
-import AuthContext from '../../context/AuthContext';
 import { ROUTES } from '../../constants/routes';
+import user from '../../store/user';
 
 import styles from './Header.module.scss';
 
-type headerProps = {
-  isAuth: boolean
-}
+const Header = observer(():React.ReactElement => {
+  const { loading, request } = useHttp();
 
-const Header = ( props: headerProps ):React.ReactElement => {
-  const { isAuth } = props;
+  const logoutHandler = async () => {
+    if (loading) return;
 
-  const { logout } = useContext(AuthContext);
+    try {
+      const data = await request('api/auth/logout', 'POST', null, {Authorization: `Bearer ${user.token}`});
+      console.log('logout', data);
+      user.logout();
+    } catch(e) {
+      console.log('error', e);
+    }
+  }
 
   return (
     <header className={styles.container}>
       <div className={styles.logo}>
         <img className={styles.logoImage} alt={'header logo'} src={"https://freepngimg.com/thumb/book/37064-8-book-hd.png"}></img>
       </div>
-      {isAuth && (
+      {user.isAuth && (
         <nav className={styles.navigation}>
           <ul className={styles.list}>
             <li className={styles.elem}>
               <Link href={ROUTES.HOME_PAGE} text="Домой" />
             </li>
             <li className={styles.elem}>
-              <Link href={ROUTES.WELCOME_PAGE} text="Выйти" onClick={logout} />
+              <Link href={ROUTES.WELCOME_PAGE} text="Выйти" onClick={logoutHandler} />
             </li>
           </ul>
         </nav>
       )}
     </header>
   )
-};
+});
 
 export default Header;

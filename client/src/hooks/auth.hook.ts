@@ -23,8 +23,6 @@ const useAuth = () => {
   const refreshToken = (token: string) => {
     setToken(prev => token);
 
-    console.log('token', token);
-
     localStorage.setItem(storageName, JSON.stringify({
       token: token
     }))
@@ -32,7 +30,6 @@ const useAuth = () => {
 
   useEffect(() => {
     const data: {userId: string | null, token: string | null} = JSON.parse(localStorage.getItem(storageName) || '{}');
-    console.log('data', data);
     if (data && data.token) {
       login(data.token, 'mock');
     }
