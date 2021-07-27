@@ -1,12 +1,15 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import user from '../../store/user';
 import { useHttp } from '../../hooks/http.hook';
 import useInput from '../../hooks/input.hook';
-import AuthContext from '../../context/AuthContext';
 import InputForm from '../../components/InputForm';
 import Button from '../../components/Button';
 import Popup from '../../components/Popup';
 import AboutCard from './components/AboutCard';
 import SearchImage from './components/SearchImage';
+
+import DynamicPagination from '../../components/DynamicPagination';
 
 import styles from './AddWordPage.module.scss';
 
@@ -21,20 +24,20 @@ type cardType = {
   url: string;
 }
 
-const AddWordPage = ():React.ReactElement => {
+const AddWordPage = observer(():React.ReactElement => {
   const inputWord = useInput('');
   const inputTranslate = useInput('');
   const inputImage = useInput('');
 
   const [images, setImages] = useState<imageType[]>();
   const [pickedImage, setPickedImage] = useState<string>('');
-  const [page, setPage] = useState<number>(1);
+  const [page, setPage] = useState<number>(2);
+  const [maxPage, setMaxPage] = useState<number>(3);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [isExistCard, setIsExistCard] = useState<boolean>(false);
   const [existCard, setExistCard] = useState<cardType>();
 
   const { loading, request } = useHttp();
-  const auth = useContext(AuthContext);
 
   const getImages = async (findImage: string, numberOfPage: number) => {
     if (!findImage) return;
@@ -44,9 +47,11 @@ const AddWordPage = ():React.ReactElement => {
         `images/list?search=${findImage}&page=${numberOfPage}`,
         'GET',
         null, 
-        {Authorization: `Bearer ${auth.token}`}
+        {Authorization: `Bearer ${user.token}`}
       );
 
+      setMaxPage(Number(imageList.headers['number-of-page']));
+      
       const images = imageList.message.map((img: string) => {
         return {url: img, active: false}
       })
@@ -62,26 +67,35 @@ const AddWordPage = ():React.ReactElement => {
     try {
       ev.preventDefault();
       ev.stopPropagation();
-      // тут будет эндпоинт на проверку карточки у пользователя 
-      const checkCardExist = false;
-      if (checkCardExist) {
+      setPage(2);
+      setMaxPage(3);
+      // тут будет эндпоинт на проверку карточки у пользователя
+      const checkCardExist = await request(
+        `words/getEngWord?reqWord=${inputWord.value}`, 
+        'GET', 
+        null, 
+        {Authorization: `Bearer ${user.token}`}
+      );
+
+      if (checkCardExist.message?.word) {
+        const card = checkCardExist.message;
         setShowPopup(true);
         setIsExistCard(true);
         setExistCard({
-          word: 'mock',
-          translate: 'cock',
-          url: 'https://i.ytimg.com/vi/1Ne1hqOXKKI/maxresdefault.jpg'
+          word: card.word,
+          translate: card.translations[0],
+          url: card.imageURL
         })
       } else {
         const translateFromServer = await request(
           `words/translate?word=${inputWord.value}`, 
           'GET', 
           null, 
-          {Authorization: `Bearer ${auth.token}`}
+          {Authorization: `Bearer ${user.token}`}
         );
         inputTranslate.setValue(translateFromServer.message);
         inputImage.setValue(translateFromServer.message);
-        setImages(await getImages(inputWord.value, page));
+        setImages(await getImages(translateFromServer.message, 1));
       }
     } catch (e) {
       console.log('ERROR: ', e);
@@ -97,6 +111,22 @@ const AddWordPage = ():React.ReactElement => {
 
     setShowPopup(true);
   }
+
+  const createDictionary = async () => {
+    try {
+      const create = await request(
+        'words/createDictionary', 
+        'POST', 
+        null, 
+        {Authorization: `Bearer ${user.token}`}
+      );
+      console.log(create);
+      return true;
+    } catch(e) {
+      console.log(e);
+      return false;
+    }
+  }
   
   const confirmClickHandler = async () => {
     try {
@@ -104,7 +134,7 @@ const AddWordPage = ():React.ReactElement => {
         'words/saveTranslation', 
         'POST', 
         {reqWord: inputWord.value, reqTranslation: inputTranslate.value, reqImageURL: pickedImage}, 
-        {Authorization: `Bearer ${auth.token}`}
+        {Authorization: `Bearer ${user.token}`}
       );
       console.log('done saveTranslateWord', saveTranslateWord);
 
@@ -114,6 +144,13 @@ const AddWordPage = ():React.ReactElement => {
       setImages([]);
       inputTranslate.setValue('');
     } catch (e) {
+      const code = Number(e.toString().split(' ')[1]);
+      if (code === 400) {
+        // TODO: когда будет готова реализация нескольких словарей,
+        // сделать попап с предложением создать словарь с новым языком
+        const isSuccess = await createDictionary();
+        if (isSuccess) confirmClickHandler();
+      }
       console.log('ERROR:', e);
     }  
   }
@@ -132,9 +169,7 @@ const AddWordPage = ():React.ReactElement => {
   }
 
   const imageTile = (images: imageType[], chunks: number) => {
-    const columns = [...Array(chunks)].map((_, c) => images.filter((_, i) => i % chunks === c)); 
-    console.log('columns', columns);
-    console.log('images', images);
+    const columns = [...Array(chunks)].map((_, c) => images.filter((_, i) => i % chunks === c));
     return columns.map(column => column.map(el=> {
       return (
         <SearchImage key={el.url} url={el.url} active={el.active} cb={() => {
@@ -149,6 +184,22 @@ const AddWordPage = ():React.ReactElement => {
         />
       )
     }))
+  }
+
+  const dynamicPaginationHandler = (): Promise<void | string> => {
+    return new Promise((res, rej) => {
+      const nextPage: Promise<void | string> = getImages(inputImage.value, page)
+        .then((res) => {
+          if (images && res) {
+            setImages([...images, ...res]);
+            setPage(prev => prev + 1);
+          }
+        })
+        .catch((rej) => `got error - ${rej}`);
+
+      res(nextPage);
+      rej(nextPage);
+    })
   }
 
   return (
@@ -186,9 +237,11 @@ const AddWordPage = ():React.ReactElement => {
         <Button onClick={searchImageHandler} text={'Найти ассоциацию'} disabled={loading} />
       </form>
       <div>
-        <div className={styles.wrapperPickImage}>
-          {images && imageTile(images, 3).map((column: JSX.Element[], index: number) => <div className={styles.imageColumn} key={`${index}-column`}>{column}</div>)}
-        </div>
+        <DynamicPagination onScrollEnd={dynamicPaginationHandler} currentPage={page} maxPage={maxPage}> 
+          <div className={styles.wrapperPickImage}>
+            {images && imageTile(images, 3).map((column: JSX.Element[], index: number) => <div className={styles.imageColumn} key={`${index}-column`}>{column}</div>)}
+          </div>
+        </DynamicPagination>
       </div>
       <Popup visible={showPopup} onClosePopup={() => setShowPopup(!showPopup)}>
         {(isExistCard && existCard) ? (
@@ -196,9 +249,13 @@ const AddWordPage = ():React.ReactElement => {
             title={'У вас уже есть карточка с таким словом. Редактировать ?'}
             card={{...existCard}} 
             loading={loading}
-            onCancelClick={() => setShowPopup(!showPopup)} 
+            onCancelClick={() => {
+              setShowPopup(!showPopup);
+              setIsExistCard(false);
+            }} 
             onConfirmClick={async () => {
               setShowPopup(!showPopup)
+              setIsExistCard(false);
               inputTranslate.setValue(existCard.translate);
               inputImage.setValue(existCard.word);
               try {
@@ -221,6 +278,6 @@ const AddWordPage = ():React.ReactElement => {
       </Popup>
     </div>
   )
-}
+});
 
 export default AddWordPage;

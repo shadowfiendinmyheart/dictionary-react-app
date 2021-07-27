@@ -1,10 +1,13 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+import user from '../../store/user';
 import Card from '../../components/Card';
+import { sizeVariant } from '../../components/Card/Card';
 import InputForm from '../../components/InputForm';
 import Button from '../../components/Button';
+import DynamicPagination from '../../components/DynamicPagination';
 
 import { useHttp } from '../../hooks/http.hook';
-import AuthContext from '../../context/AuthContext';
 
 import styles from './DictionaryPage.module.scss';
 
@@ -14,48 +17,54 @@ enum words {
   unknown
 }
 
-const DictionaryPage = (): React.ReactElement => {
-  const auth = useContext(AuthContext);
+const DictionaryPage = observer((): React.ReactElement => {
   const { request, loading } = useHttp();
 
   const [selectedWords, setSelectedWords] = useState<words>(words.all);
   const [searchWord, setSearchWord] = useState<string>('');
-  const [cards, setCards] = useState<[]>([]);
+  const [cards, setCards] = useState<{word: string, translations: string[], imageURL: string}[]>([]);
+  const [page, setPage] = useState<number>(1);
+  const [maxPage, setMaxPage] = useState<number>(2);
 
   const handleSelectChange = (ev: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedWords(Number(ev.target.value));
   }
 
-  useEffect(() => {
-    const getCards = async () => {
-      try {
-        const userInfo = await request(
-          `user/info`,
-          'GET',
-          null, 
-          {Authorization: `Bearer ${auth.token}`}
-        );
-  
-        setCards(userInfo.message.words);
-      } catch (e) {
-        console.log('ERROR:', e);
-      }
-    }
+  const getCards = () => {
+    return request(
+      `words/getWordsList?page=${page}`,
+      'GET',
+      null,
+      {Authorization: `Bearer ${user.token}`}
+    );
+  }
 
-    getCards();
-  }, [selectedWords]);
-
-  const cardsElem = (cards: any[]) => {
+  const cardsElem = (cards: {word: string, translations: string[], imageURL: string}[]) => {
       return cards.map(card => 
         <div className={styles.card} key={card.word}>
           <Card 
                 word={card.word}  
-                translate={card.word} 
+                translate={card.translations[0]} 
                 url={card.imageURL}
-                size={'s'}
+                size={sizeVariant.s}
               />
         </div>
       ) 
+  }
+
+  const dynamicPaginationHandler = (): Promise<void | string> => {
+    return new Promise((res, rej) => {
+      const nextPage: Promise<void | string> = getCards()
+        .then((res: any) => {
+          setCards([...cards, ...res.words]);
+          setPage(prev => prev + 1);
+          setMaxPage(res.pagesTotal);
+        })
+        .catch((rej) => `got error - ${rej}`);
+
+      res(nextPage);
+      rej(nextPage);
+    })
   }
 
   return (
@@ -77,10 +86,12 @@ const DictionaryPage = (): React.ReactElement => {
       </form>
 
       <div className={styles.cardsWrapper}>
-        {cardsElem(cards)}
+        <DynamicPagination currentPage={page} maxPage={maxPage} onScrollEnd={dynamicPaginationHandler}>
+          {cardsElem(cards)}
+        </DynamicPagination>
       </div>
     </div>
   )
-}
+});
 
 export default DictionaryPage;

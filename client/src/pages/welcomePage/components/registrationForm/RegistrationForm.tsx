@@ -6,7 +6,7 @@ import { useHttp } from '../../../../hooks/http.hook';
 import styles from './RegistrationForm.module.scss';
 
 const RegistrationPage = ():React.ReactElement => {
-  const { loading, request, answer, clearAnswer } = useHttp();
+  const { loading, request, error, clearAnswer } = useHttp();
   const [form, setForm] = useState({
     regNickname: '',
     regLogin: '',
@@ -14,12 +14,12 @@ const RegistrationPage = ():React.ReactElement => {
     regPasswordRepeat: '',
   });
 
-  useEffect( () => {
-    if (answer) {
-      alert(answer); // Добавить нормальный вывод ошибки ! ! !
+  useEffect(() => {
+    if (error) {
+      alert(error); // Добавить нормальный вывод ошибки ! ! !
       clearAnswer();
     }
-  }, [answer]);
+  }, [error]);
 
   const changeHandler = (event: React.ChangeEvent<HTMLInputElement>)  => {
     setForm({ ...form, [event.target.name]: event.target.value })
@@ -29,23 +29,21 @@ const RegistrationPage = ():React.ReactElement => {
     try {
       ev.preventDefault();
       ev.stopPropagation();
-      await request('api/auth/registration', 'POST', {...form})
+      await request('api/auth/registration', 'POST', {...form});
     } catch (e) {}
   }
   
   return (
-    
       <div className={styles.container}>
-        <h2>REGISTRATION</h2>
-        <form >
+        <h2>Регистрация</h2>
+        <form>
           <InputForm type={'text'} placeholder={'Введите никнейм'} name={'regNickname'} onChange={changeHandler} />
           <InputForm type={'text'} placeholder={'Придумайте логин'} name={'regLogin'} onChange={changeHandler} />
           <InputForm type={'password'} placeholder={'Придумайте пароль'} name={'regPassword'} onChange={changeHandler} />
           <InputForm type={'password'} placeholder={'Повторите пароль'} name={'regPasswordRepeat'} onChange={changeHandler} />
-          <Button type={'submit'} text={'Зарегистрироваться'} onClick={registerHandler} />
+          <Button type={'submit'} text={'Зарегистрироваться'} onClick={registerHandler} disabled={loading} />
         </form>
       </div>
-   
   )
 };
 

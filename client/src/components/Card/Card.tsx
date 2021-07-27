@@ -3,11 +3,17 @@ import cn from 'clsx';
 
 import styles from './Card.module.scss';
 
+export enum sizeVariant {
+    s = '250px',
+    m = '500px',
+    l = '750px'
+}
+
 interface cardProps {
     word: string;
     translate: string;
     url: string;
-    size?: 's' | 'm' | 'l';
+    size?: sizeVariant;
 }
 
 
@@ -15,25 +21,10 @@ const Card = (props: cardProps): React.ReactElement => {
     const { word, translate, url, size } = props;
 
     const [roll, setRoll] = useState(false);
-
-    let px;
-    switch (size) {
-        case 's':
-            px = '250px'
-            break
-        case 'm':
-            px = '500px'
-            break
-        case 'l':
-            px = '750px'
-            break
-        default:
-            px = '500px'
-    }
     
     const wrapperStyle = {
-        width: px,
-        height: px,
+        width: size,
+        height: size,
     }
 
     return (

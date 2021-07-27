@@ -1,10 +1,12 @@
 const express = require('express');
 const config = require('config');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
 app.use(express.json({ extended: true }));
+app.use(cookieParser());
 
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/words', require('./routes/words.routes'));

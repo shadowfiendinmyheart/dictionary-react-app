@@ -2,13 +2,8 @@
 @import '../../assets/styles/mixins';
 
 .wrapper {  
-  display: flex;
-  flex: 1 1 auto;
+  @include mainContent();
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 80%;
-  padding: 20px;
 }
 
 .formWrapper {
