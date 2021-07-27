@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import user from '../store/user';
 
 export const useHttp = () => {
   const [loading, setLoading] = useState<boolean>(false); 
@@ -20,11 +21,38 @@ export const useHttp = () => {
         const response: Response = await fetch(url, {method, body, headers});
         const data: any = await response.json();
         
-        if (!response.ok) {
-          throw new Error(data.message || 'Error . . .')
+
+        if (response.status === 401) {
+          const refresh = await fetch('api/auth/refresh', {method: 'GET', headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+          }});
+
+          const answer = await refresh.json();
+          if (!refresh.ok) {
+            return new Error(answer.message || 'Error . . .')
+          }
+
+          user.refresh(answer.tokens.accessToken);
+
+          const response: Response = await fetch(url, {method, body, headers: {...headers, Authorization: `Bearer ${user.token}`}});
+          const data: any = await response.json();
+
+          if (!response.ok) {
+            return new Error(data.message || 'Error . . .')
+          }
+  
+          const headersFromRes: any = {};
+          response.headers.forEach((value, name) => {
+            headersFromRes[name] = value;
+          });
+          data['headers'] = headersFromRes;
+  
+          return data;
         }
-        
-        setLoading(false);
+
+        if (!response.ok) {
+          throw new Error(`${response.status} ${data.message}` || 'Error . . .')
+        }
 
         const headersFromRes: any = {};
         response.headers.forEach((value, name) => {
@@ -34,9 +62,10 @@ export const useHttp = () => {
 
         return data;
       } catch (e) {
-        setLoading(false);
         setError(e.message);
         throw e;
+      } finally {
+        setLoading(false);
       }
     }, [])
 

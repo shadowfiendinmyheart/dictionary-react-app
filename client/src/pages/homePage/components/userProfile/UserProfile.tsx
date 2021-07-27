@@ -1,12 +1,11 @@
-import React, { useEffect, useContext, useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
+import { observer } from 'mobx-react-lite';
 import { useHttp } from '../../../../hooks/http.hook';
-import AuthContext from '../../../../context/AuthContext';
+import user from '../../../../store/user';
 
 import styles from './UserProfile.module.scss';
 
-const UserProfile = (): React.ReactElement => {
-  const auth = useContext(AuthContext);
+const UserProfile = observer((): React.ReactElement => {
   const { request, loading } = useHttp();
   
   const [username, setUsername] = useState<string>();
@@ -20,19 +19,20 @@ const UserProfile = (): React.ReactElement => {
           `user/info`,
           'GET',
           null, 
-          {Authorization: `Bearer ${auth.token}`}
+          {Authorization: `Bearer ${user.token}`}
         );
         
         setUsername(userInfo.message.nickname);
-        setAllWords(userInfo.message.words.length);
-        setKnownWords(userInfo.message.words.length);
+        if (userInfo.message.words) {
+          setAllWords(userInfo.message.words.length);
+          setKnownWords(userInfo.message.words.length);
+        }
       } catch (e) {
         console.log('ERROR:', e);
       }
     }
     setUserInfo();
   }, [])
-
 
   // TODO: сделать loader для текста
   return (
@@ -60,6 +60,6 @@ const UserProfile = (): React.ReactElement => {
       </div>
     </div>
   );
-}
+});
 
 export default UserProfile;

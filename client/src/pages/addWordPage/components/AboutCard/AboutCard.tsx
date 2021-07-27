@@ -24,7 +24,7 @@ const AboutCard = (props: aboutCardProps): React.ReactElement => {
     return (
         <div className={styles.wrapper}>
             <h3 className={styles.header}>{title}</h3>
-            <Card word={word} translate={translate} url={url} size={sizeVariant.s} />
+            <Card word={word} translate={translate} url={url} size={sizeVariant.m} />
             <div className={styles.buttonsWrapper}>
                 {loading ? (<Loader />) : (
                     <>

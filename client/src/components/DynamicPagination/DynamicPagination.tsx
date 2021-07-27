@@ -4,7 +4,7 @@ type DynamicPaginationProps = {
     onScrollEnd: () => Promise<void | string>;
     currentPage: number;
     maxPage: number;
-    children: JSX.Element;
+    children: JSX.Element | JSX.Element[];
 }
 
 const DynamicPagination = (props: DynamicPaginationProps): React.ReactElement => {

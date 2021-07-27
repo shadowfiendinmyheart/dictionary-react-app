@@ -9,7 +9,7 @@ const getTranslatedWord = require('../services/translate');
 
 const router = Router();
 const language = "eng";//Захардкодил
-const wordListLimit = 5;//Захардкодил
+const wordListLimit = 10;//Захардкодил
 
 // words/translate?word=
 // Получить перевод слова
@@ -48,15 +48,13 @@ router.post('/createDictionary', auth,
         })
       }
 
-      const {reqWord, reqTranslation, reqImageURL} = req.body;
       const reqUserId = req.user.userId;
 
       const findDictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
       if (findDictionary) {
         return res.status(400).json({message: "Словарь с таким языком уже существует"});
       }
-      const  dictionary = new Dictionary({language:language, ownerId: reqUserId});
-
+      const dictionary = new Dictionary({language:language, ownerId: reqUserId});
 
       await dictionary.save();
       return res.status(201).json({message: 'Словарь создан'});
@@ -94,8 +92,9 @@ router.post('/saveTranslation',
 
       //Существует ли такое слово в словаре вообще
       const findWordId = dictionary.words.findIndex(word => word.word === reqWord);
-
       let word;
+
+      
       if (findWordId > -1) {
         word = dictionary.words[findWordId];
       } else {
@@ -109,7 +108,6 @@ router.post('/saveTranslation',
 
       //Существует ли такой перевод слова
       const findTranslation = word.translations.find(word => word === reqTranslation);
-
       if (!findTranslation) {
         word.translations.push(reqTranslation);
       }
@@ -161,12 +159,13 @@ router.get('/getEngWord',
           }
         }
       ])
-      if (!dictionaryAggregation) {
+
+      if (!dictionaryAggregation[0]) {
         return res.status(400).json({message: "Словарь отсутствует"});
       }
 
       //Вовзвращение объекта: слово, перевод, картинка, статус, дата
-      return res.status(200).json({message: dictionaryAggregation[0]});
+      return res.status(200).json({message: dictionaryAggregation[0].words[0]});
     } catch (e) {
       return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
     }
@@ -251,7 +250,7 @@ router.get('/getWordsList',
         }
       ])
 
-      if (!dictionaryAggregation) {
+      if (!dictionaryAggregation[0]) {
         return res.status(400).json({message: "Словарь отсутствует"});
       }
 
