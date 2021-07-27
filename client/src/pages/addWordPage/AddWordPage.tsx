@@ -51,9 +51,7 @@ const AddWordPage = observer(():React.ReactElement => {
       );
 
       setMaxPage(Number(imageList.headers['number-of-page']));
-      console.log("Number(imageList.headers['number-of-page'])", Number(imageList.headers['number-of-page']));
-      console.log('maxPage', maxPage);
-
+      
       const images = imageList.message.map((img: string) => {
         return {url: img, active: false}
       })
@@ -72,14 +70,21 @@ const AddWordPage = observer(():React.ReactElement => {
       setPage(1);
       setMaxPage(2);
       // тут будет эндпоинт на проверку карточки у пользователя
-      const checkCardExist = false;
-      if (checkCardExist) {
+      const checkCardExist = await request(
+        `words/getEngWord?reqWord=${inputWord.value}`, 
+        'GET', 
+        null, 
+        {Authorization: `Bearer ${user.token}`}
+      );
+
+      if (checkCardExist.message?.word) {
+        const card = checkCardExist.message;
         setShowPopup(true);
         setIsExistCard(true);
         setExistCard({
-          word: 'mock',
-          translate: 'cock',
-          url: 'https://i.ytimg.com/vi/1Ne1hqOXKKI/maxresdefault.jpg'
+          word: card.word,
+          translate: card.translations[0],
+          url: card.imageURL
         })
       } else {
         const translateFromServer = await request(
@@ -248,6 +253,7 @@ const AddWordPage = observer(():React.ReactElement => {
             onCancelClick={() => setShowPopup(!showPopup)} 
             onConfirmClick={async () => {
               setShowPopup(!showPopup)
+              setIsExistCard(false);
               inputTranslate.setValue(existCard.translate);
               inputImage.setValue(existCard.word);
               try {

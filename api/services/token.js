@@ -4,8 +4,8 @@ const config = require('config');
 
 class TokenService {
     generateTokens(payload) {
-        const accessToken = jwt.sign(payload, config.get('jwtAccessSecret'), {expiresIn: '15s'})
-        const refreshToken = jwt.sign(payload, config.get('jwtRefreshSecret'), {expiresIn: '30s'})
+        const accessToken = jwt.sign(payload, config.get('jwtAccessSecret'), {expiresIn: '1h'});
+        const refreshToken = jwt.sign(payload, config.get('jwtRefreshSecret'), {expiresIn: '30d'});
         return {
             accessToken,
             refreshToken
@@ -31,22 +31,22 @@ class TokenService {
     }
 
     async saveToken(userId, refreshToken) {
-        const tokenData = await Token.findOne({user: userId})
+        const tokenData = await Token.findOne({user: userId});
         if (tokenData) {
             tokenData.refreshToken = refreshToken;
             return tokenData.save();
         }
-        const token = await Token.create({user: userId, refreshToken})
+        const token = await Token.create({user: userId, refreshToken});
         return token;
     }
 
     async removeToken(refreshToken) {
-        const tokenData = await Token.deleteOne({refreshToken})
+        const tokenData = await Token.deleteOne({refreshToken});
         return tokenData;
     }
 
     async findToken(refreshToken) {
-        const tokenData = await Token.findOne({refreshToken})
+        const tokenData = await Token.findOne({refreshToken});
         return tokenData;
     }
 }

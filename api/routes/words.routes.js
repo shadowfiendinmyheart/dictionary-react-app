@@ -93,6 +93,8 @@ router.post('/saveTranslation',
       //Существует ли такое слово в словаре вообще
       const findWordId = dictionary.words.findIndex(word => word.word === reqWord);
       let word;
+
+      
       if (findWordId > -1) {
         word = dictionary.words[findWordId];
       } else {
@@ -103,7 +105,7 @@ router.post('/saveTranslation',
         }) - 1;
         word = dictionary.words[wordId];
       }
-      
+
       //Существует ли такой перевод слова
       const findTranslation = word.translations.find(word => word === reqTranslation);
       if (!findTranslation) {
@@ -157,12 +159,13 @@ router.get('/getEngWord',
           }
         }
       ])
-      if (!dictionaryAggregation) {
+
+      if (!dictionaryAggregation[0]) {
         return res.status(400).json({message: "Словарь отсутствует"});
       }
 
       //Вовзвращение объекта: слово, перевод, картинка, статус, дата
-      return res.status(200).json({message: dictionaryAggregation[0]});
+      return res.status(200).json({message: dictionaryAggregation[0].words[0]});
     } catch (e) {
       return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
     }
