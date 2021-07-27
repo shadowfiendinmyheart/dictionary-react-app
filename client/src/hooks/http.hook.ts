@@ -26,7 +26,11 @@ export const useHttp = () => {
           const refresh = await fetch('api/auth/refresh', {method: 'GET', headers: {
             'Content-Type': 'application/json;charset=utf-8'
           }});
+
           const answer = await refresh.json();
+          if (!refresh.ok) {
+            return new Error(answer.message || 'Error . . .')
+          }
 
           user.refresh(answer.tokens.accessToken);
 
@@ -34,7 +38,7 @@ export const useHttp = () => {
           const data: any = await response.json();
 
           if (!response.ok) {
-            throw new Error(data.message || 'Error . . .')
+            return new Error(data.message || 'Error . . .')
           }
   
           const headersFromRes: any = {};

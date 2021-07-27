@@ -5,7 +5,7 @@ const storageName = 'token';
 class User {
     token: string = localStorage.getItem(storageName) || '';
     name: string = '';
-    isAuth: boolean = Boolean(this.token);
+    isAuth: boolean = false;
     
     constructor() {
         makeAutoObservable(this);
@@ -41,6 +41,23 @@ class User {
         this.setToken(token);
 
         localStorage.setItem(storageName, this.token);
+    }
+
+    async checkAuth() {
+        if (!localStorage.getItem(storageName)) return;
+
+        try {
+            const check = await fetch('api/auth/refresh', {method: 'GET', headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            }});
+
+            if (!check.ok) {
+                throw new Error('not auth');
+            }
+            this.setAuth(true);
+        } catch (e) {
+            console.log(e);
+        }
     }
 
 }
