@@ -39,10 +39,6 @@ const DictionaryPage = observer((): React.ReactElement => {
     );
   }
 
-  useEffect(() => {
-    getCards();
-  }, [selectedWords]);
-
   const cardsElem = (cards: {word: string, translations: string[], imageURL: string}[]) => {
       return cards.map(card => 
         <div className={styles.card} key={card.word}>
@@ -62,6 +58,7 @@ const DictionaryPage = observer((): React.ReactElement => {
         .then((res: any) => {
           setCards([...cards, ...res.words]);
           setPage(prev => prev + 1);
+          setMaxPage(res.pagesTotal);
         })
         .catch((rej) => `got error - ${rej}`);
 

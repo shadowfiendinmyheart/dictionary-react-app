@@ -31,8 +31,8 @@ const AddWordPage = observer(():React.ReactElement => {
 
   const [images, setImages] = useState<imageType[]>();
   const [pickedImage, setPickedImage] = useState<string>('');
-  const [page, setPage] = useState<number>(1);
-  const [maxPage, setMaxPage] = useState<number>(2);
+  const [page, setPage] = useState<number>(2);
+  const [maxPage, setMaxPage] = useState<number>(3);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [isExistCard, setIsExistCard] = useState<boolean>(false);
   const [existCard, setExistCard] = useState<cardType>();
@@ -67,8 +67,8 @@ const AddWordPage = observer(():React.ReactElement => {
     try {
       ev.preventDefault();
       ev.stopPropagation();
-      setPage(1);
-      setMaxPage(2);
+      setPage(2);
+      setMaxPage(3);
       // тут будет эндпоинт на проверку карточки у пользователя
       const checkCardExist = await request(
         `words/getEngWord?reqWord=${inputWord.value}`, 
@@ -95,7 +95,7 @@ const AddWordPage = observer(():React.ReactElement => {
         );
         inputTranslate.setValue(translateFromServer.message);
         inputImage.setValue(translateFromServer.message);
-        setImages(await getImages(inputWord.value, 1));
+        setImages(await getImages(translateFromServer.message, 1));
       }
     } catch (e) {
       console.log('ERROR: ', e);
@@ -162,7 +162,6 @@ const AddWordPage = observer(():React.ReactElement => {
 
     try {
       const images =  await getImages(inputImage.value, page);
-      console.log('images', images);
       setImages(images);
     } catch (e) {
       console.log('ERROR:', e);
@@ -250,7 +249,10 @@ const AddWordPage = observer(():React.ReactElement => {
             title={'У вас уже есть карточка с таким словом. Редактировать ?'}
             card={{...existCard}} 
             loading={loading}
-            onCancelClick={() => setShowPopup(!showPopup)} 
+            onCancelClick={() => {
+              setShowPopup(!showPopup);
+              setIsExistCard(false);
+            }} 
             onConfirmClick={async () => {
               setShowPopup(!showPopup)
               setIsExistCard(false);
