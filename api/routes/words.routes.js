@@ -265,4 +265,61 @@ router.get('/getWordsList',
     }
   }
 )
+
+router.get('/getRandomWords',
+  [
+    check('counterFilter', 'Введите фильтр показов').notEmpty().isNumeric(),
+    check('count', 'Введите количество нужных слов').notEmpty().isNumeric(),
+    auth
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          errors: errors.array(),
+          message: 'Вы допустили ошибку . . .'
+        })
+      }
+
+      const counterFilter = parseInt(req.query.counterFilter);
+      const reqUserId = req.user.userId;
+
+      const dictionaryAggregation = await Dictionary.aggregate([
+        {
+          $match: {
+            "language": language,
+            "ownerId": require('mongoose').Types.ObjectId(reqUserId)
+          }
+        },
+        {
+          $unwind : {
+            path: "$words"
+          }
+        },
+        {
+          $match: {
+            "words.counter": {
+              $gt: counterFilter
+            }
+          }
+        },
+        {
+          $sample: {
+            size: count
+          }
+        },
+        {
+          $project: {
+            "word": "$words"
+          }
+        }
+      ])
+
+      return res.status(200).json({message: dictionaryAggregation});
+    } catch (e) {
+      return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
+    }
+  }
+)
 module.exports = router;
