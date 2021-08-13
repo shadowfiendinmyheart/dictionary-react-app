@@ -27,22 +27,22 @@ const LoginForm = observer((): React.ReactElement => {
   }
 
   const authHandler = async (ev: React.SyntheticEvent) => {
+    if (!(form.authLogin && form.authPassword)) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+
     try {
-      ev.preventDefault();
-      ev.stopPropagation();
       const data = await request('api/auth/login', 'POST', {...form});
       user.login(data.accessToken);
     } catch (e) {}
   }
 
   return(
-    <form action={'/login'} method={'post'}>
-      <div className={styles.container}>
-        <h2>Авторизация</h2>
-        <InputForm type={'text'} placeholder={'Введите логин'} name={'authLogin'} onChange={changeHandler} />
-        <InputForm type={'password'} placeholder={'Введите пароль'} name={'authPassword'} onChange={changeHandler} />
-        <Button type={'submit'} text={'Войти'} onClick={authHandler} disabled={loading} />
-      </div>
+    <form action={'/login'} method={'post'} className={styles.container}>
+      <h2>Авторизация</h2>
+      <InputForm type={'text'} placeholder={'Введите логин'} name={'authLogin'} onChange={changeHandler} />
+      <InputForm type={'password'} placeholder={'Введите пароль'} name={'authPassword'} onChange={changeHandler} />
+      <Button type={'submit'} text={'Войти'} onClick={authHandler} disabled={loading} />
     </form>
   )
 });

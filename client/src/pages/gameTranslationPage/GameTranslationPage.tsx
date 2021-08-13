@@ -13,7 +13,8 @@ export interface ICards {
     translate: string,
     img: string,
     counter: number,
-    isRightAnswer?: boolean,
+    isRightAnswer: boolean,
+    userAnswer?: string,
 }
 
 const GameTranslationPage = (): React.ReactElement => {
@@ -36,6 +37,7 @@ const GameTranslationPage = (): React.ReactElement => {
                     img: r.imageURL,
                     counter: r.counter,
                     isRightAnswer: false,
+                    userAnswer: null,
                 })
             })
             
@@ -58,6 +60,12 @@ const GameTranslationPage = (): React.ReactElement => {
         setCards(updateCards);
     }
 
+    const falseAnswerHandler = (cardNumber: number, userAnswer: string) => {
+        const updateCards: ICards[] = [...cards];
+        updateCards[cardNumber].userAnswer = userAnswer;
+        setCards(updateCards);
+    }
+
     return (
         <>
             {isGame ?  
@@ -66,7 +74,8 @@ const GameTranslationPage = (): React.ReactElement => {
                     lengthWords={cards.length} 
                     onFinish={() => setGame(false)}
                     onRightAnswer={rightAnswerHandler}
-                    loading={loading}
+                    onFalseAnswer={falseAnswerHandler}
+                    loadingPage={loading}
                 /> : <ScoreInfo cards={cards} onGameAgain={gameAgainHandler}/>
             }
         </>

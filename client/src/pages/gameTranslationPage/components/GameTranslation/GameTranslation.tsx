@@ -3,6 +3,8 @@ import { observer  } from 'mobx-react-lite';
 import user from '../../../../store/user';
 import InputForm from '../../../../components/InputForm';
 import Button from '../../../../components/Button';
+import Loader from '../../../../components/Loader';
+import LoadingPage from '../../../loadingPage/LoadingPage';
 import useInput from '../../../../hooks/input.hook';
 import { useHttp } from '../../../../hooks/http.hook';
 import { ICards } from '../../GameTranslationPage';
@@ -14,14 +16,15 @@ type GameTranslationProps = {
     lengthWords: number;
     onFinish: () => void;
     onRightAnswer: (cardNumber: number) => void;
-    loading: boolean;
+    onFalseAnswer: (cardNumber: number, userAnswer: string) => void;
+    loadingPage: boolean;
 }
 
 const GameTranslation = (props: GameTranslationProps): React.ReactElement => {
-    const { cards, lengthWords, onFinish, onRightAnswer, loading } = props;
+    const { cards, lengthWords, onFinish, onRightAnswer, onFalseAnswer, loadingPage } = props;
     
     const [counter, setCounter] = useState<number>(0);
-    const { request } = useHttp();
+    const { request, loading } = useHttp();
     const translate = useInput('');
     
     const compareWords = (firstWord: string, secondWord: string) => {
@@ -36,6 +39,8 @@ const GameTranslation = (props: GameTranslationProps): React.ReactElement => {
     }
 
     const buttonHandler = async (ev: React.SyntheticEvent) => {
+        if (!translate.value) return;
+        
         ev.preventDefault();
         ev.stopPropagation();
 
@@ -65,6 +70,7 @@ const GameTranslation = (props: GameTranslationProps): React.ReactElement => {
             }
             onRightAnswer(counter);
         } else {
+            onFalseAnswer(counter, translate.value);
             console.log('ты балбес');
         }
         
@@ -73,21 +79,21 @@ const GameTranslation = (props: GameTranslationProps): React.ReactElement => {
     }
 
     return (
-        loading ? <div className={styles.wrapper}>Loading...</div> :
+        loadingPage ? <LoadingPage /> :
         <div className={styles.wrapper}>
             <div className={styles.window}>
                 <h2>{`${counter} / ${lengthWords}`}</h2>
                 <img className={styles.img} src={cards[counter]?.img} alt="card" />
                 <h2>{cards[counter]?.word}</h2>
                 <form autoComplete='off'>
-                    <InputForm 
+                    <InputForm
+                        type={'text'} 
                         name={'translate'} 
                         placeholder={'Введите перевод'} 
-                        type={'text'} 
                         value={translate.value}
                         onChange={translate.onChange}
                     />
-                    <Button onClick={buttonHandler} text={'Вперёд !'} />
+                    {loading ? <Loader /> : <Button onClick={buttonHandler} text={'Вперёд !'} /> }
                 </form>
             </div>
         </div>

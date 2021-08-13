@@ -14,11 +14,7 @@ import { ROUTES } from '../../constants/routes';
 import GameTranslationPage from '../../pages/gameTranslationPage';
 
 const AuthRouter = observer((): React.ReactElement => {
-  if (user.loading) {
-    return (
-      <LoadingPage />
-    )
-  }
+  if (user.loading) return <LoadingPage />
 
   if (user.isAuth) {
     return (

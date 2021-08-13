@@ -26,7 +26,7 @@ const Input = (props: InputProps):React.ReactElement => {
         name={name} 
         onChange={onChange}
         value={value}
-        required 
+        required
       />
       <label htmlFor={name} className={styles.form__label}>{placeholder}</label>
       </div>

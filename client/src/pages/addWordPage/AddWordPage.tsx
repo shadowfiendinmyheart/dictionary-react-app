@@ -69,7 +69,6 @@ const AddWordPage = observer(():React.ReactElement => {
       ev.stopPropagation();
       setPage(2);
       setMaxPage(3);
-      // тут будет эндпоинт на проверку карточки у пользователя
       const checkCardExist = await request(
         `words/getEngWord?reqWord=${inputWord.value}`, 
         'GET', 
@@ -239,7 +238,12 @@ const AddWordPage = observer(():React.ReactElement => {
       <div>
         <DynamicPagination onScrollEnd={dynamicPaginationHandler} currentPage={page} maxPage={maxPage}> 
           <div className={styles.wrapperPickImage}>
-            {images && imageTile(images, 3).map((column: JSX.Element[], index: number) => <div className={styles.imageColumn} key={`${index}-column`}>{column}</div>)}
+            {images && imageTile(images, 3).map((column: JSX.Element[], index: number) => {
+              return (
+                <div className={styles.imageColumn} key={`${index}-column`}>
+                  {column}
+                </div>
+              )})}
           </div>
         </DynamicPagination>
       </div>

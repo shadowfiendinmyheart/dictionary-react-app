@@ -28,6 +28,11 @@ const ScoreInfo = (props: scoreInfoProps): React.ReactElement => {
                                 <div>
                                     {card.translate}
                                 </div>
+                                {card?.userAnswer && 
+                                    <div>
+                                        Вы ответили: {card.userAnswer}
+                                    </div>
+                                }
                             </div>
                         )
                     })}
