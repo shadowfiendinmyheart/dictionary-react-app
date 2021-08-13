@@ -6,7 +6,9 @@ import styles from './LoadingPage.module.scss';
 const LoadingPage = (): React.ReactElement => {
     return (
         <div className={styles.wrapper}>
-            <Loader />
+            <div className={styles.window}>
+                <Loader />
+            </div>
         </div>
     )
 }
