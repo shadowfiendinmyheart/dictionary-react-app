@@ -44,10 +44,6 @@ const GameTranslation = (props: GameTranslationProps): React.ReactElement => {
         ev.preventDefault();
         ev.stopPropagation();
 
-        if (counter === lengthWords - 1) {
-            onFinish();
-            return;
-        }
         
         const pass = compareWords(translate.value, cards[counter].translate);
         
@@ -63,8 +59,8 @@ const GameTranslation = (props: GameTranslationProps): React.ReactElement => {
                         reqCount: updatedCounter,
                     },
                     {Authorization: `Bearer ${user.token}`}
-                );
-                console.log('update counter is success', data);
+                    );
+                    console.log('update counter is success', data);
             } catch(e) {
                 console.log('cannot update counter on a word');
             }
@@ -73,8 +69,13 @@ const GameTranslation = (props: GameTranslationProps): React.ReactElement => {
             onFalseAnswer(counter, translate.value);
             console.log('ты балбес');
         }
-        
         translate.setValue('');
+
+        if (counter === lengthWords - 1) {
+            onFinish();
+            return;
+        }
+        
         setCounter((prev) => prev + 1);
     }
 
@@ -82,7 +83,7 @@ const GameTranslation = (props: GameTranslationProps): React.ReactElement => {
         loadingPage ? <LoadingPage /> :
         <div className={styles.wrapper}>
             <div className={styles.window}>
-                <h2>{`${counter} / ${lengthWords}`}</h2>
+                <h2>{`${counter + 1} / ${lengthWords}`}</h2>
                 <img className={styles.img} src={cards[counter]?.img} alt="card" />
                 <h2>{cards[counter]?.word}</h2>
                 <form autoComplete='off'>
@@ -93,7 +94,10 @@ const GameTranslation = (props: GameTranslationProps): React.ReactElement => {
                         value={translate.value}
                         onChange={translate.onChange}
                     />
-                    {loading ? <Loader /> : <Button onClick={buttonHandler} text={'Вперёд !'} /> }
+                    {loading ? 
+                        <div className={styles.loaderWrapper}>
+                            <Loader />
+                        </div> : <Button onClick={buttonHandler} text={'Вперёд !'} /> }
                 </form>
             </div>
         </div>

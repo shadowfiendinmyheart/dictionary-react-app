@@ -1,5 +1,5 @@
-declare const styles = {
-    wrapper: string
+declare const styles: {
+    readonly wrapper: string;
 }
 
 export default styles;
