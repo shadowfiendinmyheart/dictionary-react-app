@@ -1,52 +1,32 @@
 import React from 'react';
 import cn from 'clsx';
+import { ROUTES } from '../../../../constants';
+import { ICards } from '../../GameTranslationPage';
 import LinkAsButton from '../../../../components/LinkAsButton';
 import Button from '../../../../components/Button';
 
 import styles from './ScoreInfo.module.scss';
-import { ROUTES } from '../../../../constants';
 
-const mockWords = [
-    {
-        word: 'cat',
-        translate: 'кот',
-        isAnswer: true
-    },
-    {
-        word: 'dog',
-        translate: 'пёс',
-        isAnswer: true
-    },
-    {
-        word: 'bird',
-        translate: 'птица',
-        isAnswer: false
-    },
-    {
-        word: 'mouse',
-        translate: 'мышь',
-        isAnswer: true
-    },
-    {
-        word: 'dolphin',
-        translate: 'дельфин',
-        isAnswer: true
-    },
-]
+type scoreInfoProps = {
+    cards: ICards[];
+    onGameAgain: () => void;
+}
 
-const ScoreInfo = (): React.ReactElement => {
+const ScoreInfo = (props: scoreInfoProps): React.ReactElement => {
+    const { cards, onGameAgain } = props;
+    
     return (
         <div className={styles.wrapper}>
             <div className={styles.window}>
                 <div className={styles.leftSide}>
-                    {mockWords.map(mock => {
+                    {cards.map((card: ICards) => {
                         return (
-                            <div className={cn(mock.isAnswer ? styles.true : styles.false)} key={mock.word}>
+                            <div className={cn(card.isRightAnswer ? styles.true : styles.false)} key={card.word}>
                                 <div>
-                                    {mock.word}
+                                    {card.word}
                                 </div>
                                 <div>
-                                    {mock.translate}
+                                    {card.translate}
                                 </div>
                             </div>
                         )
@@ -54,8 +34,8 @@ const ScoreInfo = (): React.ReactElement => {
                 </div>
                 <div className={styles.rightSide}>
                     <LinkAsButton text={'Назад'} to={ROUTES.HOME_PAGE} />
-                    <Button onClick={() => console.log('mock')} text={'Играть снова'}  />
-                    <div>Вы угадали: <br/> 4 из 5 слов</div>
+                    <Button onClick={onGameAgain} text={'Играть снова'}  />
+                    <div>Вы угадали: <br/> NaN из {cards.length} слов</div>
                 </div>
             </div>
         </div>

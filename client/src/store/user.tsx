@@ -6,6 +6,7 @@ class User {
     token: string = localStorage.getItem(storageName) || '';
     name: string = '';
     isAuth: boolean = false;
+    loading: boolean = false;
     
     constructor() {
         makeAutoObservable(this);
@@ -21,6 +22,10 @@ class User {
 
     setAuth(isAuth: boolean) {
         this.isAuth = isAuth;
+    }
+
+    setLoading(loading: boolean) {
+        this.loading = loading;
     }
 
     login(token: string) {
@@ -47,6 +52,7 @@ class User {
         if (!localStorage.getItem(storageName)) return;
 
         try {
+            this.setLoading(true);
             const check = await fetch('api/auth/refresh', {method: 'GET', headers: {
                 'Content-Type': 'application/json;charset=utf-8'
             }});
@@ -57,6 +63,8 @@ class User {
             this.setAuth(true);
         } catch (e) {
             console.log(e);
+        } finally {
+            this.setLoading(false);
         }
     }
 
