@@ -14,7 +14,9 @@ type scoreInfoProps = {
 
 const ScoreInfo = (props: scoreInfoProps): React.ReactElement => {
     const { cards, onGameAgain } = props;
-    
+
+    const numberOfRightCards = cards.length - cards.filter(c => c.userAnswer).length;
+
     return (
         <div className={styles.wrapper}>
             <div className={styles.window}>
@@ -25,14 +27,14 @@ const ScoreInfo = (props: scoreInfoProps): React.ReactElement => {
                                 <div>
                                     {card.word}
                                 </div>
-                                <div>
-                                    {card.translate}
+                                <div className={styles.translate}>
+                                    <span>{card.translate}</span>
+                                    {card?.userAnswer && 
+                                        <span>
+                                            Вы ответили: {card.userAnswer}
+                                        </span>
+                                    }
                                 </div>
-                                {card?.userAnswer && 
-                                    <div>
-                                        Вы ответили: {card.userAnswer}
-                                    </div>
-                                }
                             </div>
                         )
                     })}
@@ -40,7 +42,7 @@ const ScoreInfo = (props: scoreInfoProps): React.ReactElement => {
                 <div className={styles.rightSide}>
                     <LinkAsButton text={'Назад'} to={ROUTES.HOME_PAGE} />
                     <Button onClick={onGameAgain} text={'Играть снова'}  />
-                    <div>Вы угадали: <br/> NaN из {cards.length} слов</div>
+                    <div>{numberOfRightCards === cards.length && <span>ВОТ ЭТО КРАСАВЧИК,</span>} Правильно: <br/>{numberOfRightCards} из {cards.length} слов</div>
                 </div>
             </div>
         </div>
