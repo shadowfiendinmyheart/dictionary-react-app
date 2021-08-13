@@ -376,6 +376,7 @@ router.get('/getRandomWords',
       }
 
       const counterFilter = parseInt(req.query.counterFilter);
+      const count = parseInt(req.query.count);
       const reqUserId = req.user.userId;
 
       const dictionaryAggregation = await Dictionary.aggregate([
@@ -393,7 +394,7 @@ router.get('/getRandomWords',
         {
           $match: {
             "words.counter": {
-              $gt: counterFilter
+              $lt: counterFilter
             }
           }
         },
@@ -409,7 +410,11 @@ router.get('/getRandomWords',
         }
       ])
 
-      return res.status(200).json({message: dictionaryAggregation});
+      const words = dictionaryAggregation.map(w => {
+        return {...w.word}
+      })
+
+      return res.status(200).json({message: words});
     } catch (e) {
       return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
     }

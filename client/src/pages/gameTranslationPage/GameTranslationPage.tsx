@@ -24,12 +24,12 @@ const GameTranslationPage = (): React.ReactElement => {
 
     const fillCards = () => {
         request(
-            `words/getWordsList?page=1`,
+            `words/getRandomWords?counterFilter=10&count=10`,
             'GET',
             null,
             {Authorization: `Bearer ${user.token}`}
         ).then(res => {
-            const cardsResponse: ICards[] = res.words.map((r: any) => {
+            const cardsResponse: ICards[] = res.message.map((r: any) => {
                 return ({
                     word: r.word,
                     translate: r.translations[0],
