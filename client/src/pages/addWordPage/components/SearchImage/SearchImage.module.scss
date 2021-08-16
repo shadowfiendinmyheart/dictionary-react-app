@@ -12,5 +12,14 @@
 }
 
 .pickedImage {
+    z-index: 1;
+    position: relative;
+    margin-bottom: -5px;
     box-shadow: 0px 0px 78px 9px rgb(255, 225, 0);
+}
+
+.pickButton {
+    position: absolute;
+    bottom: 0;
+    left: 0;
 }

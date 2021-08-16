@@ -18,3 +18,9 @@
   width: 80%;
   padding: 20px;
 }
+
+@mixin center() {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

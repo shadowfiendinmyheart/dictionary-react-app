@@ -25,12 +25,11 @@ router.get('/list',
             const search = req.query.search;
             const page = req.query.page;
 
-            const imageList = JSON.parse(await getImagePage(page, search));
+            const imageList = await getImagePage(search, page);
             
-            const answer = imageList.hits.map(img => img.webformatURL);
-            const numberOfPage = Math.ceil(imageList.totalHits / 20);
+            const numberOfPage = Math.ceil(imageList.length / 20);
             res.set('number-of-page', numberOfPage);
-            return res.status(200).json({ message: answer });
+            return res.status(200).json({ message: imageList.slice((page - 1) * 20, page * 20) });
         } catch (e) {
             return res.status(400).json({ message: 'Произошла обшибка на сервере' });
         }

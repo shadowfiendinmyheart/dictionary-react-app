@@ -8,11 +8,14 @@ import HomePage from '../../pages/homePage';
 import AddWordPage from '../../pages/addWordPage';
 import DictionaryPage from '../../pages/dictionaryPage';
 import ErrorPage from '../../pages/errorPage';
+import LoadingPage from '../../pages/loadingPage/LoadingPage';
 
 import { ROUTES } from '../../constants/routes';
 import GameTranslationPage from '../../pages/gameTranslationPage';
 
 const AuthRouter = observer((): React.ReactElement => {
+  if (user.loading) return <LoadingPage />
+
   if (user.isAuth) {
     return (
       <Switch>

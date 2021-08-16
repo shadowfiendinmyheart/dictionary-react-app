@@ -1,23 +1,39 @@
 import React from 'react';
-import cn from 'clsx';
+import Button from '../../../../components/Button';
 
 import styles from './SearchImage.module.scss';
 
 type searchImageProps = {
     url: string;
     active: boolean;
-    cb: () => void;
+    onClickCard: () => void;
+    onCreateCard: (ev: React.SyntheticEvent) => void;
 }
 
 const SearchImage = (props: searchImageProps):React.ReactElement => {
-    const { url, active, cb } = props;
+    const { url, active, onClickCard, onCreateCard } = props;
 
     return (
-        <img
-          className={cn(styles.searchImage, (active && styles.pickedImage))}
-          onClick={cb}
-          src={url}
-        />
+        active ? (
+            <div className={styles.pickedImage}>
+                <img
+                    className={styles.searchImage}
+                    onClick={onClickCard}
+                    src={url}
+                />
+                <Button 
+                    onClick={onCreateCard} 
+                    text={'Добавить карточку'}
+                    classNameUpdate={styles.pickButton} 
+                />
+            </div>
+        ) : (
+            <img
+              className={styles.searchImage}
+              onClick={onClickCard}
+              src={url}
+            />
+        )
     )
 }
 

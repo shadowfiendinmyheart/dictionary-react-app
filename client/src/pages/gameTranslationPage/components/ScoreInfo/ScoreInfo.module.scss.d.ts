@@ -5,6 +5,7 @@ declare const styles: {
     readonly rightSide: string;
     readonly true: string;
     readonly false: string;
+    readonly translate: string;
 }
 
 export = styles;

@@ -17,5 +17,10 @@
 }
 
 .img {
-    width: 200px;
+  width: 200px;
+}
+
+.loaderWrapper {
+  @include center();
+  margin-top: 10px;
 }

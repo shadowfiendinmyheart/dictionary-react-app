@@ -1,0 +1,11 @@
+@import '../../assets/styles/mixins';
+
+.wrapper {
+  @include mainContent;
+}
+
+.window {
+  @include glass;
+  padding: 50px;
+  border-radius: 30px;
+}

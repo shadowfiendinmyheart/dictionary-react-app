@@ -69,7 +69,6 @@ const AddWordPage = observer(():React.ReactElement => {
       ev.stopPropagation();
       setPage(2);
       setMaxPage(3);
-      // тут будет эндпоинт на проверку карточки у пользователя
       const checkCardExist = await request(
         `words/getEngWord?reqWord=${inputWord.value}`, 
         'GET', 
@@ -172,7 +171,7 @@ const AddWordPage = observer(():React.ReactElement => {
     const columns = [...Array(chunks)].map((_, c) => images.filter((_, i) => i % chunks === c));
     return columns.map(column => column.map(el=> {
       return (
-        <SearchImage key={el.url} url={el.url} active={el.active} cb={() => {
+        <SearchImage key={el.url} url={el.url} active={el.active} onClickCard={() => {
             const index = images.findIndex(image => image.url === el.url);
             const updatedImages = images.map((image, i) => {
               if (i === index) return {url: image.url, active: true}
@@ -181,6 +180,7 @@ const AddWordPage = observer(():React.ReactElement => {
             setImages(updatedImages);
             setPickedImage(el.url);
           }}
+          onCreateCard={createCardHandler}
         />
       )
     }))
@@ -204,19 +204,22 @@ const AddWordPage = observer(():React.ReactElement => {
 
   return (
     <div className={styles.wrapper}>
-      <form className={styles.wrapperForm}>
-        <div className={styles.inpForm}>
-          <InputForm
-            type={'text'}
-            name={'word'}
-            placeholder={'Введите слово для перевода'}
-            value={inputWord.value}
-            onChange={inputWord.onChange}
-          />
-        </div>
-        <Button onClick={translateHandler} text={'Перевести'} disabled={loading} />
+      <div className={styles.wrapperForm}>
+        <form autoComplete='off' className={styles.searchForm}>
+          <div className={styles.inpForm}>
+            <InputForm
+              type={'text'}
+              name={'word'}
+              placeholder={'Введите слово для перевода'}
+              value={inputWord.value}
+              onChange={inputWord.onChange}
+            />
+          </div>
+          <Button onClick={translateHandler} text={'Перевести'} disabled={loading} />
+        </form>
         <div className={styles.inpForm}>
           <InputForm 
+            autoComplete='off'
             type={'text'}
             name={'translate'}
             placeholder={'Перевод'}
@@ -224,22 +227,28 @@ const AddWordPage = observer(():React.ReactElement => {
             onChange={inputTranslate.onChange}
           />
         </div>
-        {inputWord.value && inputTranslate.value && pickedImage && <Button onClick={createCardHandler} text={'Создать карточку'} disabled={loading} />}
-        <div className={styles.inpForm}>
-          <InputForm 
-            type={'text'}
-            name={'imageSearch'}
-            placeholder={'Визуальная ассоциация'}
-            value={inputImage.value}
-            onChange={inputImage.onChange}
-          />
-        </div>
-        <Button onClick={searchImageHandler} text={'Найти ассоциацию'} disabled={loading} />
-      </form>
+        <form autoComplete='off' className={styles.searchForm}>
+          <div className={styles.inpForm}>
+            <InputForm 
+              type={'text'}
+              name={'imageSearch'}
+              placeholder={'Визуальная ассоциация'}
+              value={inputImage.value}
+              onChange={inputImage.onChange}
+            />
+          </div>
+          <Button onClick={searchImageHandler} text={'Найти ассоциацию'} disabled={loading} />
+        </form>
+      </div>
       <div>
         <DynamicPagination onScrollEnd={dynamicPaginationHandler} currentPage={page} maxPage={maxPage}> 
           <div className={styles.wrapperPickImage}>
-            {images && imageTile(images, 3).map((column: JSX.Element[], index: number) => <div className={styles.imageColumn} key={`${index}-column`}>{column}</div>)}
+            {images && imageTile(images, 3).map((column: JSX.Element[], index: number) => {
+              return (
+                <div className={styles.imageColumn} key={`${index}-column`}>
+                  {column}
+                </div>
+              )})}
           </div>
         </DynamicPagination>
       </div>

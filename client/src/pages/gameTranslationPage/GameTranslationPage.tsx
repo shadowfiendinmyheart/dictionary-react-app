@@ -1,50 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+
 import GameTranslation from './components/GameTranslation';
 import ScoreInfo from './components/ScoreInfo';
+import user from '../../store/user';
+import { useHttp } from '../../hooks/http.hook';
 
 import styles from './GameTranslationPage.module.scss';
 
-const mock = [
-    {
-        word: 'cat',
-        translate: 'кот',
-        img: 'https://storage.vsemayki.ru/images/0/1/1272/1272472/previews/people_1_pants_fullprint_front_white_500.jpg'
-    },
-    {
-        word: 'dog',
-        translate: 'собака',
-        img: 'https://hvost.news/upload/resize_cache/iblock/235/750_400_1/10_sposobov_razveselit_sobaku.jpg'
-    },
-    {
-        word: 'phone',
-        translate: 'телефон',
-        img: 'https://icdn.lenta.ru/images/2020/02/10/11/20200210113855000/pwa_vertical_1024_8f2ba588f2232518c98929c7bd4a4ca7.jpg'
-    },
-    {
-        word: 'board',
-        translate: 'доска',
-        img: 'https://www.castorama.ru/media/catalog/product/cache/image/1800x/040ec09b1e35df139433887a97daa66f/0/b/0ba0e0_564970_1.jpg'
-    },
-    {
-        word: 'mouse',
-        translate: 'мышь',
-        img: 'https://www.passionforum.ru/upload/125/u12554/76/4e/krisa-idei-4.jpg'
-    },
-]
-
-
+export interface ICards {
+    word: string,
+    translate: string,
+    img: string,
+    counter: number,
+    isRightAnswer: boolean,
+    userAnswer?: string,
+}
 
 const GameTranslationPage = (): React.ReactElement => {
-    const [isGame, setGame] = useState(false);
+    const [isGame, setGame] = useState<boolean>(true);
+    const [cards, setCards] = useState<ICards[]>([]);
+
+    const { request, loading } = useHttp();
+
+    const fillCards = () => {
+        request(
+            `words/getRandomWords?counterFilter=10&count=10`,
+            'GET',
+            null,
+            {Authorization: `Bearer ${user.token}`}
+        ).then(res => {
+            const cardsResponse: ICards[] = res.message.map((r: any) => {
+                return ({
+                    word: r.word,
+                    translate: r.translations[0],
+                    img: r.imageURL,
+                    counter: r.counter,
+                    isRightAnswer: false,
+                    userAnswer: null,
+                })
+            })
+            
+            if (cardsResponse) setCards(cardsResponse);
+        });
+    }
+
+    useEffect(() => {
+        fillCards();
+    }, []);
+
+    const gameAgainHandler = () => {
+        fillCards();
+        setGame(true);
+    }
+    
+    const rightAnswerHandler = (cardNumber: number) => {
+        const updateCards: ICards[] = [...cards];
+        updateCards[cardNumber].isRightAnswer = true;
+        setCards(updateCards);
+    }
+
+    const falseAnswerHandler = (cardNumber: number, userAnswer: string) => {
+        const updateCards: ICards[] = [...cards];
+        updateCards[cardNumber].userAnswer = userAnswer;
+        setCards(updateCards);
+    }
 
     return (
         <>
-            {isGame ? ( 
-                <GameTranslation mock={mock} lengthWords={mock.length} />) 
-                : <ScoreInfo />
+            {isGame ?  
+                <GameTranslation 
+                    cards={cards} 
+                    lengthWords={cards.length} 
+                    onFinish={() => setGame(false)}
+                    onRightAnswer={rightAnswerHandler}
+                    onFalseAnswer={falseAnswerHandler}
+                    loadingPage={loading}
+                /> : <ScoreInfo cards={cards} onGameAgain={gameAgainHandler}/>
             }
         </>
     )
 }
 
-export default GameTranslationPage;
+export default observer(GameTranslationPage);

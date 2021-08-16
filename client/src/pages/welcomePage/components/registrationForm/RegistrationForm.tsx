@@ -5,9 +5,13 @@ import { useHttp } from '../../../../hooks/http.hook';
 
 import styles from './RegistrationForm.module.scss';
 
+interface IForm {
+  [key: string]: string;
+}
+
 const RegistrationPage = ():React.ReactElement => {
   const { loading, request, error, clearAnswer } = useHttp();
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<IForm>({
     regNickname: '',
     regLogin: '',
     regPassword: '',
@@ -26,9 +30,16 @@ const RegistrationPage = ():React.ReactElement => {
   }
 
   const registerHandler = async (ev: React.SyntheticEvent) => {
+    for (const prop in form) {
+      if (!form[prop]) {
+        return;
+      }
+    }
+
+    ev.preventDefault();
+    ev.stopPropagation();
+    
     try {
-      ev.preventDefault();
-      ev.stopPropagation();
       await request('api/auth/registration', 'POST', {...form});
     } catch (e) {}
   }
