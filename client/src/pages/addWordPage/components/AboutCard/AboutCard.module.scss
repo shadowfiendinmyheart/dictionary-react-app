@@ -28,3 +28,15 @@
         transform: scale(1.5);
     }
 }
+
+.cancel {
+    &:hover {
+        fill: $canel-color;
+    }
+}
+
+.confirm {
+    &:hover {
+        fill: $confirm-color;
+    }
+}

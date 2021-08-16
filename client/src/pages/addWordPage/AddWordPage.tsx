@@ -202,8 +202,6 @@ const AddWordPage = observer(():React.ReactElement => {
     })
   }
 
-  // {inputWord.value && inputTranslate.value && pickedImage && <Button onClick={} text={'Создать карточку'} disabled={loading} />}
-
   return (
     <div className={styles.wrapper}>
       <div className={styles.wrapperForm}>

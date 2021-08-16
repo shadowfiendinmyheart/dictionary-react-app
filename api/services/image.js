@@ -1,13 +1,17 @@
-const fetch = require('node-fetch');
-const config = require('../config/default.json')
+const gis = require('g-i-s');
 
-const getImagePage = async (numberOfPage, search) => {
-    const response = await fetch(`https://pixabay.com/api/?key=${config.pixabayApi}&q=${encodeURIComponent(search)}&page=${numberOfPage}`, {
-        method: 'GET',
-    });
-    const answer = await response.text();
-    
-    return answer;
+const getImagePage = (search, page) => {
+    return new Promise((resolve, reject) => {
+        gis(search, (err, res) => {
+            if (err) {
+                console.log(err);
+                reject(err);
+            }
+            
+            const answer = res.map(r => r.url);
+            resolve(answer);
+        });
+    })
 }
 
 module.exports = getImagePage;
