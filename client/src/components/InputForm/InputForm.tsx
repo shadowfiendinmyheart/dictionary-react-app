@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { InputHTMLAttributes } from 'react';
 import cn from 'clsx';
 
 import styles from './InputForm.module.scss'
 
-type InputProps = {
+type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   classNameUpdate?: string,
   id?: string,
   type: 'text' | 'password',
@@ -14,19 +14,20 @@ type InputProps = {
 }
 
 const Input = (props: InputProps):React.ReactElement => {
-  const { classNameUpdate, id, type, placeholder, name, onChange, value} = props;
+  const { classNameUpdate, id, type, placeholder, name, onChange, value, ...rest} = props;
   
   return (
     <div className={styles.form__group}>
-      <input 
-        className={cn(styles.form__field, classNameUpdate)} 
-        id={name} 
-        type={type} 
+      <input
+        className={cn(styles.form__field, classNameUpdate)}
+        id={name}
+        type={type}
         placeholder={placeholder}
-        name={name} 
+        name={name}
         onChange={onChange}
         value={value}
         required
+        {...rest}
       />
       <label htmlFor={name} className={styles.form__label}>{placeholder}</label>
       </div>

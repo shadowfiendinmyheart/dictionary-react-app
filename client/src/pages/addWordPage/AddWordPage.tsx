@@ -201,21 +201,26 @@ const AddWordPage = observer(():React.ReactElement => {
     })
   }
 
+  // {inputWord.value && inputTranslate.value && pickedImage && <Button onClick={createCardHandler} text={'Создать карточку'} disabled={loading} />}
+
   return (
     <div className={styles.wrapper}>
-      <form className={styles.wrapperForm}>
-        <div className={styles.inpForm}>
-          <InputForm
-            type={'text'}
-            name={'word'}
-            placeholder={'Введите слово для перевода'}
-            value={inputWord.value}
-            onChange={inputWord.onChange}
-          />
-        </div>
-        <Button onClick={translateHandler} text={'Перевести'} disabled={loading} />
+      <div className={styles.wrapperForm}>
+        <form autoComplete='off' className={styles.searchForm}>
+          <div className={styles.inpForm}>
+            <InputForm
+              type={'text'}
+              name={'word'}
+              placeholder={'Введите слово для перевода'}
+              value={inputWord.value}
+              onChange={inputWord.onChange}
+            />
+          </div>
+          <Button onClick={translateHandler} text={'Перевести'} disabled={loading} />
+        </form>
         <div className={styles.inpForm}>
           <InputForm 
+            autoComplete='off'
             type={'text'}
             name={'translate'}
             placeholder={'Перевод'}
@@ -223,18 +228,19 @@ const AddWordPage = observer(():React.ReactElement => {
             onChange={inputTranslate.onChange}
           />
         </div>
-        {inputWord.value && inputTranslate.value && pickedImage && <Button onClick={createCardHandler} text={'Создать карточку'} disabled={loading} />}
-        <div className={styles.inpForm}>
-          <InputForm 
-            type={'text'}
-            name={'imageSearch'}
-            placeholder={'Визуальная ассоциация'}
-            value={inputImage.value}
-            onChange={inputImage.onChange}
-          />
-        </div>
-        <Button onClick={searchImageHandler} text={'Найти ассоциацию'} disabled={loading} />
-      </form>
+        <form autoComplete='off' className={styles.searchForm}>
+          <div className={styles.inpForm}>
+            <InputForm 
+              type={'text'}
+              name={'imageSearch'}
+              placeholder={'Визуальная ассоциация'}
+              value={inputImage.value}
+              onChange={inputImage.onChange}
+            />
+          </div>
+          <Button onClick={searchImageHandler} text={'Найти ассоциацию'} disabled={loading} />
+        </form>
+      </div>
       <div>
         <DynamicPagination onScrollEnd={dynamicPaginationHandler} currentPage={page} maxPage={maxPage}> 
           <div className={styles.wrapperPickImage}>

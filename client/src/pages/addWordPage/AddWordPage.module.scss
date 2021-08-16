@@ -10,16 +10,20 @@
   @include glass();
   width: 100%;
   min-width: 800px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 20px;
   padding: 20px;
 }
 
+.searchForm {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
 .inpForm {
-  grid-column-start: 1; 
-  grid-column-end: 3; 
+  grid-column-start: 1;
+  grid-column-end: 3;
 }
 
 .wrapperPickImage {
