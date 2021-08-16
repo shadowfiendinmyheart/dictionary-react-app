@@ -171,7 +171,7 @@ const AddWordPage = observer(():React.ReactElement => {
     const columns = [...Array(chunks)].map((_, c) => images.filter((_, i) => i % chunks === c));
     return columns.map(column => column.map(el=> {
       return (
-        <SearchImage key={el.url} url={el.url} active={el.active} cb={() => {
+        <SearchImage key={el.url} url={el.url} active={el.active} onClickCard={() => {
             const index = images.findIndex(image => image.url === el.url);
             const updatedImages = images.map((image, i) => {
               if (i === index) return {url: image.url, active: true}
@@ -180,6 +180,7 @@ const AddWordPage = observer(():React.ReactElement => {
             setImages(updatedImages);
             setPickedImage(el.url);
           }}
+          onCreateCard={createCardHandler}
         />
       )
     }))
@@ -201,7 +202,7 @@ const AddWordPage = observer(():React.ReactElement => {
     })
   }
 
-  // {inputWord.value && inputTranslate.value && pickedImage && <Button onClick={createCardHandler} text={'Создать карточку'} disabled={loading} />}
+  // {inputWord.value && inputTranslate.value && pickedImage && <Button onClick={} text={'Создать карточку'} disabled={loading} />}
 
   return (
     <div className={styles.wrapper}>
