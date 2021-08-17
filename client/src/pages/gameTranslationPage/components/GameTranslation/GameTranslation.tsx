@@ -27,15 +27,19 @@ const GameTranslation = (props: GameTranslationProps): React.ReactElement => {
     const { request, loading } = useHttp();
     const translate = useInput('');
     
-    const compareWords = (firstWord: string, secondWord: string) => {
-        firstWord = firstWord.trim().toLowerCase();
-        secondWord = secondWord.trim().toLowerCase();
-    
-        if (firstWord !== secondWord) {
-            return false;
-        }
-    
-        return true;
+    const compareWords = (userTranslate: string, translations: string) => {
+        let isCheck = false;
+        userTranslate = userTranslate.trim().toLowerCase();
+        const translationsArr: string[] = translations.split(', ');
+        
+        translationsArr.forEach(translation => {
+            if (translation.trim().toLowerCase() === userTranslate) {
+                isCheck = true;
+                return;
+            }
+        });
+
+        return isCheck;
     }
 
     const buttonHandler = async (ev: React.SyntheticEvent) => {
@@ -47,6 +51,7 @@ const GameTranslation = (props: GameTranslationProps): React.ReactElement => {
         
         const pass = compareWords(translate.value, cards[counter].translate);
         
+        console.log('pass', pass);
         if (pass) {
             console.log('gratz, u r right');
             try {

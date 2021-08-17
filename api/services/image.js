@@ -1,6 +1,6 @@
 const gis = require('g-i-s');
 
-const getImagePage = (search, page) => {
+const getImages = (search) => {
     return new Promise((resolve, reject) => {
         gis(search, (err, res) => {
             if (err) {
@@ -14,4 +14,4 @@ const getImagePage = (search, page) => {
     })
 }
 
-module.exports = getImagePage;
+module.exports = getImages;

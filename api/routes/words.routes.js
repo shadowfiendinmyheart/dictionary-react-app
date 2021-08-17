@@ -5,7 +5,7 @@ const Dictionary = require('../models/Dictionary');
 const User = require('../models/User');
 
 const auth = require('../middleware/auth.middleware');
-const getTranslatedWord = require('../services/translate');
+const getTranslatedWords = require('../services/translate');
 
 const router = Router();
 const language = "eng";//Захардкодил
@@ -28,9 +28,10 @@ router.get('/translate',
         })
       }
       const word = req.query.word;
-      const translatedWord = await getTranslatedWord(word);
+      const translatedWords = await getTranslatedWords(word);
+      const answer = translatedWords.join(', ');
 
-      return res.status(200).json({ message: translatedWord });
+      return res.status(200).json({ message: answer });
     } catch (e) {
       return res.status(400).json({message: 'Произошла обшибка на сервере'})
     }

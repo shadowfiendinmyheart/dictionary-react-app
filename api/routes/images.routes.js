@@ -2,7 +2,7 @@ const { Router } = require('express');
 const { check, validationResult } = require('express-validator');
 
 const auth = require('../middleware/auth.middleware');
-const getImagePage = require('../services/image');
+const getImages = require('../services/image');
 
 const router = Router();
 
@@ -25,7 +25,7 @@ router.get('/list',
             const search = req.query.search;
             const page = req.query.page;
 
-            const imageList = await getImagePage(search, page);
+            const imageList = await getImages(search);
             
             const numberOfPage = Math.ceil(imageList.length / 20);
             res.set('number-of-page', numberOfPage);
