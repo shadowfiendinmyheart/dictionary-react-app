@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+
 import InputForm from '../../../../components/InputForm';
 import Button from '../../../../components/Button';
 import { useHttp } from '../../../../hooks/http.hook';
+import { notificationConfig } from '../../../../constants/notification';
 
 import styles from './RegistrationForm.module.scss';
 
@@ -20,7 +23,7 @@ const RegistrationPage = ():React.ReactElement => {
 
   useEffect(() => {
     if (error) {
-      alert(error); // Добавить нормальный вывод ошибки ! ! !
+      toast.error(error, notificationConfig);
       clearAnswer();
     }
   }, [error]);
@@ -41,6 +44,7 @@ const RegistrationPage = ():React.ReactElement => {
     
     try {
       await request('api/auth/registration', 'POST', {...form});
+      toast.success('Аккаунт создан!', notificationConfig);
     } catch (e) {}
   }
   

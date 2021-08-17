@@ -1,9 +1,11 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { useHttp } from '../../hooks/http.hook';
+import { toast } from 'react-toastify';
 
+import { useHttp } from '../../hooks/http.hook';
 import Link from '../Link';
 import { ROUTES } from '../../constants/routes';
+import { notificationConfig } from '../../constants/notification';
 import user from '../../store/user';
 
 import styles from './Header.module.scss';
@@ -15,11 +17,12 @@ const Header = observer(():React.ReactElement => {
     if (loading) return;
 
     try {
-      const data = await request('api/auth/logout', 'POST', null, {Authorization: `Bearer ${user.token}`});
-      console.log('logout', data);
+      await request('api/auth/logout', 'POST', null, {Authorization: `Bearer ${user.token}`});
       user.logout();
+      toast.success('Вы вышли из аккаунта', notificationConfig);
     } catch(e) {
       console.log('error', e);
+      toast.error(e, notificationConfig);
     }
   }
 

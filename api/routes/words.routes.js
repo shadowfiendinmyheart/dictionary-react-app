@@ -70,7 +70,7 @@ router.post('/saveTranslation',
   [
     check('reqWord', 'Введите слово').notEmpty().isString().toLowerCase(),
     check('reqTranslation', 'Введите перевод').notEmpty().isString().toLowerCase(),
-    check('reqImageURL', 'Введите URL картинки').notEmpty().isString().toLowerCase(),
+    check('reqImageURL', 'Введите URL картинки').notEmpty().isString(),
     auth
   ],
   async (req, res) => {

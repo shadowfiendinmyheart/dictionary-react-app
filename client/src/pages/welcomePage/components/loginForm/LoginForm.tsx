@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
+import { toast } from 'react-toastify';
 
 import InputForm from '../../../../components/InputForm';
 import Button from '../../../../components/Button';
 import { useHttp } from '../../../../hooks/http.hook';
 import user from '../../../../store/user';
+import { notificationConfig } from '../../../../constants/notification';
 
 import styles from './LoginForm.module.scss';
 
@@ -14,10 +16,10 @@ const LoginForm = observer((): React.ReactElement => {
     authLogin: '',
     authPassword: '',
   });
-
+  
   useEffect( () => {
     if (error) {
-      alert(error); // Добавить нормальный вывод ошибки ! ! !
+      toast.error(error, notificationConfig);
       clearAnswer();
     }
   }, [error]);
@@ -34,8 +36,10 @@ const LoginForm = observer((): React.ReactElement => {
     try {
       const data = await request('api/auth/login', 'POST', {...form});
       user.login(data.accessToken);
+      toast.success('Вы успешно вошли!', notificationConfig);
     } catch (e) {}
   }
+
 
   return(
     <form action={'/login'} method={'post'} className={styles.container}>

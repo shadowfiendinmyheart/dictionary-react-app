@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import { toast } from 'react-toastify';
+
 import user from '../../store/user';
 import { useHttp } from '../../hooks/http.hook';
 import useInput from '../../hooks/input.hook';
@@ -8,8 +10,8 @@ import Button from '../../components/Button';
 import Popup from '../../components/Popup';
 import AboutCard from './components/AboutCard';
 import SearchImage from './components/SearchImage';
-
 import DynamicPagination from '../../components/DynamicPagination';
+import { notificationConfig } from '../../constants/notification';
 
 import styles from './AddWordPage.module.scss';
 
@@ -32,7 +34,7 @@ const AddWordPage = observer(():React.ReactElement => {
   const [images, setImages] = useState<imageType[]>();
   const [pickedImage, setPickedImage] = useState<string>('');
   const [page, setPage] = useState<number>(2);
-  const [maxPage, setMaxPage] = useState<number>(3);
+  const [maxPage, setMaxPage] = useState<number>(2);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [isExistCard, setIsExistCard] = useState<boolean>(false);
   const [existCard, setExistCard] = useState<cardType>();
@@ -57,6 +59,7 @@ const AddWordPage = observer(():React.ReactElement => {
       })
       return images;
     } catch (e) {
+      toast.error(e, notificationConfig);
       console.log('ERROR:', e);
     }
   }
@@ -72,6 +75,7 @@ const AddWordPage = observer(():React.ReactElement => {
       console.log(create);
       return true;
     } catch(e) {
+      toast.error(e, notificationConfig);
       console.log(e);
       return false;
     }
@@ -84,7 +88,6 @@ const AddWordPage = observer(():React.ReactElement => {
       ev.preventDefault();
       ev.stopPropagation();
       setPage(2);
-      setMaxPage(3);
       const checkCardExist = await request(
         `words/getEngWord?reqWord=${inputWord.value}`, 
         'GET', 
@@ -115,6 +118,7 @@ const AddWordPage = observer(():React.ReactElement => {
         setImages(await getImages(mainTranslation, 1));
       }
     } catch (e) {
+      toast.error(e, notificationConfig);
       const code = Number(e.toString().split(' ')[1]);
       if (code === 400) await createDictionary();
       console.log('ERROR:', e);
@@ -141,6 +145,7 @@ const AddWordPage = observer(():React.ReactElement => {
         {Authorization: `Bearer ${user.token}`}
       );
       console.log('done saveTranslateWord', saveTranslateWord);
+      toast.success('Карточка успешно создана и ждёт вас в словаре :)', notificationConfig);
 
       setShowPopup(false);
       inputWord.setValue('');
@@ -148,6 +153,7 @@ const AddWordPage = observer(():React.ReactElement => {
       setImages([]);
       inputTranslate.setValue('');
     } catch (e) {
+      toast.error(e, notificationConfig);
       const code = Number(e.toString().split(' ')[1]);
       if (code === 400) {
         // TODO: когда будет готова реализация нескольких словарей,
@@ -165,9 +171,11 @@ const AddWordPage = observer(():React.ReactElement => {
     if (!inputImage.value) return console.log('Заполните поле для поиска ассоциации');
 
     try {
-      const images =  await getImages(inputImage.value, page);
+      const images =  await getImages(inputImage.value, 1);
       setImages(images);
+      setPage(2);
     } catch (e) {
+      toast.error(e, notificationConfig);
       console.log('ERROR:', e);
     }
   }
@@ -276,6 +284,7 @@ const AddWordPage = observer(():React.ReactElement => {
                 const images = await getImages(existCard.word, page);
                 setImages(images);
               } catch (e) {
+                toast.error(e, notificationConfig);
                 console.log('ERROR:', e);
               }
             }}
