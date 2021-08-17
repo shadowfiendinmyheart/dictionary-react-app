@@ -6,4 +6,5 @@ const schema = new Schema ({
   password: {type: String, required: true},
   dictionaries: [{type: Schema.Types.ObjectId, ref:"Dictionary"}]
 })
+
 module.exports = model('User', schema);

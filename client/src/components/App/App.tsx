@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 import AuthRouter from '../AuthRouter';
 import user from '../../store/user';
 
@@ -7,6 +8,7 @@ import Header from '../Header';
 import Footer from '../Footer';
 
 import styles from './App.module.scss';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = ():React.ReactElement => {
   useEffect(() => {
@@ -22,6 +24,7 @@ const App = ():React.ReactElement => {
           <Footer/>
         </BrowserRouter>
       </div>
+      <ToastContainer />
     </div>
   );
 };

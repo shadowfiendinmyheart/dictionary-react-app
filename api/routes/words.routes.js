@@ -1,5 +1,6 @@
 const {Router} = require('express');
 const {check, validationResult} = require('express-validator');
+const { wordListLimit, knownWordsCounter } = require('../constants/words');
 
 const Dictionary = require('../models/Dictionary');
 const User = require('../models/User');
@@ -9,7 +10,6 @@ const getTranslatedWords = require('../services/translate');
 
 const router = Router();
 const language = "eng";//Захардкодил
-const wordListLimit = 10;//Захардкодил
 
 // words/translate?word=
 // Получить перевод слова
@@ -70,7 +70,7 @@ router.post('/saveTranslation',
   [
     check('reqWord', 'Введите слово').notEmpty().isString().toLowerCase(),
     check('reqTranslation', 'Введите перевод').notEmpty().isString().toLowerCase(),
-    check('reqImageURL', 'Введите URL картинки').notEmpty().isString().toLowerCase(),
+    check('reqImageURL', 'Введите URL картинки').notEmpty().isString(),
     auth
   ],
   async (req, res) => {
@@ -421,4 +421,31 @@ router.get('/getRandomWords',
     }
   }
 )
+
+router.get('/count', auth,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          errors: errors.array(),
+          message: 'Вы допустили ошибку...'
+        })
+      }
+      const reqUserId = req.user.userId;
+
+      const dictionaries = await Dictionary.find({ "ownerId": reqUserId });
+      
+      // TODO: по возмможности перенести эту логику в запрос к бд
+      const allWords = dictionaries.map(d => d.words.map(w => w)).flat();
+      const knownWords = allWords.filter(w => w.counter > knownWordsCounter);
+
+      return res.status(201).json({message: {allWords: allWords.length, knownWords: knownWords.length }});
+    } catch (e) {
+      return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
+    }
+  }
+)
+
+
 module.exports = router;

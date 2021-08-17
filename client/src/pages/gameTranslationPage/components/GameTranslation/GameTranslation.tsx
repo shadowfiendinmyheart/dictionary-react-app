@@ -51,7 +51,6 @@ const GameTranslation = (props: GameTranslationProps): React.ReactElement => {
         
         const pass = compareWords(translate.value, cards[counter].translate);
         
-        console.log('pass', pass);
         if (pass) {
             console.log('gratz, u r right');
             try {

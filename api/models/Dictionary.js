@@ -1,4 +1,5 @@
 const {Schema, model} = require('mongoose');
+
 const Word = new Schema( {
     word: {type: String, index: true},
     translations: {type: [String], index: true},
@@ -12,4 +13,5 @@ const Dictionary = new Schema ({
     ownerId: {type: Schema.Types.ObjectId,ref:"User"},
     words: [Word]
 });
+
 module.exports = model('Dictionary', Dictionary);

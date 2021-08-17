@@ -21,18 +21,25 @@ const UserProfile = observer((): React.ReactElement => {
           null, 
           {Authorization: `Bearer ${user.token}`}
         );
+
+        const userWords = await request(
+          `words/count`,
+          'GET',
+          null, 
+          {Authorization: `Bearer ${user.token}`}
+        );
         
         setUsername(userInfo.message.nickname);
-        if (userInfo.message.words) {
-          setAllWords(userInfo.message.words.length);
-          setKnownWords(userInfo.message.words.length);
-        }
+        setAllWords(userWords.message.allWords);
+        setKnownWords(userWords.message.knownWords);
       } catch (e) {
         console.log('ERROR:', e);
       }
     }
     setUserInfo();
   }, [])
+
+  // [....................................................................................................]
 
   // TODO: сделать loader для текста
   return (
@@ -44,7 +51,7 @@ const UserProfile = observer((): React.ReactElement => {
             <ul className={styles.list}>
               <li className={styles.element}>
                 <span>Кол-во слов в словаре: </span>
-                <span>{allWords}</span>
+                <span>{loading ? 'loading' : allWords}</span>
               </li>
               <li className={styles.element}>
                 <span>Кол-во изученных слов: </span>
