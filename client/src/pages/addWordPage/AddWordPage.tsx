@@ -61,6 +61,22 @@ const AddWordPage = observer(():React.ReactElement => {
     }
   }
 
+  const createDictionary = async () => {
+    try {
+      const create = await request(
+        'words/createDictionary', 
+        'POST', 
+        null, 
+        {Authorization: `Bearer ${user.token}`}
+      );
+      console.log(create);
+      return true;
+    } catch(e) {
+      console.log(e);
+      return false;
+    }
+  }
+
   // TODO: подумать над некой "обёрткой" для кнопок
   const translateHandler = async (ev: React.SyntheticEvent) => {
     if (!inputWord.value) return console.log('Введите слово для перевода');
@@ -99,7 +115,9 @@ const AddWordPage = observer(():React.ReactElement => {
         setImages(await getImages(mainTranslation, 1));
       }
     } catch (e) {
-      console.log('ERROR: ', e);
+      const code = Number(e.toString().split(' ')[1]);
+      if (code === 400) await createDictionary();
+      console.log('ERROR:', e);
     }
   }
   
@@ -113,21 +131,6 @@ const AddWordPage = observer(():React.ReactElement => {
     setShowPopup(true);
   }
 
-  const createDictionary = async () => {
-    try {
-      const create = await request(
-        'words/createDictionary', 
-        'POST', 
-        null, 
-        {Authorization: `Bearer ${user.token}`}
-      );
-      console.log(create);
-      return true;
-    } catch(e) {
-      console.log(e);
-      return false;
-    }
-  }
   
   const confirmClickHandler = async () => {
     try {
