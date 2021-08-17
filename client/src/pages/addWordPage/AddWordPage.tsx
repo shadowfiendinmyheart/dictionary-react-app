@@ -92,9 +92,11 @@ const AddWordPage = observer(():React.ReactElement => {
           null, 
           {Authorization: `Bearer ${user.token}`}
         );
+        const mainTranslation = translateFromServer.message.split(', ')[0];
+
         inputTranslate.setValue(translateFromServer.message);
-        inputImage.setValue(translateFromServer.message);
-        setImages(await getImages(translateFromServer.message, 1));
+        inputImage.setValue(mainTranslation);
+        setImages(await getImages(mainTranslation, 1));
       }
     } catch (e) {
       console.log('ERROR: ', e);
