@@ -395,8 +395,13 @@ router.get('/getWordsList',
         return res.status(400).json({message: "Словарь отсутствует"});
       }
 
+      let wordsArr = [];
+      dictionaryAggregation.forEach((word) => {
+        wordsArr.push(word.words);
+      })
+
       return res.status(200).json({
-        wordsArr: dictionaryAggregation,
+        wordsArr: wordsArr,
         pagesTotal: Math.ceil(countAggregation[0].wordsCount / wordListLimit)
       });
     } catch (e) {
