@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import user from '../../store/user';
-import Card from '../../components/Card';
-import { sizeVariant } from '../../components/Card/Card';
 import InputForm from '../../components/InputForm';
 import Button from '../../components/Button';
-import DynamicPagination from '../../components/DynamicPagination';
+import UserCards from './components/UserCards';
 
 import { useHttp } from '../../hooks/http.hook';
 
 import styles from './DictionaryPage.module.scss';
 
-enum words {
+export enum words {
   all,
   known,
   unknown
+}
+
+export interface card {
+  word: string, 
+  translations: string[], 
+  imageURL: string,
+  counter: number
 }
 
 const DictionaryPage = observer((): React.ReactElement => {
@@ -22,7 +27,7 @@ const DictionaryPage = observer((): React.ReactElement => {
 
   const [selectedWords, setSelectedWords] = useState<words>(words.all);
   const [searchWord, setSearchWord] = useState<string>('');
-  const [cards, setCards] = useState<{word: string, translations: string[], imageURL: string}[]>([]);
+  const [cards, setCards] = useState<card[]>([]);
   const [page, setPage] = useState<number>(1);
   const [maxPage, setMaxPage] = useState<number>(2);
 
@@ -32,27 +37,14 @@ const DictionaryPage = observer((): React.ReactElement => {
 
   const getCards = () => {
     return request(
-      `words/getWordsList?page=${page}`,
+      `words/getWordsList?page=${page}&filter=${selectedWords}`,
       'GET',
       null,
       {Authorization: `Bearer ${user.token}`}
     );
   }
 
-  const cardsElem = (cards: {word: string, translations: string[], imageURL: string}[]) => {
-      return cards.map(card => 
-        <div className={styles.card} key={card.word}>
-          <Card 
-                word={card.word}  
-                translate={card.translations[0]} 
-                url={card.imageURL}
-                size={sizeVariant.s}
-              />
-        </div>
-      ) 
-  }
-
-  const dynamicPaginationHandler = (): Promise<void | string> => {
+  const scrollPageHandler = (): Promise<void | string> => {
     return new Promise((res, rej) => {
       const nextPage: Promise<void | string> = getCards()
         .then((res: any) => {
@@ -66,6 +58,11 @@ const DictionaryPage = observer((): React.ReactElement => {
       rej(nextPage);
     })
   }
+
+  useEffect(() => {
+    console.log('cards', cards);
+    console.log('selected words', selectedWords);
+  }, [cards])
 
   return (
     <div className={styles.wrapper}>
@@ -84,12 +81,13 @@ const DictionaryPage = observer((): React.ReactElement => {
         />
         <Button onClick={() => console.log('mock')} text={'Мне повезёт'} />
       </form>
-
-      <div className={styles.cardsWrapper}>
-        <DynamicPagination currentPage={page} maxPage={maxPage} onScrollEnd={dynamicPaginationHandler}>
-          {cardsElem(cards)}
-        </DynamicPagination>
-      </div>
+      <UserCards
+        cards={cards} 
+        page={page} 
+        maxPage={maxPage} 
+        selectedWords={selectedWords}
+        onScrollPage={scrollPageHandler}
+      />
     </div>
   )
 });

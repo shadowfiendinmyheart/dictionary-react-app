@@ -23,25 +23,3 @@
     background-color: rgb(224, 200, 121);
   }
 }
-
-.cardsWrapper {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-gap: 15px;
-}
-
-.card {
-  grid-column: span 2;
-
-  &:last-child:nth-child(3n - 1) {
-    grid-column-end: -2;
-  }
-  
-  &:nth-last-child(2):nth-child(3n + 1) {
-    grid-column-end: 4;
-  }
-  
-  &:last-child:nth-child(3n - 2) {
-    grid-column-end: 5;
-  }
-}

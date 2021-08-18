@@ -1,5 +1,6 @@
 const {Router} = require('express');
 const {check, validationResult} = require('express-validator');
+const mongoose = require('mongoose');
 const { wordListLimit, knownWordsCounter } = require('../constants/words');
 
 const Dictionary = require('../models/Dictionary');
@@ -55,8 +56,12 @@ router.post('/createDictionary', auth,
       if (findDictionary) {
         return res.status(400).json({message: "Словарь с таким языком уже существует"});
       }
-      const dictionary = new Dictionary({language:language, ownerId: reqUserId});
+      const dictionary = new Dictionary({language: language, ownerId: reqUserId});
+      
+      const findUser = await User.findOne({"_id": reqUserId});
+      findUser.dictionaries.push(dictionary);
 
+      await findUser.save();
       await dictionary.save();
       return res.status(201).json({message: 'Словарь создан'});
     } catch (e) {
@@ -95,7 +100,6 @@ router.post('/saveTranslation',
       const findWordId = dictionary.words.findIndex(word => word.word === reqWord);
       let word;
 
-      
       if (findWordId > -1) {
         word = dictionary.words[findWordId];
       } else {
@@ -106,7 +110,7 @@ router.post('/saveTranslation',
         }) - 1;
         word = dictionary.words[wordId];
       }
-
+      
       //Существует ли такой перевод слова
       const findTranslation = word.translations.find(word => word === reqTranslation);
       if (!findTranslation) {
@@ -238,7 +242,7 @@ router.get('/getEngWord',
         {
           $match: {
             "language": language,
-            "ownerId": require('mongoose').Types.ObjectId(reqUserId)
+            "ownerId": mongoose.Types.ObjectId(reqUserId)
           }
         },
         {
@@ -261,6 +265,7 @@ router.get('/getEngWord',
       //Вовзвращение объекта: слово, перевод, картинка, статус, дата
       return res.status(200).json({message: dictionaryAggregation[0].words[0]});
     } catch (e) {
+      console.log('route /getEngWord', e);
       return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
     }
   }
@@ -332,14 +337,13 @@ router.get('/getWordsList',
         {
           $match: {
             "language": language,
-            "ownerId": require('mongoose').Types.ObjectId(reqUserId)
+            "ownerId": mongoose.Types.ObjectId(reqUserId)
           },
-
         },
         {
           $project: {
-            "wordsArr": {$slice: ["$words",(page - 1) * wordListLimit , wordListLimit]},
-            "wordsCount":{$size: "$words"}
+            "wordsArr": {$slice: ["$words", (page - 1) * wordListLimit, wordListLimit]},
+            "wordsCount": {$size: "$words"}
           }
         }
       ])
@@ -384,7 +388,7 @@ router.get('/getRandomWords',
         {
           $match: {
             "language": language,
-            "ownerId": require('mongoose').Types.ObjectId(reqUserId)
+            "ownerId": mongoose.Types.ObjectId(reqUserId)
           }
         },
         {
@@ -411,9 +415,7 @@ router.get('/getRandomWords',
         }
       ])
 
-      const words = dictionaryAggregation.map(w => {
-        return {...w.word}
-      })
+      const words = dictionaryAggregation.map(w => {return {...w.word}});
 
       return res.status(200).json({message: words});
     } catch (e) {
@@ -435,7 +437,7 @@ router.get('/count', auth,
       const reqUserId = req.user.userId;
 
       const dictionaries = await Dictionary.find({ "ownerId": reqUserId });
-      
+
       // TODO: по возмможности перенести эту логику в запрос к бд
       const allWords = dictionaries.map(d => d.words.map(w => w)).flat();
       const knownWords = allWords.filter(w => w.counter > knownWordsCounter);
