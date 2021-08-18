@@ -322,6 +322,7 @@ router.post('/setCounter',
 router.get('/getWordsList',
   [
     check('page', 'Введите страницу').notEmpty().isNumeric(),
+    check('mode', 'Введите режим выдачи списка').notEmpty().isNumeric(),
     auth
   ],
   async (req, res) => {
@@ -335,7 +336,35 @@ router.get('/getWordsList',
       }
 
       const page = req.query.page;
+      const mode = req.query.mode;
       const reqUserId = req.user.userId;
+
+      let condition;
+      switch (mode) {
+        case "0":
+          condition = {$gt: -1}
+          break;
+        case "1":
+          condition = {$lt: knownWordsCounter}
+          break;
+        case "2":
+          condition = {$gt: knownWordsCounter}
+          break;
+      }
+
+      const countAggregation = await Dictionary.aggregate([
+        {
+          $match: {
+            "language": language,
+            "ownerId": mongoose.Types.ObjectId(reqUserId)
+          }
+        },
+        {
+          $project: {
+            "wordsCount": {$size: "$words"}
+          }
+        }
+      ]);
 
       const dictionaryAggregation = await Dictionary.aggregate([
         {
@@ -345,22 +374,30 @@ router.get('/getWordsList',
           },
         },
         {
-          $project: {
-            "wordsArr": {$slice: ["$words", (page - 1) * wordListLimit, wordListLimit]},
-            "wordsCount": {$size: "$words"}
+          $unwind : {
+            path: "$words"
           }
+        },
+        {
+          $match: {
+            "words.counter": condition
+          }
+        },
+        {
+          $skip: (page - 1) * wordListLimit
+        },
+        {
+          $limit: wordListLimit
         }
-      ])
+      ]);
 
-      if (!dictionaryAggregation[0]) {
+      if (!dictionaryAggregation) {
         return res.status(400).json({message: "Словарь отсутствует"});
       }
 
-      const dictionary = dictionaryAggregation[0];
-
       return res.status(200).json({
-        words: dictionary.wordsArr,
-        pagesTotal: Math.ceil(dictionary.wordsCount / wordListLimit)
+        wordsArr: dictionaryAggregation,
+        pagesTotal: Math.ceil(countAggregation[0].wordsCount / wordListLimit)
       });
     } catch (e) {
       return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
