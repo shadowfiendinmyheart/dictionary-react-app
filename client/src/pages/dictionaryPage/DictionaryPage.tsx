@@ -75,14 +75,18 @@ const DictionaryPage = observer((): React.ReactElement => {
         return;
       }
       
-      const card = await request(
+      const cards = await request(
         `words/getEngWord?reqWord=${searchWord}`,
         'GET',
         null,
         {Authorization: `Bearer ${user.token}`}
-        );
+      );
+
+      if (cards.message.length === 0) {
+        throw new Error('К сожалению, у тебя нет такого слова :(');
+      }
         
-        setCards([{...card.message}]);
+      setCards([{...cards.message}]);
     } catch(e) {
       toast.error(String(e), notificationConfig);
       console.log('here', e);

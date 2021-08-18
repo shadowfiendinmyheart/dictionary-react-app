@@ -118,7 +118,7 @@ const AddWordPage = observer(():React.ReactElement => {
         setImages(await getImages(mainTranslation, 1));
       }
     } catch (e) {
-      toast.error(e, notificationConfig);
+      toast.error(String(e), notificationConfig);
       const code = Number(e.toString().split(' ')[1]);
       if (code === 400) await createDictionary();
       console.log('ERROR:', e);

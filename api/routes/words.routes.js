@@ -263,7 +263,7 @@ router.get('/getEngWord',
       }
 
       if (dictionaryAggregation[0].words.length === 0) {
-        return res.status(400).json({message: "Слово отсутствует"});
+        return res.status(200).json({message: []});
       }
 
       //Вовзвращение объекта: слово, перевод, картинка, статус, дата
