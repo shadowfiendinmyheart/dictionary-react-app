@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import { toast } from 'react-toastify';
+
 import user from '../../store/user';
+import { notificationConfig } from '../../constants/notification';
 import InputForm from '../../components/InputForm';
 import Button from '../../components/Button';
 import UserCards from './components/UserCards';
@@ -35,7 +38,7 @@ const DictionaryPage = observer((): React.ReactElement => {
     setSelectedWords(Number(ev.target.value));
   }
 
-  const getCards = () => {
+  const getCards = (page: number) => {
     return request(
       `words/getWordsList?page=${page}&filter=${selectedWords}`,
       'GET',
@@ -46,7 +49,7 @@ const DictionaryPage = observer((): React.ReactElement => {
 
   const scrollPageHandler = (): Promise<void | string> => {
     return new Promise((res, rej) => {
-      const nextPage: Promise<void | string> = getCards()
+      const nextPage: Promise<void | string> = getCards(page)
         .then((res: any) => {
           setCards([...cards, ...res.words]);
           setPage(prev => prev + 1);
@@ -59,10 +62,32 @@ const DictionaryPage = observer((): React.ReactElement => {
     })
   }
 
-  useEffect(() => {
-    console.log('cards', cards);
-    console.log('selected words', selectedWords);
-  }, [cards])
+  const findCardHandler = async (ev: React.SyntheticEvent) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+
+    
+    try {
+      if (searchWord.trim() === '') {
+        setPage(2);
+        const cards = await getCards(1);
+        setCards(cards.words);
+        return;
+      }
+      
+      const card = await request(
+        `words/getEngWord?reqWord=${searchWord}`,
+        'GET',
+        null,
+        {Authorization: `Bearer ${user.token}`}
+        );
+        
+        setCards([{...card.message}]);
+    } catch(e) {
+      toast.error(String(e), notificationConfig);
+      console.log('here', e);
+    }
+  }
 
   return (
     <div className={styles.wrapper}>
@@ -79,7 +104,7 @@ const DictionaryPage = observer((): React.ReactElement => {
           value={searchWord}
           onChange={(ev: React.ChangeEvent<HTMLInputElement>) => setSearchWord(ev.target.value)}
         />
-        <Button onClick={() => console.log('mock')} text={'Мне повезёт'} />
+        <Button onClick={findCardHandler} text={'Мне повезёт'} />
       </form>
       <UserCards
         cards={cards} 
