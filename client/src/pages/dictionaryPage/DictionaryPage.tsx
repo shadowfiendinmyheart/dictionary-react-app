@@ -34,13 +34,15 @@ const DictionaryPage = observer((): React.ReactElement => {
   const [page, setPage] = useState<number>(1);
   const [maxPage, setMaxPage] = useState<number>(2);
 
-  const handleSelectChange = (ev: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleSelectChange = async (ev: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedWords(Number(ev.target.value));
+    const cards = await getCards(1, Number(ev.target.value));
+    setCards([...cards.words]);
   }
 
-  const getCards = (page: number) => {
+  const getCards = (page: number, selectedWords: number) => {
     return request(
-      `words/getWordsList?page=${page}&filter=${selectedWords}`,
+      `words/getWordsList?page=${page}&mode=${selectedWords}`,
       'GET',
       null,
       {Authorization: `Bearer ${user.token}`}
@@ -49,7 +51,7 @@ const DictionaryPage = observer((): React.ReactElement => {
 
   const scrollPageHandler = (): Promise<void | string> => {
     return new Promise((res, rej) => {
-      const nextPage: Promise<void | string> = getCards(page)
+      const nextPage: Promise<void | string> = getCards(page, selectedWords)
         .then((res: any) => {
           setCards([...cards, ...res.words]);
           setPage(prev => prev + 1);
@@ -66,11 +68,10 @@ const DictionaryPage = observer((): React.ReactElement => {
     ev.stopPropagation();
     ev.preventDefault();
 
-    
     try {
       if (searchWord.trim() === '') {
         setPage(2);
-        const cards = await getCards(1);
+        const cards = await getCards(1, selectedWords);
         setCards(cards.words);
         return;
       }

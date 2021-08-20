@@ -6,8 +6,13 @@
 }
 
 @mixin glass() {
-  background-color: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
+  background-color: rgba(43, 43, 43, 0.66);
+  
+  @supports ((-webkit-backdrop-filter: blur()) or (backdrop-filter: blur())) {
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+  }
+
 }
 
 @mixin mainContent() {

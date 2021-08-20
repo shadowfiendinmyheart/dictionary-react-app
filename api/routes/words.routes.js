@@ -345,10 +345,10 @@ router.get('/getWordsList',
           condition = {$gt: -1}
           break;
         case "1":
-          condition = {$lt: knownWordsCounter}
+          condition = {$gt: knownWordsCounter}
           break;
         case "2":
-          condition = {$gt: knownWordsCounter}
+          condition = {$lt: knownWordsCounter}
           break;
       }
 
@@ -395,13 +395,10 @@ router.get('/getWordsList',
         return res.status(400).json({message: "Словарь отсутствует"});
       }
 
-      let wordsArr = [];
-      dictionaryAggregation.forEach((word) => {
-        wordsArr.push(word.words);
-      })
+      const words = dictionaryAggregation.map(w => w.words);
 
       return res.status(200).json({
-        wordsArr: wordsArr,
+        words,
         pagesTotal: Math.ceil(countAggregation[0].wordsCount / wordListLimit)
       });
     } catch (e) {
