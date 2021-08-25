@@ -25,7 +25,7 @@ const GameTranslationPage = (): React.ReactElement => {
 
     const fillCards = () => {
         request(
-            `words/getRandomWords?counterFilter=10&count=10`,
+            `words/getRandomWords?counterFilter=10&count=10&checkDate=0`,
             'GET',
             null,
             {Authorization: `Bearer ${user.token}`}

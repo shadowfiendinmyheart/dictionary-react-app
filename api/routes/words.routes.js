@@ -8,7 +8,6 @@ const User = require('../models/User');
 
 const auth = require('../middleware/auth.middleware');
 const getTranslatedWords = require('../services/translate');
-const {booleanParser} = require("config/parser");
 
 const router = Router();
 const language = "eng";//Захардкодил

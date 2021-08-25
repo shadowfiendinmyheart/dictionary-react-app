@@ -13,8 +13,8 @@ const HomePage = (): React.ReactElement => {
       <div className={styles.menu}>
         <LinkAsButton updateClassName={styles.addWordButton} text={"Добавить слово в словарик"} to={ROUTES.ADD_WORD_PAGE}/>
         <LinkAsButton updateClassName={styles.gameOneButton} text={"Игра 1. Переводчик"} to={ROUTES.GAME_TRANSLATION_PAGE}/>
-        <LinkAsButton updateClassName={styles.gameTwoButton} text={"Игра 2. Выбор"} to={"#"}/>
-        <LinkAsButton updateClassName={styles.gameThreeButton} text={"Игра 3. Картинки"} to={"#"}/>
+        {/* <LinkAsButton updateClassName={styles.gameTwoButton} text={"Игра 2. Выбор"} to={"#"}/>
+        <LinkAsButton updateClassName={styles.gameThreeButton} text={"Игра 3. Картинки"} to={"#"}/> */}
         <LinkAsButton updateClassName={styles.showDictionaryButton} text={"Подсмотреть в словарик"} to={ROUTES.DICTIONARY_PAGE}/>
       </div>
     </div>
