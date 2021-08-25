@@ -1,13 +1,14 @@
 const {Router} = require('express');
 const {check, validationResult} = require('express-validator');
 const mongoose = require('mongoose');
-const { wordListLimit, knownWordsCounter } = require('../constants/words');
+const { wordListLimit, knownWordsCounter, randomWordsDateDifference} = require('../constants/words');
 
 const Dictionary = require('../models/Dictionary');
 const User = require('../models/User');
 
 const auth = require('../middleware/auth.middleware');
 const getTranslatedWords = require('../services/translate');
+const {booleanParser} = require("config/parser");
 
 const router = Router();
 const language = "eng";//Захардкодил
@@ -414,6 +415,7 @@ router.get('/getRandomWords',
   [
     check('counterFilter', 'Введите фильтр показов').notEmpty().isNumeric(),
     check('count', 'Введите количество нужных слов').notEmpty().isNumeric(),
+    check('checkDate', 'Укажите флажок фильтра по дате').notEmpty().isBoolean(),
     auth
   ],
   async (req, res) => {
@@ -428,9 +430,10 @@ router.get('/getRandomWords',
 
       const counterFilter = parseInt(req.query.counterFilter);
       const count = parseInt(req.query.count);
+      const checkDate = (req.query.checkDate.toLowerCase() === "true");
       const reqUserId = req.user.userId;
 
-      const dictionaryAggregation = await Dictionary.aggregate([
+      let pipeline = [
         {
           $match: {
             "language": language,
@@ -448,18 +451,24 @@ router.get('/getRandomWords',
               $lt: counterFilter
             }
           }
-        },
-        {
-          $sample: {
-            size: count
-          }
-        },
-        {
-          $project: {
-            "word": "$words"
-          }
         }
-      ])
+      ]
+
+      if (checkDate) {
+        let lastDate = new Date(Date.now());
+        lastDate.setDate(lastDate.getDate() - randomWordsDateDifference);
+        const dateMatch = {
+          '$match' : {'words.date': {'$lte': lastDate}}
+        }
+        pipeline.push(dateMatch);
+      }
+
+      pipeline.push({$sample: {size: count}});
+      pipeline.push({$project: {"word": "$words"}});
+
+
+
+      const dictionaryAggregation = await Dictionary.aggregate(pipeline)
 
       const words = dictionaryAggregation.map(w => {return {...w.word}});
 
