@@ -7,12 +7,12 @@ import Loader from '../../../../components/Loader';
 import LoadingPage from '../../../loadingPage/LoadingPage';
 import useInput from '../../../../hooks/input.hook';
 import { useHttp } from '../../../../hooks/http.hook';
-import { ICards } from '../../GameTranslationPage';
+import { ICard } from '../../GameTranslationPage';
 
 import styles from './GameTranslation.module.scss';
 
 type GameTranslationProps = {
-    cards: ICards[];
+    cards: ICard[];
     lengthWords: number;
     onFinish: () => void;
     onRightAnswer: (cardNumber: number) => void;

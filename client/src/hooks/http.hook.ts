@@ -5,7 +5,7 @@ export const useHttp = () => {
   const [loading, setLoading] = useState<boolean>(false); 
   const [error, setError] = useState<string | null>(null);
 
-  const request = useCallback(async (
+  const request: any = useCallback(async (
       url: string, 
       method: string = 'GET',
       body: object | string | null = null,
@@ -31,23 +31,9 @@ export const useHttp = () => {
           if (!refresh.ok) {
             return new Error(answer.message || 'Error . . .')
           }
-
           user.refresh(answer.tokens.accessToken);
 
-          const response: Response = await fetch(url, {method, body, headers: {...headers, Authorization: `Bearer ${user.token}`}});
-          const data: any = await response.json();
-
-          if (!response.ok) {
-            return new Error(data.message || 'Error . . .')
-          }
-  
-          const headersFromRes: any = {};
-          response.headers.forEach((value, name) => {
-            headersFromRes[name] = value;
-          });
-          data['headers'] = headersFromRes;
-  
-          return data;
+          return await request(url, method, body, {...headers, Authorization: `Bearer ${user.token}`});
         }
 
         if (!response.ok) {

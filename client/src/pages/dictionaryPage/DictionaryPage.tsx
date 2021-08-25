@@ -57,7 +57,7 @@ const DictionaryPage = observer((): React.ReactElement => {
           setPage(prev => prev + 1);
           setMaxPage(res.pagesTotal);
         })
-        .catch((rej) => `got error - ${rej}`);
+        .catch((rej: any) => `got error - ${rej}`);
 
       res(nextPage);
       rej(nextPage);

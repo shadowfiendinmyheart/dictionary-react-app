@@ -8,7 +8,7 @@ import { useHttp } from '../../hooks/http.hook';
 
 import styles from './GameTranslationPage.module.scss';
 
-export interface ICards {
+export interface ICard {
     word: string,
     translate: string,
     img: string,
@@ -19,7 +19,7 @@ export interface ICards {
 
 const GameTranslationPage = (): React.ReactElement => {
     const [isGame, setGame] = useState<boolean>(true);
-    const [cards, setCards] = useState<ICards[]>([]);
+    const [cards, setCards] = useState<ICard[]>([]);
 
     const { request, loading } = useHttp();
 
@@ -29,15 +29,15 @@ const GameTranslationPage = (): React.ReactElement => {
             'GET',
             null,
             {Authorization: `Bearer ${user.token}`}
-        ).then(res => {
-            const cardsResponse: ICards[] = res.message.map((r: any) => {
+        ).then((res: any) => {
+            const cardsResponse: ICard[] = res.message.map((r: any): ICard => {
                 return ({
                     word: r.word,
                     translate: r.translations[0],
                     img: r.imageURL,
                     counter: r.counter,
                     isRightAnswer: false,
-                    userAnswer: null,
+                    userAnswer: undefined,
                 })
             })
             
@@ -55,13 +55,13 @@ const GameTranslationPage = (): React.ReactElement => {
     }
     
     const rightAnswerHandler = (cardNumber: number) => {
-        const updateCards: ICards[] = [...cards];
+        const updateCards: ICard[] = [...cards];
         updateCards[cardNumber].isRightAnswer = true;
         setCards(updateCards);
     }
 
     const falseAnswerHandler = (cardNumber: number, userAnswer: string) => {
-        const updateCards: ICards[] = [...cards];
+        const updateCards: ICard[] = [...cards];
         updateCards[cardNumber].userAnswer = userAnswer;
         setCards(updateCards);
     }
