@@ -126,6 +126,8 @@ router.post('/saveTranslation',
   }
 )
 
+
+
 // Сохранение перевода слова
 router.post('/addTranslation',
   [
@@ -177,7 +179,7 @@ router.post('/addTranslation',
 router.post('/addWord',
   [
     check('reqWord', 'Введите слово').notEmpty().isString().toLowerCase(),
-    check('reqImageURL', 'Введите URL картинки').notEmpty().isString().toLowerCase(),
+    check('reqImageURL', 'Введите URL картинки').notEmpty().isString(),
     auth
   ],
   async (req, res) => {
@@ -217,6 +219,48 @@ router.post('/addWord',
       return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
     }
   }
+)
+
+//Изменение картинки
+router.post('/setImage',
+    [
+      check('reqWord', 'Введите слово').notEmpty().isString().toLowerCase(),
+      check('reqImageURL', 'Введите URL картинки').notEmpty().isString(),
+      auth
+    ],
+    async (req, res) => {
+      try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(400).json({
+            errors: errors.array(),
+            message: 'Вы допустили ошибку . . .'
+          })
+        }
+
+        const {reqWord, reqImageURL} = req.body;
+        const reqUserId = req.user.userId;
+
+        const dictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
+        if (!dictionary) {
+          return res.status(400).json({message: "Отсутствует словарь"});
+        }
+
+        //Существует ли такое слово в словаре вообще
+        const findWordId = dictionary.words.findIndex(word => word.word === reqWord);
+        if (findWordId === -1) {
+          return res.status(400).json({message: "Такого слова нет"});
+        }
+
+        const word = dictionary.words[findWordId];
+        word.imageURL = reqImageURL;
+
+        await dictionary.save();
+        return res.status(201).json({message: 'Картинка изменена', word: word});
+      } catch (e) {
+        return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
+      }
+    }
 )
 
 // Получение слова из списка слов пользователя
