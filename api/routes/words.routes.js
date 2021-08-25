@@ -1,13 +1,14 @@
 const {Router} = require('express');
 const {check, validationResult} = require('express-validator');
 const mongoose = require('mongoose');
-const { wordListLimit, knownWordsCounter } = require('../constants/words');
+const { wordListLimit, knownWordsCounter, randomWordsDateDifference} = require('../constants/words');
 
 const Dictionary = require('../models/Dictionary');
 const User = require('../models/User');
 
 const auth = require('../middleware/auth.middleware');
 const getTranslatedWords = require('../services/translate');
+const {booleanParser} = require("config/parser");
 
 const router = Router();
 const language = "eng";//Захардкодил
@@ -125,6 +126,8 @@ router.post('/saveTranslation',
   }
 )
 
+
+
 // Сохранение перевода слова
 router.post('/addTranslation',
   [
@@ -176,7 +179,7 @@ router.post('/addTranslation',
 router.post('/addWord',
   [
     check('reqWord', 'Введите слово').notEmpty().isString().toLowerCase(),
-    check('reqImageURL', 'Введите URL картинки').notEmpty().isString().toLowerCase(),
+    check('reqImageURL', 'Введите URL картинки').notEmpty().isString(),
     auth
   ],
   async (req, res) => {
@@ -216,6 +219,48 @@ router.post('/addWord',
       return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
     }
   }
+)
+
+//Изменение картинки
+router.post('/setImage',
+    [
+      check('reqWord', 'Введите слово').notEmpty().isString().toLowerCase(),
+      check('reqImageURL', 'Введите URL картинки').notEmpty().isString(),
+      auth
+    ],
+    async (req, res) => {
+      try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(400).json({
+            errors: errors.array(),
+            message: 'Вы допустили ошибку . . .'
+          })
+        }
+
+        const {reqWord, reqImageURL} = req.body;
+        const reqUserId = req.user.userId;
+
+        const dictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
+        if (!dictionary) {
+          return res.status(400).json({message: "Отсутствует словарь"});
+        }
+
+        //Существует ли такое слово в словаре вообще
+        const findWordId = dictionary.words.findIndex(word => word.word === reqWord);
+        if (findWordId === -1) {
+          return res.status(400).json({message: "Такого слова нет"});
+        }
+
+        const word = dictionary.words[findWordId];
+        word.imageURL = reqImageURL;
+
+        await dictionary.save();
+        return res.status(201).json({message: 'Картинка изменена', word: word});
+      } catch (e) {
+        return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
+      }
+    }
 )
 
 // Получение слова из списка слов пользователя
@@ -411,6 +456,7 @@ router.get('/getRandomWords',
   [
     check('counterFilter', 'Введите фильтр показов').notEmpty().isNumeric(),
     check('count', 'Введите количество нужных слов').notEmpty().isNumeric(),
+    check('checkDate', 'Укажите флажок фильтра по дате').notEmpty().isBoolean(),
     auth
   ],
   async (req, res) => {
@@ -425,9 +471,10 @@ router.get('/getRandomWords',
 
       const counterFilter = parseInt(req.query.counterFilter);
       const count = parseInt(req.query.count);
+      const checkDate = (req.query.checkDate.toLowerCase() === "true");
       const reqUserId = req.user.userId;
 
-      const dictionaryAggregation = await Dictionary.aggregate([
+      let pipeline = [
         {
           $match: {
             "language": language,
@@ -445,18 +492,24 @@ router.get('/getRandomWords',
               $lt: counterFilter
             }
           }
-        },
-        {
-          $sample: {
-            size: count
-          }
-        },
-        {
-          $project: {
-            "word": "$words"
-          }
         }
-      ])
+      ]
+
+      if (checkDate) {
+        let lastDate = new Date(Date.now());
+        lastDate.setDate(lastDate.getDate() - randomWordsDateDifference);
+        const dateMatch = {
+          '$match' : {'words.date': {'$lte': lastDate}}
+        }
+        pipeline.push(dateMatch);
+      }
+
+      pipeline.push({$sample: {size: count}});
+      pipeline.push({$project: {"word": "$words"}});
+
+
+
+      const dictionaryAggregation = await Dictionary.aggregate(pipeline)
 
       const words = dictionaryAggregation.map(w => {return {...w.word}});
 
