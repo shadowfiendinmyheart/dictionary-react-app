@@ -174,6 +174,51 @@ router.post('/addTranslation',
   }
 )
 
+// Сохранение перевода слова
+router.post('/editTranslation',
+    [
+      check('reqWord', 'Введите слово').notEmpty().isString().toLowerCase(),
+      check('reqTranslations', 'Введите переводы').notEmpty().isString().toLowerCase(),
+      auth
+    ],
+    async (req, res) => {
+      try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(400).json({
+            errors: errors.array(),
+            message: 'Вы допустили ошибку . . .'
+          })
+        }
+
+        const {reqWord, reqTranslations} = req.body;
+        const reqUserId = req.user.userId;
+
+        const dictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
+        if (!dictionary) {
+          return res.status(400).json({message: "Отсутствует словарь"});
+        }
+
+        //Существует ли такое слово в словаре вообще
+        const findWordId = dictionary.words.findIndex(word => word.word === reqWord);
+
+        if (findWordId === -1) {
+          return res.status(400).json({message: "Отсутствует слово"});
+        }
+        const word = dictionary.words[findWordId];
+
+        word.translations = [];
+        const translationsArr = reqTranslations.split(", ");
+        Array.prototype.push.apply(word.translations, translationsArr)
+
+        await dictionary.save();
+        return res.status(201).json({message: 'Перевод изменен', word: word});
+      } catch (e) {
+        return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
+      }
+    }
+)
+
 //Добавление слова в словарь
 router.post('/addWord',
   [
