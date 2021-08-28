@@ -1,20 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import { toast } from 'react-toastify';
+
 import user from '../../store/user';
-import Card from '../../components/Card';
-import { sizeVariant } from '../../components/Card/Card';
+import { notificationConfig } from '../../constants/notification';
 import InputForm from '../../components/InputForm';
 import Button from '../../components/Button';
-import DynamicPagination from '../../components/DynamicPagination';
+import UserCards from './components/UserCards';
 
 import { useHttp } from '../../hooks/http.hook';
 
 import styles from './DictionaryPage.module.scss';
 
-enum words {
+export enum words {
   all,
   known,
   unknown
+}
+
+export interface card {
+  word: string, 
+  translations: string[], 
+  imageURL: string,
+  counter: number
 }
 
 const DictionaryPage = observer((): React.ReactElement => {
@@ -22,49 +30,68 @@ const DictionaryPage = observer((): React.ReactElement => {
 
   const [selectedWords, setSelectedWords] = useState<words>(words.all);
   const [searchWord, setSearchWord] = useState<string>('');
-  const [cards, setCards] = useState<{word: string, translations: string[], imageURL: string}[]>([]);
+  const [cards, setCards] = useState<card[]>([]);
   const [page, setPage] = useState<number>(1);
   const [maxPage, setMaxPage] = useState<number>(2);
 
-  const handleSelectChange = (ev: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleSelectChange = async (ev: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedWords(Number(ev.target.value));
+    const cards = await getCards(1, Number(ev.target.value));
+    setCards([...cards.words]);
   }
 
-  const getCards = () => {
+  const getCards = (page: number, selectedWords: number) => {
     return request(
-      `words/getWordsList?page=${page}`,
+      `words/getWordsList?page=${page}&mode=${selectedWords}`,
       'GET',
       null,
       {Authorization: `Bearer ${user.token}`}
     );
   }
 
-  const cardsElem = (cards: {word: string, translations: string[], imageURL: string}[]) => {
-      return cards.map(card => 
-        <div className={styles.card} key={card.word}>
-          <Card 
-                word={card.word}  
-                translate={card.translations[0]} 
-                url={card.imageURL}
-                size={sizeVariant.s}
-              />
-        </div>
-      ) 
-  }
-
-  const dynamicPaginationHandler = (): Promise<void | string> => {
+  const scrollPageHandler = (): Promise<void | string> => {
     return new Promise((res, rej) => {
-      const nextPage: Promise<void | string> = getCards()
+      const nextPage: Promise<void | string> = getCards(page, selectedWords)
         .then((res: any) => {
           setCards([...cards, ...res.words]);
           setPage(prev => prev + 1);
           setMaxPage(res.pagesTotal);
         })
-        .catch((rej) => `got error - ${rej}`);
+        .catch((rej: any) => `got error - ${rej}`);
 
       res(nextPage);
       rej(nextPage);
     })
+  }
+
+  const findCardHandler = async (ev: React.SyntheticEvent) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+
+    try {
+      if (searchWord.trim() === '') {
+        setPage(2);
+        const cards = await getCards(1, selectedWords);
+        setCards(cards.words);
+        return;
+      }
+      
+      const cards = await request(
+        `words/getEngWord?reqWord=${searchWord}`,
+        'GET',
+        null,
+        {Authorization: `Bearer ${user.token}`}
+      );
+
+      if (cards.message.length === 0) {
+        throw new Error('К сожалению, у тебя нет такого слова :(');
+      }
+        
+      setCards([{...cards.message}]);
+    } catch(e) {
+      toast.error(String(e), notificationConfig);
+      console.log('here', e);
+    }
   }
 
   return (
@@ -82,14 +109,15 @@ const DictionaryPage = observer((): React.ReactElement => {
           value={searchWord}
           onChange={(ev: React.ChangeEvent<HTMLInputElement>) => setSearchWord(ev.target.value)}
         />
-        <Button onClick={() => console.log('mock')} text={'Мне повезёт'} />
+        <Button onClick={findCardHandler} text={'Мне повезёт'} />
       </form>
-
-      <div className={styles.cardsWrapper}>
-        <DynamicPagination currentPage={page} maxPage={maxPage} onScrollEnd={dynamicPaginationHandler}>
-          {cardsElem(cards)}
-        </DynamicPagination>
-      </div>
+      <UserCards
+        cards={cards} 
+        page={page} 
+        maxPage={maxPage} 
+        selectedWords={selectedWords}
+        onScrollPage={scrollPageHandler}
+      />
     </div>
   )
 });

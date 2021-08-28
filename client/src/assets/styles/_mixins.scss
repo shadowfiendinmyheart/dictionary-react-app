@@ -1,13 +1,18 @@
 @import './_colors.scss';
 
-@mixin glow($color) {
-  text-shadow: 0 0 10px $font-shadow,0 0 30px $font-shadow, 0 0 80px $font-shadow;
+@mixin glow($color, $glow-color) {
+  text-shadow: 0 0 10px $glow-color,0 0 30px $glow-color, 0 0 80px $glow-color;
   color: $color;
 }
 
 @mixin glass() {
-  background-color: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
+  background-color: rgba(43, 43, 43, 0.66);
+  
+  @supports ((-webkit-backdrop-filter: blur()) or (backdrop-filter: blur())) {
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+  }
+
 }
 
 @mixin mainContent() {

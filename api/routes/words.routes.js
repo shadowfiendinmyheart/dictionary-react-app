@@ -1,6 +1,7 @@
 const {Router} = require('express');
 const {check, validationResult} = require('express-validator');
-const { wordListLimit, knownWordsCounter } = require('../constants/words');
+const mongoose = require('mongoose');
+const { wordListLimit, knownWordsCounter, randomWordsDateDifference} = require('../constants/words');
 
 const Dictionary = require('../models/Dictionary');
 const User = require('../models/User');
@@ -55,8 +56,12 @@ router.post('/createDictionary', auth,
       if (findDictionary) {
         return res.status(400).json({message: "Словарь с таким языком уже существует"});
       }
-      const dictionary = new Dictionary({language:language, ownerId: reqUserId});
+      const dictionary = new Dictionary({language: language, ownerId: reqUserId});
+      
+      const findUser = await User.findOne({"_id": reqUserId});
+      findUser.dictionaries.push(dictionary);
 
+      await findUser.save();
       await dictionary.save();
       return res.status(201).json({message: 'Словарь создан'});
     } catch (e) {
@@ -95,7 +100,6 @@ router.post('/saveTranslation',
       const findWordId = dictionary.words.findIndex(word => word.word === reqWord);
       let word;
 
-      
       if (findWordId > -1) {
         word = dictionary.words[findWordId];
       } else {
@@ -106,7 +110,7 @@ router.post('/saveTranslation',
         }) - 1;
         word = dictionary.words[wordId];
       }
-
+      
       //Существует ли такой перевод слова
       const findTranslation = word.translations.find(word => word === reqTranslation);
       if (!findTranslation) {
@@ -120,6 +124,8 @@ router.post('/saveTranslation',
     }
   }
 )
+
+
 
 // Сохранение перевода слова
 router.post('/addTranslation',
@@ -168,11 +174,58 @@ router.post('/addTranslation',
   }
 )
 
+// Сохранение перевода слова
+router.post('/editTranslation',
+    [
+      check('reqWord', 'Введите слово').notEmpty().isString().toLowerCase(),
+      check('reqTranslations', 'Введите переводы').notEmpty().isString().toLowerCase(),
+      auth
+    ],
+    async (req, res) => {
+      try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(400).json({
+            errors: errors.array(),
+            message: 'Вы допустили ошибку . . .'
+          })
+        }
+
+        const {reqWord, reqTranslations} = req.body;
+        const reqUserId = req.user.userId;
+
+        const dictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
+        if (!dictionary) {
+          return res.status(400).json({message: "Отсутствует словарь"});
+        }
+
+        //Существует ли такое слово в словаре вообще
+        const findWordId = dictionary.words.findIndex(word => word.word === reqWord);
+
+        if (findWordId === -1) {
+          return res.status(400).json({message: "Отсутствует слово"});
+        }
+        const word = dictionary.words[findWordId];
+
+        // word.translations = [];
+        // const translationsArr = reqTranslations.split(", ");
+        // Array.prototype.push.apply(word.translations, translationsArr);
+
+        word.translations = reqTranslations;
+
+        await dictionary.save();
+        return res.status(201).json({message: 'Перевод изменен', word: word});
+      } catch (e) {
+        return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
+      }
+    }
+)
+
 //Добавление слова в словарь
 router.post('/addWord',
   [
     check('reqWord', 'Введите слово').notEmpty().isString().toLowerCase(),
-    check('reqImageURL', 'Введите URL картинки').notEmpty().isString().toLowerCase(),
+    check('reqImageURL', 'Введите URL картинки').notEmpty().isString(),
     auth
   ],
   async (req, res) => {
@@ -214,6 +267,48 @@ router.post('/addWord',
   }
 )
 
+//Изменение картинки
+router.post('/setImage',
+    [
+      check('reqWord', 'Введите слово').notEmpty().isString().toLowerCase(),
+      check('reqImageURL', 'Введите URL картинки').notEmpty().isString(),
+      auth
+    ],
+    async (req, res) => {
+      try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(400).json({
+            errors: errors.array(),
+            message: 'Вы допустили ошибку . . .'
+          })
+        }
+
+        const {reqWord, reqImageURL} = req.body;
+        const reqUserId = req.user.userId;
+
+        const dictionary = await Dictionary.findOne({"language": language, "ownerId": reqUserId});
+        if (!dictionary) {
+          return res.status(400).json({message: "Отсутствует словарь"});
+        }
+
+        //Существует ли такое слово в словаре вообще
+        const findWordId = dictionary.words.findIndex(word => word.word === reqWord);
+        if (findWordId === -1) {
+          return res.status(400).json({message: "Такого слова нет"});
+        }
+
+        const word = dictionary.words[findWordId];
+        word.imageURL = reqImageURL;
+
+        await dictionary.save();
+        return res.status(201).json({message: 'Картинка изменена', word: word});
+      } catch (e) {
+        return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
+      }
+    }
+)
+
 // Получение слова из списка слов пользователя
 router.get('/getEngWord',
   [
@@ -238,7 +333,7 @@ router.get('/getEngWord',
         {
           $match: {
             "language": language,
-            "ownerId": require('mongoose').Types.ObjectId(reqUserId)
+            "ownerId": mongoose.Types.ObjectId(reqUserId)
           }
         },
         {
@@ -258,9 +353,14 @@ router.get('/getEngWord',
         return res.status(400).json({message: "Словарь отсутствует"});
       }
 
+      if (dictionaryAggregation[0].words.length === 0) {
+        return res.status(200).json({message: []});
+      }
+
       //Вовзвращение объекта: слово, перевод, картинка, статус, дата
       return res.status(200).json({message: dictionaryAggregation[0].words[0]});
     } catch (e) {
+      console.log('route /getEngWord', e);
       return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
     }
   }
@@ -313,6 +413,7 @@ router.post('/setCounter',
 router.get('/getWordsList',
   [
     check('page', 'Введите страницу').notEmpty().isNumeric(),
+    check('mode', 'Введите режим выдачи списка').notEmpty().isNumeric(),
     auth
   ],
   async (req, res) => {
@@ -326,33 +427,70 @@ router.get('/getWordsList',
       }
 
       const page = req.query.page;
+      const mode = req.query.mode;
       const reqUserId = req.user.userId;
+
+      let condition;
+      switch (mode) {
+        case "0":
+          condition = {$gt: -1}
+          break;
+        case "1":
+          condition = {$gt: knownWordsCounter}
+          break;
+        case "2":
+          condition = {$lt: knownWordsCounter}
+          break;
+      }
+
+      const countAggregation = await Dictionary.aggregate([
+        {
+          $match: {
+            "language": language,
+            "ownerId": mongoose.Types.ObjectId(reqUserId)
+          }
+        },
+        {
+          $project: {
+            "wordsCount": {$size: "$words"}
+          }
+        }
+      ]);
 
       const dictionaryAggregation = await Dictionary.aggregate([
         {
           $match: {
             "language": language,
-            "ownerId": require('mongoose').Types.ObjectId(reqUserId)
+            "ownerId": mongoose.Types.ObjectId(reqUserId)
           },
-
         },
         {
-          $project: {
-            "wordsArr": {$slice: ["$words",(page - 1) * wordListLimit , wordListLimit]},
-            "wordsCount":{$size: "$words"}
+          $unwind : {
+            path: "$words"
           }
+        },
+        {
+          $match: {
+            "words.counter": condition
+          }
+        },
+        {
+          $skip: (page - 1) * wordListLimit
+        },
+        {
+          $limit: wordListLimit
         }
-      ])
+      ]);
 
-      if (!dictionaryAggregation[0]) {
+      if (!dictionaryAggregation) {
         return res.status(400).json({message: "Словарь отсутствует"});
       }
 
-      const dictionary = dictionaryAggregation[0];
+      const words = dictionaryAggregation.map(w => w.words);
 
       return res.status(200).json({
-        words: dictionary.wordsArr,
-        pagesTotal: Math.ceil(dictionary.wordsCount / wordListLimit)
+        words,
+        pagesTotal: Math.ceil(countAggregation[0].wordsCount / wordListLimit)
       });
     } catch (e) {
       return res.status(500).json({message: 'Произошла ошибка на сервере', error: e})
@@ -364,6 +502,7 @@ router.get('/getRandomWords',
   [
     check('counterFilter', 'Введите фильтр показов').notEmpty().isNumeric(),
     check('count', 'Введите количество нужных слов').notEmpty().isNumeric(),
+    check('checkDate', 'Укажите флажок фильтра по дате').notEmpty().isBoolean(),
     auth
   ],
   async (req, res) => {
@@ -378,13 +517,14 @@ router.get('/getRandomWords',
 
       const counterFilter = parseInt(req.query.counterFilter);
       const count = parseInt(req.query.count);
+      const checkDate = (req.query.checkDate.toLowerCase() === "true");
       const reqUserId = req.user.userId;
 
-      const dictionaryAggregation = await Dictionary.aggregate([
+      let pipeline = [
         {
           $match: {
             "language": language,
-            "ownerId": require('mongoose').Types.ObjectId(reqUserId)
+            "ownerId": mongoose.Types.ObjectId(reqUserId)
           }
         },
         {
@@ -398,22 +538,26 @@ router.get('/getRandomWords',
               $lt: counterFilter
             }
           }
-        },
-        {
-          $sample: {
-            size: count
-          }
-        },
-        {
-          $project: {
-            "word": "$words"
-          }
         }
-      ])
+      ]
 
-      const words = dictionaryAggregation.map(w => {
-        return {...w.word}
-      })
+      if (checkDate) {
+        let lastDate = new Date(Date.now());
+        lastDate.setDate(lastDate.getDate() - randomWordsDateDifference);
+        const dateMatch = {
+          '$match' : {'words.date': {'$lte': lastDate}}
+        }
+        pipeline.push(dateMatch);
+      }
+
+      pipeline.push({$sample: {size: count}});
+      pipeline.push({$project: {"word": "$words"}});
+
+
+
+      const dictionaryAggregation = await Dictionary.aggregate(pipeline)
+
+      const words = dictionaryAggregation.map(w => {return {...w.word}});
 
       return res.status(200).json({message: words});
     } catch (e) {
@@ -435,7 +579,7 @@ router.get('/count', auth,
       const reqUserId = req.user.userId;
 
       const dictionaries = await Dictionary.find({ "ownerId": reqUserId });
-      
+
       // TODO: по возмможности перенести эту логику в запрос к бд
       const allWords = dictionaries.map(d => d.words.map(w => w)).flat();
       const knownWords = allWords.filter(w => w.counter > knownWordsCounter);

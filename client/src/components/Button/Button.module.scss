@@ -11,7 +11,12 @@
 
   &:hover {
     cursor: pointer;
-    @include glow($font-color);
+    @include glow($font-color, $font-shadow);
+  }
+
+  &:disabled {
+    cursor: wait;
+    @include glow($font-color, $canel-color);
   }
 }
 

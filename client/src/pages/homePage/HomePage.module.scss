@@ -1,3 +1,8 @@
+@mixin wide() {
+  grid-column-start: 1; 
+  grid-column-end: 4;
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -16,11 +21,13 @@
 }
 
 .addWordButton {
-  grid-column-start: 1; 
-  grid-column-end: 4; 
+  @include wide();
+}
+
+.gameOneButton {
+  @include wide();
 }
 
 .showDictionaryButton {
-  grid-column-start: 1; 
-  grid-column-end: 4; 
+  @include wide(); 
 }

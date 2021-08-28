@@ -1,0 +1,16 @@
+@import '../../../../assets/styles/mixins';
+@import '../../../../assets/styles/colors';
+
+.wrapper {
+    @include glass();
+    @include center();
+    flex-direction: column;
+    width: 800px;
+    position: relative;
+    margin: 75px 0;
+    height: 100%;
+}
+
+.images {
+    padding: 15px;
+}

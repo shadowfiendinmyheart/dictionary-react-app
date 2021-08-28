@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import cn from 'clsx';
 
 import styles from './Popup.module.scss';
@@ -14,7 +14,7 @@ const Popup = (props: popupProps): React.ReactElement => {
     const backgroundRef = useRef<any>(null);
 
     useEffect(() => {
-        const handler = (event: any) => {
+        const handler = (event: Event) => {
             if (backgroundRef.current === event.target) {
                 onClosePopup();
             }

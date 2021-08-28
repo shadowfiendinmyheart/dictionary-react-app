@@ -9,7 +9,7 @@
 
   &:hover {
     border-bottom: 3px solid $font-color;
-    @include glow($font-active-color);
+    @include glow($font-active-color, $font-shadow);
   }
 
   &:active {

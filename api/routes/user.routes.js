@@ -25,7 +25,11 @@ router.get('/info',
             
             const user = await User.findOne({_id: req.user.userId});
 
-            return res.status(200).json({ message: user});
+            return res.status(200).json({ message: {
+                dictionaries: user.dictionaries,
+                nickname: user.nickname,
+                login: user.login
+            }});
         } catch (e) {
             return res.status(400).json({ message: 'Произошла обшибка на сервере' });
         }

@@ -6,12 +6,14 @@ import styles from './SearchImage.module.scss';
 type searchImageProps = {
     url: string;
     active: boolean;
+    buttonText: string;
     onClickCard: () => void;
-    onCreateCard: (ev: React.SyntheticEvent) => void;
+    onButtonClick: (ev: React.SyntheticEvent) => void;
+    loading?: boolean;
 }
 
 const SearchImage = (props: searchImageProps):React.ReactElement => {
-    const { url, active, onClickCard, onCreateCard } = props;
+    const { url, active, buttonText, onClickCard, onButtonClick, loading } = props;
 
     return (
         active ? (
@@ -22,9 +24,10 @@ const SearchImage = (props: searchImageProps):React.ReactElement => {
                     src={url}
                 />
                 <Button 
-                    onClick={onCreateCard} 
-                    text={'Добавить карточку'}
-                    classNameUpdate={styles.pickButton} 
+                    onClick={onButtonClick} 
+                    text={buttonText}
+                    classNameUpdate={styles.pickButton}
+                    disabled={loading}
                 />
             </div>
         ) : (
