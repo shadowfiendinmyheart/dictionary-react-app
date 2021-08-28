@@ -13,7 +13,7 @@ interface cardProps {
     word: string;
     translate: string;
     url: string;
-    size?: sizeVariant;
+    size: sizeVariant;
 }
 
 

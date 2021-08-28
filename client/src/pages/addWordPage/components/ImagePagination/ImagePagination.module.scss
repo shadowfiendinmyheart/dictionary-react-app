@@ -1,0 +1,14 @@
+@import '../../../../assets/styles/mixins';
+@import '../../../../assets/styles/colors';
+
+.wrapperPickImage {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.imageColumn {
+    display: flex;
+    flex-direction: column;
+}

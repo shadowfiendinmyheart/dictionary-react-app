@@ -1,7 +1,7 @@
 @import './_colors.scss';
 
-@mixin glow($color) {
-  text-shadow: 0 0 10px $font-shadow,0 0 30px $font-shadow, 0 0 80px $font-shadow;
+@mixin glow($color, $glow-color) {
+  text-shadow: 0 0 10px $glow-color,0 0 30px $glow-color, 0 0 80px $glow-color;
   color: $color;
 }
 

@@ -9,7 +9,7 @@
   transition: all 0.2s;
 
   &:hover {
-    @include glow($font-active-color);
+    @include glow($font-color, $font-shadow);
     transform: scale(1.02);
   }
 
@@ -27,6 +27,6 @@
   text-decoration: none;
 
   &:hover {
-    @include glow($font-active-color);
+    @include glow($font-color, $font-shadow);
   }
 }
