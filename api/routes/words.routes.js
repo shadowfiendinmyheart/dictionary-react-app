@@ -207,9 +207,11 @@ router.post('/editTranslation',
         }
         const word = dictionary.words[findWordId];
 
-        word.translations = [];
-        const translationsArr = reqTranslations.split(", ");
-        Array.prototype.push.apply(word.translations, translationsArr)
+        // word.translations = [];
+        // const translationsArr = reqTranslations.split(", ");
+        // Array.prototype.push.apply(word.translations, translationsArr);
+
+        word.translations = reqTranslations;
 
         await dictionary.save();
         return res.status(201).json({message: 'Перевод изменен', word: word});

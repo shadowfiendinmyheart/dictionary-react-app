@@ -38,7 +38,24 @@ const EditCard = (props: EditCardProps): React.ReactElement => {
         ev.preventDefault();
         ev.stopPropagation();
 
-        console.log('card', card);
+        // TODO: валидировать строку на корректность
+        if (!inputTranslate.value) {
+            toast.error('Введи слово, хакер', notificationConfig);
+            return
+        }
+
+        try {
+            await request(
+                `/words/editTranslation`,
+                'POST',
+                {reqWord: card.word, reqTranslations: inputTranslate.value},
+                {Authorization: `Bearer ${user.token}`},
+            )
+    
+            toast.success('Перевод был обновлен', notificationConfig);
+        } catch (e) {
+            toast.error('Ошибка', notificationConfig);
+        }
     }
 
     const findImageHandler = async (ev: React.SyntheticEvent) => {
@@ -49,7 +66,7 @@ const EditCard = (props: EditCardProps): React.ReactElement => {
         if (images) {
             setImages(images);
         } else {
-            toast.error('Что-то пошло не так . . .');
+            toast.error('Что-то пошло не так . . .', notificationConfig);
         } 
     }
 
@@ -65,9 +82,9 @@ const EditCard = (props: EditCardProps): React.ReactElement => {
                 {Authorization: `Bearer ${user.token}`},
             );
             
-            toast.success('Картинка была обновлена');
+            toast.success('Картинка была обновлена', notificationConfig);
         } catch(e) {
-            toast.error('Ошибка', e);
+            toast.error('Ошибка', notificationConfig);
         }
     }
 
