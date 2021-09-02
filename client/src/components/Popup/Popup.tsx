@@ -9,6 +9,7 @@ type popupProps = {
     onClosePopup: () => void;
 }
 
+// TODO: фиксануть position(!) 
 const Popup = (props: popupProps): React.ReactElement => {
     const { children, visible, onClosePopup } = props;
     const backgroundRef = useRef<any>(null);

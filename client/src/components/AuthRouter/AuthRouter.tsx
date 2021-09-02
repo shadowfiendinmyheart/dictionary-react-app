@@ -9,9 +9,9 @@ import AddWordPage from '../../pages/addWordPage';
 import DictionaryPage from '../../pages/dictionaryPage';
 import ErrorPage from '../../pages/errorPage';
 import LoadingPage from '../../pages/loadingPage/LoadingPage';
+import GameTranslationPage from '../../pages/gameTranslationPage';
 
 import { ROUTES } from '../../constants/routes';
-import GameTranslationPage from '../../pages/gameTranslationPage';
 
 const AuthRouter = observer((): React.ReactElement => {
   if (user.loading) return <LoadingPage />

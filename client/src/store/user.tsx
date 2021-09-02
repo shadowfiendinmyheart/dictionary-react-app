@@ -1,4 +1,4 @@
-import { makeAutoObservable  } from "mobx";
+import { makeAutoObservable } from "mobx";
 
 const storageName = 'token';
 
@@ -67,7 +67,6 @@ class User {
             this.setLoading(false);
         }
     }
-
 }
 
 export default new User();

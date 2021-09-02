@@ -59,7 +59,7 @@ const AddWordPage = observer(():React.ReactElement => {
       })
       return images;
     } catch (e) {
-      toast.error(e, notificationConfig);
+      toast.error(String(e), notificationConfig);
       console.log('ERROR:', e);
     }
   }
@@ -75,13 +75,14 @@ const AddWordPage = observer(():React.ReactElement => {
       console.log(create);
       return true;
     } catch(e) {
-      toast.error(e, notificationConfig);
+      toast.error(String(e), notificationConfig);
       console.log(e);
       return false;
     }
   }
 
   // TODO: подумать над некой "обёрткой" для кнопок
+  // TODO: показывать инпуты для перевода и посика картинки, только после нажатия этой кнопки -
   const translateHandler = async (ev: React.SyntheticEvent) => {
     if (!inputWord.value) return console.log('Введите слово для перевода');
     try {
@@ -118,7 +119,7 @@ const AddWordPage = observer(():React.ReactElement => {
       }
     } catch (e) {
       toast.error(String(e), notificationConfig);
-      const code = Number(e.toString().split(' ')[1]);
+      const code = Number(String(e).toString().split(' ')[1]);
       if (code === 400) await createDictionary();
       console.log('ERROR:', e);
     }
@@ -127,9 +128,15 @@ const AddWordPage = observer(():React.ReactElement => {
   const createCardHandler = (ev: React.SyntheticEvent) => {
     ev.preventDefault();
     ev.stopPropagation();
-    // TODO: сделать вывод ошибки
-    if (!inputWord.value) return console.log('Введите слово для перевода');
-    if (!inputTranslate.value) return console.log('Укажите перевод');
+    
+    if (!inputWord.value) {
+      toast.error(String('Введите слово для перевода'), notificationConfig);
+      return;
+    }
+    if (!inputTranslate.value) {
+      toast.error(String('Укажите перевод'), notificationConfig);
+      return;
+    } 
 
     setSaveCardPopup(true);
   }
@@ -152,8 +159,8 @@ const AddWordPage = observer(():React.ReactElement => {
       setImages([]);
       inputTranslate.setValue('');
     } catch (e) {
-      toast.error(e, notificationConfig);
-      const code = Number(e.toString().split(' ')[1]);
+      toast.error(String(e), notificationConfig);
+      const code = Number(String(e).split(' ')[1]);
       if (code === 400) {
         // TODO: когда будет готова реализация нескольких словарей,
         // сделать попап с предложением создать словарь с новым языком
@@ -173,7 +180,7 @@ const AddWordPage = observer(():React.ReactElement => {
       const images =  await getImages(inputImage.value, 1);
       setImages(images);
     } catch (e) {
-      toast.error(e, notificationConfig);
+      toast.error(String(e), notificationConfig);
       console.log('ERROR:', e);
     }
   }

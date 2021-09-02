@@ -48,13 +48,14 @@ export const useHttp = () => {
 
         return data;
       } catch (e) {
-        setError(e.message);
+        setError(String(e));
         throw e;
       } finally {
         setLoading(false);
       }
     }, [])
-
+  
+  // TODO: fix name
   const clearAnswer = useCallback(() => setError(null), []);
 
   return { loading, request, error, clearAnswer }

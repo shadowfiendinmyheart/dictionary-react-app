@@ -40,7 +40,7 @@ const EditCard = (props: EditCardProps): React.ReactElement => {
 
         // TODO: валидировать строку на корректность
         if (!inputTranslate.value) {
-            toast.error('Введи слово, хакер', notificationConfig);
+            toast.error('Введи перевод, хакер', notificationConfig);
             return
         }
 
@@ -105,7 +105,7 @@ const EditCard = (props: EditCardProps): React.ReactElement => {
           })
           return images;
         } catch (e) {
-          toast.error(e, notificationConfig);
+          toast.error(String(e), notificationConfig);
           console.log('ERROR:', e);
         }
     }
