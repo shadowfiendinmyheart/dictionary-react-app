@@ -15,8 +15,8 @@
   }
 
   &:disabled {
-    cursor: wait;
-    @include glow($font-color, $canel-color);
+    cursor: default;
+    @include glow($font-color, $disable-color);
   }
 }
 

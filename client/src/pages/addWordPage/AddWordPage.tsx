@@ -37,6 +37,7 @@ const AddWordPage = observer(():React.ReactElement => {
   const [images, setImages] = useState<imageType[]>();
   const [pickedImage, setPickedImage] = useState<string>('');
   const [isExistCardPopup, setIsExistCardPopup] = useState<boolean>(false);
+  const [isTranslated, setIsTranslated] = useState<boolean>(false);
   const [saveCardPopup, setSaveCardPopup] = useState<boolean>(false);
   const [editCardPopup, setEditCardPopup] = useState<boolean>(false);
   const [existCard, setExistCard] = useState<cardType>();
@@ -82,12 +83,18 @@ const AddWordPage = observer(():React.ReactElement => {
   }
 
   // TODO: подумать над некой "обёрткой" для кнопок
-  // TODO: показывать инпуты для перевода и посика картинки, только после нажатия этой кнопки -
   const translateHandler = async (ev: React.SyntheticEvent) => {
     if (!inputWord.value) return console.log('Введите слово для перевода');
     try {
       ev.preventDefault();
       ev.stopPropagation();
+
+      const regular = /^[a-z]+$/i;
+      if (!regular.test(inputWord.value)) {
+        throw new Error('Хех, постарайся ввести заморское слово');
+      }
+
+      setIsTranslated(true);
 
       const checkCardExist = await request(
         `words/getEngWord?reqWord=${inputWord.value}`, 
@@ -121,7 +128,6 @@ const AddWordPage = observer(():React.ReactElement => {
       toast.error(String(e), notificationConfig);
       const code = Number(String(e).toString().split(' ')[1]);
       if (code === 400) await createDictionary();
-      console.log('ERROR:', e);
     }
   }
   
@@ -196,32 +202,41 @@ const AddWordPage = observer(():React.ReactElement => {
               placeholder={'Введите слово для перевода'}
               value={inputWord.value}
               onChange={inputWord.onChange}
+              disabled={isTranslated}
             />
           </div>
-          <Button onClick={translateHandler} text={'Перевести'} disabled={loading} />
-        </form>
-        <div className={styles.inpForm}>
-          <InputForm 
-            autoComplete='off'
-            type={'text'}
-            name={'translate'}
-            placeholder={'Перевод'}
-            value={inputTranslate.value}
-            onChange={inputTranslate.onChange}
+          <Button 
+            onClick={translateHandler} 
+            text={'Перевести'} 
+            disabled={loading || isTranslated} 
           />
-        </div>
-        <form autoComplete='off' className={styles.searchForm}>
-          <div className={styles.inpForm}>
-            <InputForm 
-              type={'text'}
-              name={'imageSearch'}
-              placeholder={'Визуальная ассоциация'}
-              value={inputImage.value}
-              onChange={inputImage.onChange}
-            />
-          </div>
-          <Button onClick={searchImageHandler} text={'Найти ассоциацию'} disabled={loading} />
         </form>
+        {isTranslated && 
+          <>
+            <div className={styles.inpForm}>
+              <InputForm 
+                autoComplete='off'
+                type={'text'}
+                name={'translate'}
+                placeholder={'Перевод'}
+                value={inputTranslate.value}
+                onChange={inputTranslate.onChange}
+              />
+            </div>
+            <form autoComplete='off' className={styles.searchForm}>
+              <div className={styles.inpForm}>
+                <InputForm 
+                  type={'text'}
+                  name={'imageSearch'}
+                  placeholder={'Визуальная ассоциация'}
+                  value={inputImage.value}
+                  onChange={inputImage.onChange}
+                />
+              </div>
+              <Button onClick={searchImageHandler} text={'Найти ассоциацию'} disabled={loading} />
+            </form>
+          </>
+        }
       </div>
       <div>
         {images ? 
