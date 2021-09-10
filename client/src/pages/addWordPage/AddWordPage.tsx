@@ -84,7 +84,10 @@ const AddWordPage = observer(():React.ReactElement => {
 
   // TODO: подумать над некой "обёрткой" для кнопок
   const translateHandler = async (ev: React.SyntheticEvent) => {
-    if (!inputWord.value) return console.log('Введите слово для перевода');
+    if (!inputWord.value) {
+      throw new Error('Не знаю как ты этого добился, но для создания карточки нужно слово 0_о');
+    }
+
     try {
       ev.preventDefault();
       ev.stopPropagation();
