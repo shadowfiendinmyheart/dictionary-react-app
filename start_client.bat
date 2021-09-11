@@ -1,2 +1,2 @@
-cd api
-npm run client
+cd client
+npm start
