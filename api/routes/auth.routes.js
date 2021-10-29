@@ -140,7 +140,7 @@ router.get('/refresh', async (req, res) => {
     await tokenService.saveToken(userData.userId, tokens.refreshToken);
 
     res.cookie('refreshToken', tokens.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true});
-    res.status(200).json({ message: 'refresh is success', tokens});
+    res.status(200).json({ message: 'refresh is success', token: tokens.accessToken });
   } catch (e) {
     console.log('ERROR:', e);
     res.status(500).json({ message: 'u broke the site . . .'});

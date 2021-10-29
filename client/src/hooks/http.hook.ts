@@ -28,10 +28,11 @@ export const useHttp = () => {
           }});
 
           const answer = await refresh.json();
+          console.log('answer', answer);
           if (!refresh.ok) {
             return new Error(answer.message || 'Error . . .')
           }
-          user.refresh(answer.tokens.accessToken);
+          user.refresh(answer.token);
 
           return await request(url, method, body, {...headers, Authorization: `Bearer ${user.token}`});
         }

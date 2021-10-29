@@ -17,17 +17,17 @@
   &:disabled {
     cursor: default;
     @include glow($font-color, $disable-color);
+    color: $disable-color;
+  }
+
+  &:active {
+    box-shadow: 0 0 3px $font-shadow, 0 0 6px $font-shadow, 0 0 9px whitesmoke;
+  }
+  
+  &:focus {
+    outline: none;
   }
 }
 
-.btn:active {
-  box-shadow: 0 0 3px $font-shadow, 0 0 6px $font-shadow, 0 0 9px whitesmoke;
-}
 
-.btn:focus {
-  outline: none;
-}
 
-.btn:disabled {
-  color: $disable-color;
-}

@@ -1,0 +1,6 @@
+{
+    "port": "your port",
+    "jwtAccessSecret": "your secret key for access token",
+    "jwtRefreshSecret": "your secret key for refresh token",
+    "mongoUri": "path to u cluster"
+  }
