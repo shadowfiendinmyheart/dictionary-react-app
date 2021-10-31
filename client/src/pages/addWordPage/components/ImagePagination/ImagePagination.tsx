@@ -73,7 +73,7 @@ const ImagePagination = (props: ImagePaginationProps): React.ReactElement => {
           })
           return images;
         } catch (e) {
-          toast.error(e, notificationConfig);
+          toast.error(String(e), notificationConfig);
           console.log('ERROR:', e);
         }
     }

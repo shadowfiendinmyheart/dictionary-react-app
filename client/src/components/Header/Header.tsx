@@ -22,7 +22,7 @@ const Header = observer(():React.ReactElement => {
       toast.success('Вы вышли из аккаунта', notificationConfig);
     } catch(e) {
       console.log('error', e);
-      toast.error(e, notificationConfig);
+      toast.error(String(e), notificationConfig);
     }
   }
 
